@@ -1,17 +1,19 @@
+
 #ifndef _Window_
 #define _Window_
 typedef struct Window
 {
-	int WinState;/*¹¤×÷×´Ì¬£ºCloseWin´°¿Ú¹Ø±Õ  OpenWin¿ÕÏĞ  OnSerWinÕıÔÚ·şÎñ  
-								RestWinĞİÏ¢ÖĞ  ReadyRestWinµÈ´ıĞİÏ¢  ReadyClosWinµÈ´ı¹Ø±Õ*/
-	int SerNum;//·şÎñµÄºÅÂë 		
-	long SerTime;//±¾´Î·şÎñ½áÊøÊ±¼ä
-	long RestTime;//±¾´ÎĞİÏ¢½áÊøÊ±¼ä
-	long TotalSer;//×Ü¹²·şÎñÈËÊı
-	long TotalTime;//×Ü¹²·şÎñÊ±¼ä
-	Passenger *WinHead;//´°¿Ú¶ÓÁĞÍ·Ö¸Õë
-	Passenger *WinTail;//´°¿Ú¶ÓÁĞÎ²Ö¸Õë
-}Window;//´°¿Ú½á¹¹
+	int WinState;/*å·¥ä½œçŠ¶æ€ï¼šCloseWinçª—å£å…³é—­  OpenWinç©ºé—²  OnSerWinæ­£åœ¨æœåŠ¡  
+								RestWinä¼‘æ¯ä¸­  ReadyRestWinç­‰å¾…ä¼‘æ¯  ReadyClosWinç­‰å¾…å…³é—­*/
+	int SerNum;//æœåŠ¡çš„å·ç  		
+	long SerTime;//æœ¬æ¬¡æœåŠ¡ç»“æŸæ—¶é—´
+	long RestTime;//æœ¬æ¬¡ä¼‘æ¯ç»“æŸæ—¶é—´
+	long TotalSer;//æ€»å…±æœåŠ¡äººæ•°
+	long TotalTime;//æ€»å…±æœåŠ¡æ—¶é—´
+	int  WaitNum;//è®°å½•å½“å‰å®‰æ£€å£æ’é˜Ÿä¹˜å®¢æ•°é‡
+	Passenger *WinHead;//çª—å£é˜Ÿåˆ—å¤´æŒ‡é’ˆ
+	Passenger *WinTail;//çª—å£é˜Ÿåˆ—å°¾æŒ‡é’ˆ
+}Window;//çª—å£ç»“æ„
 
 #endif
 
