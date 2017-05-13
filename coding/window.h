@@ -11,6 +11,7 @@ typedef struct Window
 	long TotalSer;//总共服务人数
 	long TotalTime;//总共服务时间
 	int  WaitNum;//记录当前安检口排队乘客数量
+	Passenger *NowPas;//指向被安检乘客指针
 	Passenger *WinHead;//窗口队列头指针
 	Passenger *WinTail;//窗口队列尾指针
 }Window;//窗口结构
