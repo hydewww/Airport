@@ -38,7 +38,24 @@ extern int MaxSec;		//安检口最大安检时长 单位是秒
 extern int MinSec;		//安检口最小安检时长 单位是秒
 extern int PassengerArriveTask;//给到达的乘客安排窗口号码
 
+struct entry {
+	int no; //事件序号
+	int sec;//事件发生时间间隔
+	char type;//事件类型：C-乘客到达，X-安检口申请暂停，Q-下班；
+	int mans; //事件属性1-到达人数
+	int check; //事件属性2-申请暂停的安检口编号 
+};
+
 //函数声明
+void MainInput();
+void AirportOnServe();
+void DistriNum(int);
+void WinRun();
+long SerTaskTime();
 void MainPara();
+void CusOutput();
+void NowTime();
+void RegularOutput();
+void ResultOutput();
 
 #endif
