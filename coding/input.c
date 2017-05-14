@@ -49,7 +49,7 @@ void MainInput() {
 		
 	FILE *finput = fopen("input.dat", "wb+");
 	
-	extern struct entry event[100];
+	struct entry event[100];
 	if (finput) {
 		for (int i = 0; i < 99; i++) {
 
@@ -66,6 +66,7 @@ void MainInput() {
 				event[i].mans = (int)(random() * MaxCrown + 1);
 				event[i].check = 0;
 			}
+			event[i].ev_valid = 0;
 		}
 		event[99].type = 'Q';
 		fwrite(&event, sizeof(struct entry), 100, finput);
@@ -78,6 +79,16 @@ void MainInput() {
 }
 
 void AirportOnServe() {
-	
+		
+	time_t time_pre_ev = TimeStart;
+	time_t temtime;
+	FILE *finput = fopen("input.dat", "rb+");
 
+	extern struct entry thisEvent;
+
+	fread(&thisEvent, sizeof(struct entry), 1, "finput");
+	if (time(&temtime)> thisEvent.sec + time_pre_ev) {
+		time_pre_ev = clock();
+		fread(&thisEvent, sizeof(struct entry), 1, "finput");
+	}
 }
