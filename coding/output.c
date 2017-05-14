@@ -1,12 +1,13 @@
-#include<stdio.h>
-#include<stdlib.h>
 #include"global.h"
 #include"passenger.h"
 #include"window.h"
+#include<stdio.h>
+#include<stdlib.h>
 #include<Windows.h>
 #include<process.h>
 void StatusOutputFile() {
-	StartTimer(100); /*?????????????*/
+	if ( ((int)difftime(TimeStart,TimeNow)) %3!=0)
+		return;
 	FILE* fp;
 	if (!  (fp=fopen("output.txt", "a"))  ) {
 		puts("Error: cannot open the file \"output.txt\".");
