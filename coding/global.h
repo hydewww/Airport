@@ -46,14 +46,19 @@ typedef struct entry {
 
 
 //函数声明
+//maintain.c
 int MainPara();//维护配置文件
+//input.c
+double random();
+void MainInput();
+void AirportOnServe();
+//state.cpp
 void DistriNum(entry event);//为乘客分配号码并插入排队缓冲区
-void EventOutput(int EventType, int PasID, int WinID);
-void DistriNum(int);
 void WinRun();
-long SerTaskTime();
-int  MainPara();
-void CusOutput();
-void NowTime();
-void RegularOutput();
+void PreWinRun();
+//output.c
+void StatusOutputCmd();
+void EventOutputFile(char event, int id, int no);
+void StatusOutputFile();
+//void NowTime();
 #endif
