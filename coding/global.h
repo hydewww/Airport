@@ -44,6 +44,7 @@ struct entry {
 	char type;//事件类型：C-乘客到达，X-安检口申请暂停，Q-下班；
 	int mans; //事件属性1-到达人数
 	int check; //事件属性2-申请暂停的安检口编号 
+	int ev_valid; //判断事件是否读取
 };
 
 //函数声明
@@ -52,7 +53,7 @@ void AirportOnServe();
 void DistriNum(int);
 void WinRun();
 long SerTaskTime();
-void MainPara();
+int  MainPara();
 void CusOutput();
 void NowTime();
 void RegularOutput();
