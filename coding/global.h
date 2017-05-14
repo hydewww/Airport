@@ -1,61 +1,65 @@
+
 #ifndef _Global_
 #define _Global_
 #include<time.h>
-//»ú³¡×´Ì¬
-#define OffWork 0    //ÏÂ°à
-#define OnWork 1     //ÕıÔÚ¹¤×÷
+//æœºåœºçŠ¶æ€
+#define OffWork 0    //ä¸‹ç­
+#define OnWork 1     //æ­£åœ¨å·¥ä½œ
 #define ShutDown 2 
-//´°¿Ú×´Ì¬
-#define CloseWin 0   //´°¿Ú¹Ø±Õ
-#define OpenWin 1    //´°¿Ú¿ªÆô
-#define OnSerWin 2   //´°¿ÚÕıÔÚ·şÎñ
-#define RestWin 3    //´°¿ÚÕıÔÚĞİÏ¢
-#define ReadyRestWin 4  //´°¿Ú×¼±¸ĞİÏ¢
-#define ReadyClosWin 5  //´°¿Ú×¼±¸¹Ø±Õ
+//çª—å£çŠ¶æ€
+#define CloseWin 0   //çª—å£å…³é—­
+#define OpenWin 1    //çª—å£å¼€å¯
+#define OnSerWin 2   //çª—å£æ­£åœ¨æœåŠ¡
+#define RestWin 3    //çª—å£æ­£åœ¨ä¼‘æ¯
+#define ReadyRestWin 4  //çª—å£å‡†å¤‡ä¼‘æ¯
+#define ReadyClosWin 5  //çª—å£å‡†å¤‡å…³é—­
 
-//È«¾Ö±äÁ¿ÉùÃ÷
-extern int AirportState;//»ú³¡×´Ì¬
-extern int TotalOdinCus;//µ±Ç°×ÜµÄ³Ë¿ÍÈËÊı
-extern int OdinWatNum;//µ±Ç°³Ë¿ÍµÈ´ıÈËÊı
-extern int WinNum;//°²¼ì¿Ú¹¤×÷ÊıÄ¿
-extern int PassengerArriveTask;//¸øµ½´ïµÄ³Ë¿Í°²ÅÅ´°¿ÚºÅÂë
-extern time_t TimeStart;//¿ªÊ¼Ê±¼ä
-extern time_t TimeFinish;//½áÊøÊ±¼ä 
-extern time_t TimeNow;//ÏÖÔÚµÄÊ±¼ä
-extern int NumOfWin;//°²¼ì¿Ú×ÜÊıÄ¿
-extern int MinRestSec;//°²¼ì¿Ú¿Ú×îĞ¡ĞİÏ¢Ê±³¤
-extern int MaxRestSec;//°²¼ì¿Ú×î´óĞİÏ¢Ê±³¤
-extern int MaxCustSingleLine;// µ¥¶ÓÁĞ×î´óµÈ´ı³Ë¿ÍÊı
-extern int MaxLines;// ÉßĞÎ»º³åÇø×î¶àÓÉMaxLines¸öÖ±¶Ó×é³É
-extern int MaxSeqLen;// ×î´óÔÊĞíµÈ´ı³¤¶È
-extern int EasySeqLen;// ¶ÌÆÚµÈ´ı³¤¶È
-extern int MinCheck;// ×îÉÙ¿ª·Å°²¼ì¿ÚÊıÁ¿
-extern int MaxCheck;// ×î¶à¿ª·Å°²¼ì¿ÚÊıÁ¿
-extern int MaxCustCheck;// °²¼ì¿Ú¶ÓÎé×î´ó³¤¶È
-extern int MaxSec;// °²¼ì¿Ú×î´ó°²¼ìÊ±³¤ µ¥Î»ÊÇÃë
-extern int MinSec;// °²¼ì¿Ú×îĞ¡°²¼ìÊ±³¤ µ¥Î»ÊÇÃë
+//å…¨å±€å˜é‡å£°æ˜
+extern int AirportState;//æœºåœºçŠ¶æ€
+extern int TotalOdinCus;//å½“å‰æ€»çš„ä¹˜å®¢äººæ•°
+extern int OdinWatNum;//å½“å‰ä¹˜å®¢ç­‰å¾…äººæ•°
+extern int WinNum;//å®‰æ£€å£å·¥ä½œæ•°ç›®
+extern int PassengerArriveTask;//ç»™åˆ°è¾¾çš„ä¹˜å®¢å®‰æ’çª—å£å·ç 
+extern time_t TimeStart;//å¼€å§‹æ—¶é—´
+extern time_t TimeFinish;//ç»“æŸæ—¶é—´ 
+extern time_t TimeNow;//ç°åœ¨çš„æ—¶é—´
+extern int NumOfWin;//å®‰æ£€å£æ€»æ•°ç›®
+extern int MinRestSec;//å®‰æ£€å£å£æœ€å°ä¼‘æ¯æ—¶é•¿
+extern int MaxRestSec;//å®‰æ£€å£æœ€å¤§ä¼‘æ¯æ—¶é•¿
+extern int MaxCustSingleLine;// å•é˜Ÿåˆ—æœ€å¤§ç­‰å¾…ä¹˜å®¢æ•°
+extern int MaxLines;// è›‡å½¢ç¼“å†²åŒºæœ€å¤šç”±MaxLinesä¸ªç›´é˜Ÿç»„æˆ
+extern int MaxSeqLen;// æœ€å¤§å…è®¸ç­‰å¾…é•¿åº¦
+extern int EasySeqLen;// çŸ­æœŸç­‰å¾…é•¿åº¦
+extern int MinCheck;// æœ€å°‘å¼€æ”¾å®‰æ£€å£æ•°é‡
+extern int MaxCheck;// æœ€å¤šå¼€æ”¾å®‰æ£€å£æ•°é‡
+extern int MaxCustCheck;// å®‰æ£€å£é˜Ÿä¼æœ€å¤§é•¿åº¦
+extern int MaxSec;// å®‰æ£€å£æœ€å¤§å®‰æ£€æ—¶é•¿ å•ä½æ˜¯ç§’
+extern int MinSec;// å®‰æ£€å£æœ€å°å®‰æ£€æ—¶é•¿ å•ä½æ˜¯ç§’
 
 typedef struct entry {
-	int no; //ÊÂ¼şĞòºÅ
-	int sec;//ÊÂ¼ş·¢ÉúÊ±¼ä¼ä¸ô
-	char type;//ÊÂ¼şÀàĞÍ£ºC-³Ë¿Íµ½´ï£¬X-°²¼ì¿ÚÉêÇëÔİÍ££¬Q-ÏÂ°à£»
-	int mans; //ÊÂ¼şÊôĞÔ1-µ½´ïÈËÊı
-	int check; //ÊÂ¼şÊôĞÔ2-ÉêÇëĞİÏ¢µÄ°²¼ì¿Ú±àºÅ 
-	int ev_valid; //ÊÂ¼şÊÇ·ñ±»¶ÁÈ¡
+	int no; //äº‹ä»¶åºå·
+	int sec;//äº‹ä»¶å‘ç”Ÿæ—¶é—´é—´éš”
+	char type;//äº‹ä»¶ç±»å‹ï¼šC-ä¹˜å®¢åˆ°è¾¾ï¼ŒX-å®‰æ£€å£ç”³è¯·æš‚åœï¼ŒQ-ä¸‹ç­ï¼›
+	int mans; //äº‹ä»¶å±æ€§1-åˆ°è¾¾äººæ•°
+	int check; //äº‹ä»¶å±æ€§2-ç”³è¯·ä¼‘æ¯çš„å®‰æ£€å£ç¼–å· 
+	int ev_valid; //äº‹ä»¶æ˜¯å¦è¢«è¯»å–
 }entry;
 
 
-//º¯ÊıÉùÃ÷
+//å‡½æ•°å£°æ˜
 //maintain.c
-int MainPara();//Î¬»¤ÅäÖÃÎÄ¼ş
+int MainPara();//ç»´æŠ¤é…ç½®æ–‡ä»¶
 //input.c
 double random();
 void MainInput();
 void AirportOnServe();
 //state.cpp
-void DistriNum(entry event);//Îª³Ë¿Í·ÖÅäºÅÂë²¢²åÈëÅÅ¶Ó»º³åÇø
+void DistriNum(entry event);//ä¸ºä¹˜å®¢åˆ†é…å·ç å¹¶æ’å…¥æ’é˜Ÿç¼“å†²åŒº
 void WinRun();
 void PreWinRun();
+int CheckWin();//åˆ¤æ–­å®‰æ£€å£èƒ½å¦å…³é—­
+void RestOrClosWin(entry event);//æ¥æ”¶å®‰æ£€å£äº‹ä»¶å®Œæˆå®‰æ£€å£ä¸‹ç­åŠä¼‘æ¯åŠŸèƒ½
+void StateTrans(entry * event);//æ€»æ§åˆ¶å‡½æ•°
 //output.c
 void StatusOutputCmd();
 void EventOutputFile(char event, int id, int no);
