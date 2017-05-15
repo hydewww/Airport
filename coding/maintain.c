@@ -50,12 +50,20 @@ int MainPara()
 	printf("11.安检口最大安检时长:        %3d\n", MaxSec);
 	fread(&MinSec, sizeof(int), 1, fp);
 	printf("12.安检口最小安检时长:        %3d\n", MinSec);
+	/*
+	1 9需要重合
+	*/
 	fclose(fp);//关闭文件指针
 
 	while (1) //判断是否需要修改
 	{
 		printf("是否需要修改:\tY\tN\n");
 		c = getchar();
+		/*
+		读之前要清空缓存区吧
+		fflush(stdin);
+		或者别的
+		*/
 		if (c == 'n' || c == 'N' || c == 'y' || c == 'Y') //输入正确
 		{
 			break;
@@ -73,6 +81,9 @@ int MainPara()
 			{
 				printf("输入要修改的信息编号,0代表完成修改:\n");
 				scanf("%d", &num);
+				/*
+				为了防止蜜汁非数字输入 这里要if(scanf=1)啥的
+				*/
 				if (num == 0) //完成修改
 				{
 					break;

@@ -29,6 +29,10 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 	int number = 0;//本次到达乘客数量计数器
 	Passenger* p;//乘客指针
 	for (number = 0; (number < event->mans) && (AirportState != OffWork); number++)
+	/*
+	检查排队缓冲区最大人数  
+	准备下班也不能进人
+	*/
 	{
 		TotalOdinCus++;//乘客数量加一
 		OdinWatNum++;//当前等待乘客数加一
@@ -57,16 +61,25 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 	int MinWaitNum = MaxCustCheck;//最少安检口排队乘客数量
 	int MinWaitWinNum = 0;//最少乘客排队的安检口数组编号
 	for (; ; MinWaitWinNum = 0, MinWaitNum = MaxCustCheck) //存在可以插入乘客的安检口队列
+	/*
+	这里好像能改写一下，这个for和break有点迷
+	*/
 	{
 		for (NowWinNum = 0; NowWinNum < NumOfWin; NowWinNum++) //数组编号小于安检口总数则执行循环
 		{
 			if ((MinWaitNum > Win[NowWinNum].WaitNum) && (Win[NowWinNum].WinState == OpenWin || Win[NowWinNum].WinState == OnSerWin || Win[NowWinNum].WinState == ReadyClosWin)) //记录目前排队最少且处于正常工作的安检口
+			/*
+			正在关闭的窗口不要插入乘客比较好？
+			*/
 			{
 				MinWaitNum = Win[NowWinNum].WaitNum; //记录当前最少排队人数
 				MinWaitWinNum = NowWinNum; //改变当前最少安检口编号
 			}
 		}
 		if (MinWaitWinNum < MaxCustCheck) //存在排队未满的安检口
+		/*
+		<= 
+		*/
 		{
 			Win[MinWaitWinNum].WinTail->next = Queuehead->next;//将排队缓冲区队头插入该安检口的队尾
 			Win[MinWaitWinNum].WinTail = Queuehead->next;//将安检口队尾改为其下一个
@@ -87,8 +100,14 @@ void RestOrClosWin(entry event)//接收事件完成安检口下班及休息功能
 		case 'X'://安检口申请休息
 			Win[event.check - 1].WinState = ReadyRestWin;//设置安检口状态为准备休息
 			break;
+			/*
+			检查安检口是否开启
+			*/
 		case 'Q':
 			int i = 0;//设置循环变量
+			/*
+			我这里int报错了 a declartion cannot have a label
+			*/
 			for (i = 0; i < NumOfWin; i++)//遍历安检口数组
 			{
 				if (Win[i].WinState != CloseWin)//安检口不在关闭状态
@@ -164,6 +183,9 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				break;
 			case ReadyRestWin: //安检口处于申请休息状态
 				if ((Win[i].NowPas == NULL) && (Win[i].WinHead == NULL))//安检口无人排队且空闲
+				/*
+				Winhead->next=null
+				*/
 				{
 					time(&TimeNow);//获取当前时间
 					Win[i].WinState = RestWin;//改变安检口状态为正在休息
@@ -171,11 +193,18 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				}
 				else//不能休息
 				{
+					/*
+					如果nowpas=null winhead->next!=null 需要处理下一个乘客
+					*/
 					;
 				}
 				break;
 			case ReadyClosWin: //安检口处于准备关闭状态
 				if (((Win[i].NowPas == NULL) && (Win[i].WinHead == NULL)) && ((OdinWatNum + 1 - MaxCustCheck) / WinNum) <= EasySeqLen)//满足关闭条件(安检口空闲且炮队缓冲区人少)
+				/*
+				Winhead->next=null 约炮缓冲区
+
+				*/
 				{
 					Win[i].WinState = CloseWin;//改变安检口状态为关闭
 					WinNum--;//安检口数量减一
@@ -183,6 +212,9 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				}
 				else //不能关闭
 				{
+					/*
+					如果nowpas=null winhead->next!=null 需要处理下一个乘客
+					*/
 					;
 				}
 				break;
@@ -212,16 +244,38 @@ void StateTrans(entry *event) // 总控制函数
 		{
 		case 'G':			//乘客到达事件
 			DistriNum(event);//将乘客分配到缓冲区
+			/*
+			EventOutputFile('G',int PasID,int WinID);
+			*/
 			break;
 		default: //安检口事件
 			RestOrClosWin(*event);//将安检口状态设置为准备休息或下班
+			/*
+			EventOutputFile('X',int PasID,int WinID);
+			*/
 			break;
 		}
 	}//if
 	PreWinRun(); //将排队缓冲区的乘客插入到安检口
+	/*
+	EventOutputFile('C',int PasID,int WinID);
+	*/
 	WinRun();////安检口处理乘客及计算安检口状态转换
 	if (event->type == 'Q') //收到下班指令
 	{
 		AirportState= CheckWin();//判断安检口能否关闭
 	}
 }
+/*
+需要一波输出函数
+case 'G':fprintf(fp, "%d号乘客进入排队缓冲区\n", PasID); break;
+case 'F':fprintf(fp, "排队缓冲区已满\n"); break;
+case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); break;
+case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); break;
+case 'O':fprintf(fp, "%d号安检口开启", WinID); break;
+case 'S':fprintf(fp, "%d号安检口关闭", WinID); break;
+case 'X':fprintf(fp, "%d号安检口申请休息", WinID); break;
+case 'K':fprintf(fp, "%d号安检口开始休息", WinID); break;
+case 'J':fprintf(fp, "%d号安检口结束休息", WinID); break;
+case 'Q':fprintf(fp, "接收到下班指令\n"); break;
+*/
