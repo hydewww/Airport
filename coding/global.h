@@ -54,20 +54,20 @@ typedef struct entry {
 //maintain.c
 int MainPara();//维护配置文件
 //input.c
-double random();
-void MainInput();
-void AirportOnServe();
+double random();//正态分布函数
+void MainInput();//生成随机事件
+void AirportOnServe();//读取事件
 //Cmdinput.c
 unsigned __stdcall CmdInput(void* pArguments);
 //state.cpp
 void DistriNum(entry *event);//为乘客分配号码并插入排队缓冲区
-void WinRun();
-void PreWinRun();
-int CheckWin();//判断安检口能否关闭
+void WinRun();//安检口状态机
+void PreWinRun();//缓冲区进安检口
+int CheckWin();//判断安检口能否关闭 
 void RestOrClosWin(entry event);//接收安检口事件完成安检口下班及休息功能
 void StateTrans(entry * event);//总控制函数
 //output.c
-void StatusOutputCmd();
-void EventOutputFile(char event, int id, int no);
-void StatusOutputFile();
+void StatusOutputCmd();//命令行输出
+void EventOutputFile(char event, int id, int no);//事件发生文件输出
+void StatusOutputFile();//周期性文件输出
 #endif
