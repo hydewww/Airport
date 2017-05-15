@@ -9,6 +9,8 @@
 #define	OneOutOfTen 1 + rand() % 100 > 90	//10%为安检口申请休息的概率
 #define MaxCrown 10 //一次性最大人数 
 
+struct entry thisEvent;
+
 void MainInput();
 void AirportOnServe();
 double random();
@@ -84,7 +86,7 @@ void AirportOnServe() {
 	time_t temtime;
 	FILE *finput = fopen("input.dat", "rb+");
 
-	extern struct entry thisEvent;
+	
 
 	fread(&thisEvent, sizeof(struct entry), 1, "finput");
 	if (time(&temtime)> thisEvent.sec + time_pre_ev) {
