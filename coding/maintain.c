@@ -9,7 +9,7 @@
  int MaxSeqLen;// 最大允许等待长度
  int EasySeqLen;// 短期等待长度
  int MinCheck;// 最少开放安检口数量
- int MaxCheck;// 最多开放安检口数量
+ //int MaxCheck;// 最多开放安检口数量
  int MaxCustCheck;// 安检口队伍最大长度
  int MaxSec;// 安检口最大安检时长 单位是秒
  int MinSec;// 安检口最小安检时长 单位是秒
@@ -43,24 +43,25 @@ int MainPara()
 	fread(&MinCheck, sizeof(int), 1, fp);
 	printf("8.最少开放安检口数量:         %3d\n", MinCheck);
 	fread(&MaxCheck, sizeof(int), 1, fp);
-	printf("9.最多开放安检口数量:         %3d\n", MaxCheck);
-	fread(&MaxCustCheck, sizeof(int), 1, fp);
-	printf("10.安检口队伍最大长度:        %3d\n", MaxCustCheck);
+	//printf("9.最多开放安检口数量:         %3d\n", MaxCheck);
+	//fread(&MaxCustCheck, sizeof(int), 1, fp);
+	printf("9.安检口队伍最大长度:        %3d\n", MaxCustCheck);
 	fread(&MaxSec, sizeof(int), 1, fp);
-	printf("11.安检口最大安检时长:        %3d\n", MaxSec);
+	printf("10.安检口最大安检时长:        %3d\n", MaxSec);
 	fread(&MinSec, sizeof(int), 1, fp);
-	printf("12.安检口最小安检时长:        %3d\n", MinSec);
+	printf("11.安检口最小安检时长:        %3d\n", MinSec);
 	/*
-	1 9需要重合
+	1 9需要重合 ---------------------------------已修改
 	*/
 	fclose(fp);//关闭文件指针
 
 	while (1) //判断是否需要修改
 	{
 		printf("是否需要修改:\tY\tN\n");
+		fflush(stdin);
 		c = getchar();
 		/*
-		读之前要清空缓存区吧
+		读之前要清空缓存区吧----------------已修改
 		fflush(stdin);
 		或者别的
 		*/
@@ -82,7 +83,7 @@ int MainPara()
 				printf("输入要修改的信息编号,0代表完成修改:\n");
 				scanf("%d", &num);
 				/*
-				为了防止蜜汁非数字输入 这里要if(scanf=1)啥的
+				为了防止蜜汁非数字输入 这里要if(scanf=1)啥的--------------这个明天再改，先睡了0.0
 				*/
 				if (num == 0) //完成修改
 				{
