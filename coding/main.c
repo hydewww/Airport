@@ -5,17 +5,30 @@
 #include "passenger.h"
 #include "window.h"
 
-void SetAndBegin();
-
-int main() {
-
-
-}
+time_t TimeStart;
+//time_t TimeNow;
+time_t TimeFinish;
+int AirportState;
+int PassengerArriveTask;
 
 void SetAndBegin() {
 
-	Window *win;
-	win = (Window*)malloc(sizeof(Window)*NumOfWin);
-
-	memset(win, 0, sizeof(win[0]));
+	Mainpara();
+	Window *Win;
+	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
+	//memset(Win, 0, sizeof(Win[0]));
+	MainInput();
+	time(&TimeStart);
+	AirportState = OnWork;
 }
+
+int main() {
+	SetAndBegin();
+	while (AirportState!=OffWork) {
+		AirportOnServe();
+		StateTrans(&thisEvent);
+	}
+	time(&TimeFinish);
+	StatusOutputFile();
+}
+
