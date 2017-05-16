@@ -8,10 +8,10 @@
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
 int OdinWatNum=0;//当前总乘客等待人数
-
+int PreClose = 0;//记录准备关闭安检口的数目
 Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
 Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
-time_t TimeNow;//当前时间
+//time_t TimeNow;//当前时间
 
 
 void QueueEstablish()//创建队列头指针函数
@@ -149,13 +149,14 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 	int i = 0;//安检口数组编号
 	int n = 0;//此次状态处理循环中已增设安检口数量
 	int NowState;//安检口当前状态
-	if (((OdinLineWaitNum / WinNum) <= EasySeqLen)&&(WinNum>MinCheck))//排队缓冲人少，有关闭一个安检口的需求(当前安检口数大于最少安检口数)
+	if (((OdinLineWaitNum / WinNum) <= EasySeqLen)&&(WinNum>MinCheck)&&(PreClose==0)&&(AirportState==OnWork))//排队缓冲人少，有关闭一个安检口的需求(当前安检口数大于最少安检口数,机场不处于ShutDown),且一次只能有一个安检口处于此状态
 	{
 		for (i = NumOfWin-1; i >=0; i--)//从最后开始寻找一个合适关闭的安检口
 		{
 			if (Win[i].WinState == OnSerWin || Win[i].WinState == OpenWin)//找到一个空闲或正在安检的安检口
 			{
 				Win[i].WinState = ReadyClosWin;//设置安检口状态为准备关闭
+				PreClose++;//准备关闭安检口数目加一
 				break;//一次最多关闭一个
 			}
 		}
