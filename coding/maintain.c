@@ -42,7 +42,7 @@ int MainPara()
 	printf("7.短期等待长度:               %3d\n", EasySeqLen);
 	fread(&MinCheck, sizeof(int), 1, fp);
 	printf("8.最少开放安检口数量:         %3d\n", MinCheck);
-	fread(&MaxCheck, sizeof(int), 1, fp);
+	//fread(&MaxCheck, sizeof(int), 1, fp);
 	//printf("9.最多开放安检口数量:         %3d\n", MaxCheck);
 	//fread(&MaxCustCheck, sizeof(int), 1, fp);
 	printf("9.安检口队伍最大长度:        %3d\n", MaxCustCheck);
@@ -78,6 +78,7 @@ int MainPara()
 		else  //需要修改
 		{
 			fp = fopen("para.dat", "rb+");
+			int ret = 0;
 			while (1)
 			{
 				printf("输入要修改的信息编号,0代表完成修改:\n");
@@ -167,32 +168,32 @@ int MainPara()
 					fwrite(&MinCheck, sizeof(int), 1, fp);
 					printf("修改完成\n");
 					break;
-				case 9:
+				/*case 9:
 					printf("9.最多开放安检口数量:         %3d\n", MaxCheck);
 					printf("请输入要修改的值:              ");
 					scanf("%d", &MaxCheck);
 					fseek(fp, sizeof(int)*(num - 1), SEEK_SET);
 					fwrite(&MaxCheck, sizeof(int), 1, fp);
 					printf("修改完成\n");
-					break;
-				case 10:
-					printf("10.安检口队伍最大长度:        %3d\n", MaxCustCheck);
+					break;*/
+				case 9:
+					printf("9.安检口队伍最大长度:        %3d\n", MaxCustCheck);
 					printf("请输入要修改的值:              ");
 					scanf("%d", MaxCustCheck);
 					fseek(fp, sizeof(int)*(num - 1), SEEK_SET);
 					fwrite(&MaxCustCheck, sizeof(int), 1, fp);
 					printf("修改完成\n");
 					break;
-				case 11:
-					printf("11.安检口最大安检时长:        %3d\n", MaxSec);
+				case 10:
+					printf("10.安检口最大安检时长:        %3d\n", MaxSec);
 					printf("请输入要修改的值:              ");
 					scanf("%d", &MaxSec);
 					fseek(fp, sizeof(int)*(num - 1), SEEK_SET);
 					fwrite(&MaxSec, sizeof(int), 1, fp);
 					printf("修改完成\n");
 					break;
-				case 12:
-					printf("12.安检口最小安检时长:        %3d\n", MinSec);
+				case 11:
+					printf("11.安检口最小安检时长:        %3d\n", MinSec);
 					printf("请输入要修改的值:              ");
 					scanf("%d", &MinSec);
 					fseek(fp, sizeof(int)*(num - 1), SEEK_SET);
