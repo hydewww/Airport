@@ -1,9 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include "global.h"
-#include "passenger.h"
-#include "window.h"
+#include"a.h"
 
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
@@ -72,7 +70,7 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 	int MinWaitNum = MaxCustCheck;//最少安检口排队乘客数量
 	int MinWaitWinNum = 0;//最少乘客排队的安检口数组编号
 	//for (; ; MinWaitWinNum = 0, MinWaitNum = MaxCustCheck) //存在可以插入乘客的安检口队列
-	while(1)
+	while(OdinLineWaitNum!=0)//有人在排队缓冲区排队
 	/*
 	这里好像能改写一下，这个for和break有点迷--------------好的，改成While了0.0
 	*/
@@ -80,7 +78,7 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 		MinWaitWinNum = 0;
 		MinWaitNum = MaxCustCheck;
 
-		for (NowWinNum = 0; NowWinNum < NumOfWin; NowWinNum++) //数组编号小于安检口总数则执行循环
+		for (NowWinNum = 0; (NowWinNum < NumOfWin); NowWinNum++) //数组编号小于安检口总数则执行循环
 		{
 			if ((MinWaitNum > Win[NowWinNum].WaitNum) && (Win[NowWinNum].WinState == OpenWin || Win[NowWinNum].WinState == OnSerWin ||( Win[NowWinNum].WinState == ReadyClosWin&&AirportState==ShutDown))) //记录目前排队最少且处于正常工作的安检口
 			/*
@@ -91,7 +89,7 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 				MinWaitWinNum = NowWinNum; //改变当前最少安检口编号
 			}
 		}
-		if (MinWaitWinNum < MaxCustCheck) //存在排队未满的安检口
+		if (MinWaitNum < MaxCustCheck) //存在排队未满的安检口
 		/*
 		<=  -----------我感觉=的话已经满人了0.0
 		*/
