@@ -1,10 +1,11 @@
-#include"global.h"
-#include"passenger.h"
-#include"window.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<Windows.h>
 #include<process.h>
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
+
 void StatusOutputFile() {
 	if ( ((int)difftime(TimeStart,TimeNow)) %3!=0)
 		return;
@@ -54,7 +55,7 @@ void EventOutputFile(char event,int PasID,int WinID) {	//PasID乘客 WinID安检口
 }
 
 void StatusOutputCmd() {
-	System("cls");
+	system("cls");
 	printf("T=<%l>\n", TimeNow);								//T=<当前时间（3位）>
 	printf("OFFDUTY = %c\n", AirportState == 0 ? "N" : "Y");	//是否下班
 																	//WIN1 : State = 状态(11位)，WinList = 队列中乘客编号列表，WinListCustCount = 安检口队列人数

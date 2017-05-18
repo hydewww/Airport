@@ -1,4 +1,3 @@
-
 #ifndef _Global_
 #define _Global_
 #include<time.h>
@@ -22,7 +21,7 @@ extern int OdinWatNum;//当前总乘客等待人数
 extern int PassengerArriveTask;//给到达的乘客安排窗口号码
 //extern int new_sigh;//同步锁
 extern struct entry thisEvent;
-extern Window *Win;
+extern struct Window *Win;
 //排队缓冲区
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
 extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成

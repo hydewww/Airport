@@ -1,5 +1,7 @@
 #include<stdio.h>
-#include"a.h"
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
 
  int NumOfWin;//安检口总数目
  int MinRestSec;//安检口口最小休息时长
@@ -44,7 +46,7 @@ int MainPara()
 	printf("8.最少开放安检口数量:         %3d\n", MinCheck);
 	//fread(&MaxCheck, sizeof(int), 1, fp);
 	//printf("9.最多开放安检口数量:         %3d\n", MaxCheck);
-	fread(&MaxCustCheck, sizeof(int), 1, fp);
+	//fread(&MaxCustCheck, sizeof(int), 1, fp);
 	printf("9.安检口队伍最大长度:        %3d\n", MaxCustCheck);
 	fread(&MaxSec, sizeof(int), 1, fp);
 	printf("10.安检口最大安检时长:        %3d\n", MaxSec);

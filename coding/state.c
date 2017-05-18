@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include"global.h"
-#include"passenger.h"
-#include"window.h"
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
 
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
@@ -196,7 +196,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= Win[i].SerTime)//安检完成
 				{	
-					EventOutputFile('L', Win[i].NOwPas->id, 0);//新增事件输出----------------------PasId乘客完成安检
+					EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客完成安检
 					Win[i].WinState = OpenWin;//状态转换为空闲
 					Win[i].NowPas = NULL;//设置被安检乘客指针为空
 

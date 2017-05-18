@@ -5,6 +5,8 @@
 #include "passenger.h"
 #include "window.h"
 
+Window *Win;
+int WinNum;
 time_t TimeStart;
 time_t TimeNow;
 time_t TimeFinish;
@@ -13,11 +15,11 @@ int PassengerArriveTask;
 
 void SetAndBegin() {
 
-	Mainpara();
-	Window *Win;
+	MainPara();
 	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
 	//--------------------------------------以下部分为新增（初始化Win数组）------------
 	int i = 0;
+	WinNum = MinCheck;
 	for (i = 0; i < NumOfWin; i++)
 	{
 		if (i < MinCheck)
@@ -41,9 +43,10 @@ void SetAndBegin() {
 	MainInput();
 	time(&TimeStart);
 	AirportState = OnWork;
+	QueueEstablish();
 }
 
-int main() {
+ main() {
 	SetAndBegin();
 	while (AirportState!=OffWork) {
 		AirportOnServe();

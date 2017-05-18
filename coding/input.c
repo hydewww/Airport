@@ -9,7 +9,8 @@
 #define	OneOutOfTen 1 + rand() % 100 > 90	//10%为安检口申请休息的概率
 #define MaxCrown 10 //一次性最大人数 
 
-struct entry thisEvent;
+entry thisEvent;
+int MaxCheck;
 
 void MainInput();
 void AirportOnServe();
@@ -51,7 +52,7 @@ void MainInput() {
 		
 	FILE *finput = fopen("input.dat", "wb+");
 	
-	struct entry event[100];
+	entry event[100];
 	if (finput) {
 		for (int i = 0; i < 99; i++) {
 
@@ -71,11 +72,11 @@ void MainInput() {
 			event[i].ev_valid = 0;
 		}
 		event[99].type = 'Q';
-		fwrite(&event, sizeof(struct entry), 100, finput);
+		fwrite(&event, sizeof(entry), 100, finput);
 	}
 	else {
 		printf("文件打开失败，请重启程序");
-		exie(EXIT_FAILURE);
+		exit(EXIT_FAILURE);//---------------------------------------------------------出错
 	}
 	fclose(finput);
 }
@@ -88,9 +89,9 @@ void AirportOnServe() {
 
 	
 
-	fread(&thisEvent, sizeof(struct entry), 1, "finput");
+	fread(&thisEvent, sizeof(entry), 1, finput);
 	if (time(&temtime)> thisEvent.sec + time_pre_ev) {
 		time_pre_ev = clock();
-		fread(&thisEvent, sizeof(struct entry), 1, "finput");
+		fread(&thisEvent, sizeof(entry), 1, finput);
 	}
 }
