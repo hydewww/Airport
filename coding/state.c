@@ -1,17 +1,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include "global.h"
-#include "passenger.h"
-#include "window.h"
-
+#include"a.h"
 
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
 int OdinWatNum=0;//当前总乘客等待人数
 int PreClose = 0;//记录准备关闭安检口的数目
-//Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
-//Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
+Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
+Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
 //time_t TimeNow;//当前时间
 
 
@@ -110,6 +107,10 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 			break;
 		}
 	}
+	if (OdinLineWaitNum == 0)
+	{
+		Queuetail = Queuehead;
+	}
 }
 void RestOrClosWin(entry event)//接收事件完成安检口下班及休息功能
 {
@@ -187,6 +188,10 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					Win[i].SerTime = TimeNow + Win[i].NowPas->TaskTime;//设置此次安检结束时间
 					Win[i].TotalSer++;//服务的乘客量增加
 					Win[i].TotalTime += Win[i].NowPas->TaskTime;//服务的总时间增加
+					if (Win[i].WinHead->next == NULL)//---------------------------------------DEBUG----WIn->Head==NULL,让尾指向头
+					{
+						Win[i].WinTail = Win[i].WinHead; //让尾和头和同指
+					}
 				}
 				else//无人排队
 				{
@@ -226,6 +231,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				Winhead->next=null------------------已修改
 				*/
 				{
+					Win[i].WinTail = Win[i].WinHead;//-------------------------------------------DEBUG-------尾和头同指
 					time(&TimeNow);//获取当前时间
 					Win[i].WinState = RestWin;//改变安检口状态为正在休息
 					Win[i].RestTime = TimeNow + MinRestSec + rand() % (MaxRestSec + 1);//为安检口设置休息结束时间
@@ -252,6 +258,8 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 						EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出------------------------------------PasId乘客完成安检
 						Win[i].NowPas = NULL;//设置被安检乘客指针为空
 					}
+
+
 				}
 				break;
 			case ReadyClosWin: //安检口处于准备关闭状态
@@ -261,6 +269,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 
 				*/
 				{
+					Win[i].WinTail = Win[i].WinHead;//-------------------------------------------DEBUG-------尾和头同指
 					Win[i].WinState = CloseWin;//改变安检口状态为关闭
 					WinNum--;//安检口数量减一
 					EventOutputFile('S', 0, i + 1);//新增事件输出--------------------------------------WinID安检口关闭
