@@ -34,6 +34,7 @@ void SetAndBegin() {
 		Win[i].TotalTime = 0;
 		Win[i].WaitNum = 0;
 		Win[i].WinHead=(Passenger*)malloc(sizeof(Passenger));
+		Win[i].WinTail = Win[i].WinHead;
 		Win[i].WinHead->next = NULL;
 		Win[i].WinState = NULL;
 		Win[i].NowPas = NULL;
@@ -53,6 +54,6 @@ void SetAndBegin() {
 		StateTrans(&thisEvent);
 	}
 	time(&TimeFinish);
-	StatusOutputFile();
+	StatusOutputCmd();
 }
 

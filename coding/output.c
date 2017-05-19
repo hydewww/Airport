@@ -43,11 +43,11 @@ void EventOutputFile(char event,int PasID,int WinID) {	//PasID乘客 WinID安检口
 	case 'F':fprintf(fp, "排队缓冲区已满\n"); break;
 	case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); break;
 	case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); break;
-	case 'O':fprintf(fp, "%d号安检口开启", WinID); break;
-	case 'S':fprintf(fp, "%d号安检口关闭", WinID); break;
-	case 'X':fprintf(fp, "%d号安检口申请休息", WinID); break;
-	case 'K':fprintf(fp, "%d号安检口开始休息", WinID); break;
-	case 'J':fprintf(fp, "%d号安检口结束休息", WinID); break;
+	case 'O':fprintf(fp, "%d号安检口开启\n", WinID); break;
+	case 'S':fprintf(fp, "%d号安检口关闭\n", WinID); break;
+	case 'X':fprintf(fp, "%d号安检口申请休息\n", WinID); break;
+	case 'K':fprintf(fp, "%d号安检口开始休息\n", WinID); break;
+	case 'J':fprintf(fp, "%d号安检口结束休息\n", WinID); break;
 	case 'Q':fprintf(fp, "接收到下班指令\n"); break;
 	default:fprintf(fp, "接收到未知事件\n"); break;
 	}

@@ -1,17 +1,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
 
-#include"window.h"
-#include"passenger.h"
-#include"global.h"
 
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
 int OdinWatNum=0;//当前总乘客等待人数
 int PreClose = 0;//记录准备关闭安检口的数目
-Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
-Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
+//Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
+//Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
 //time_t TimeNow;//当前时间
 
 
