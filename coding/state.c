@@ -112,16 +112,16 @@ void PreWinRun() //将排队缓冲区的乘客插入到安检口
 		Queuetail = Queuehead;
 	}
 }
-void RestOrClosWin(entry event)//接收事件完成安检口下班及休息功能
+void RestOrClosWin(entry *event)//接收事件完成安检口下班及休息功能
 {
 	int i = 0;//设置循环变量
-	switch (event.type)
+	switch (event->type)
 	{
 		case 'X'://安检口申请休息
-			if ((Win[event.check - 1].WinState==OnSerWin)||(Win[event.check - 1].WinState==OpenWin))//只有处于正在安检或空闲的安检口可以准备休息
+			if ((Win[event->check- 1].WinState==OnSerWin)||(Win[event->check - 1].WinState==OpenWin))//只有处于正在安检或空闲的安检口可以准备休息
 			{
-				Win[event.check - 1].WinState = ReadyRestWin;//设置安检口状态为准备休息
-				EventOutputFile('X', 0, event.check);//新增事件输出----------------------------------WinID安检口申请休息
+				Win[event->check - 1].WinState = ReadyRestWin;//设置安检口状态为准备休息
+				EventOutputFile('X', 0, event->check);//新增事件输出----------------------------------WinID安检口申请休息
 			}
 			break;
 			/*
@@ -132,6 +132,7 @@ void RestOrClosWin(entry event)//接收事件完成安检口下班及休息功能
 			/*
 			我这里int报错了 a declartion cannot have a label --------------我也报错了0.0------已修改
 			*/
+			AirportState = ShutDown;//---------------------------------------------------MD这个BUG好隐秘----------
 			for (i = 0; i < NumOfWin; i++)//遍历安检口数组
 			{
 				if (Win[i].WinState != CloseWin)//安检口不在关闭状态
@@ -169,7 +170,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 		switch (NowState)
 		{
 			case CloseWin: //安检口处于关闭状态
-				if ((((OdinWatNum +1-MaxCustCheck*n) / WinNum) >= MaxSeqLen)&&WinNum<NumOfWin)//排队缓冲区乘客过多且于剩余安检口则需要开放新的安检口
+				if ((AirportState!=ShutDown)&&(((OdinWatNum +1-MaxCustCheck*n) / WinNum) >= MaxSeqLen)&&WinNum<NumOfWin)//排队缓冲区乘客过多且于剩余安检口则需要开放新的安检口
 				{
 					Win[i].WinState = OpenWin;//安检口状态设置为空闲
 					WinNum++;//当前安检口数量增加
@@ -187,6 +188,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					time(&TimeNow);//获取当前时间
 					Win[i].SerTime = TimeNow + Win[i].NowPas->TaskTime;//设置此次安检结束时间
 					Win[i].TotalSer++;//服务的乘客量增加
+					Win[i].WaitNum--;//------------------------------------排队的乘客数量减一
 					Win[i].TotalTime += Win[i].NowPas->TaskTime;//服务的总时间增加
 					if (Win[i].WinHead->next == NULL)//---------------------------------------DEBUG----WIn->Head==NULL,让尾指向头
 					{
@@ -248,6 +250,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					time(&TimeNow);//获取当前时间
 					Win[i].SerTime = TimeNow + Win[i].NowPas->TaskTime;//设置此次安检结束时间
 					Win[i].TotalSer++;//服务的乘客量增加
+					Win[i].WaitNum--;//-------------------------------------------排队的乘客减一
 					Win[i].TotalTime += Win[i].NowPas->TaskTime;//服务的总时间增加					
 				}
 				else if (Win[i].NowPas != NULL)//有人正在安检
@@ -271,8 +274,9 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				{
 					Win[i].WinTail = Win[i].WinHead;//-------------------------------------------DEBUG-------尾和头同指
 					Win[i].WinState = CloseWin;//改变安检口状态为关闭
-					WinNum--;//安检口数量减一
+					WinNum--;//工作安检口数量减一
 					EventOutputFile('S', 0, i + 1);//新增事件输出--------------------------------------WinID安检口关闭
+					PreClose--; //待关闭安检口数量减一（机场不处于ShutDown状态）
 
 				}
 				/*
@@ -286,7 +290,12 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					time(&TimeNow);//获取当前时间
 					Win[i].SerTime = TimeNow + Win[i].NowPas->TaskTime;//设置此次安检结束时间
 					Win[i].TotalSer++;//服务的乘客量增加
-					Win[i].TotalTime += Win[i].NowPas->TaskTime;//服务的总时间增加					
+					Win[i].WaitNum--;//-----------------------------------------排队的乘客量-1
+					Win[i].TotalTime += Win[i].NowPas->TaskTime;//服务的总时间增加	
+					if (Win[i].WinHead->next == NULL)//---------------------------------------------------------DEBUG--------首尾同指
+					{
+						Win[i].WinTail = Win[i].WinHead;
+					}
 				}
 				else if (Win[i].NowPas != NULL)//有人正在安检
 				{
@@ -296,6 +305,11 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 						EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出-------------------------------------PasId乘客完成安检
 						Win[i].NowPas = NULL;//设置被安检乘客指针为空
 					}
+					if (Win[i].WinHead->next == NULL)//---------------------------------------------------------DEBUG--------首尾同指
+					{
+						Win[i].WinTail = Win[i].WinHead;
+					}
+
 				}
 				break;
 			default:
@@ -327,15 +341,12 @@ void StateTrans(entry *event) // 总控制函数
 			{
 				DistriNum(event);//将乘客分配到缓冲区
 			}
-			/*
-			EventOutputFile('G',int PasID,int WinID);------------------------已修改
-			*/
 			break;
-		default: //安检口事件
-			RestOrClosWin(*event);//将安检口状态设置为准备休息或下班
-			/*
-			EventOutputFile('X',int PasID,int WinID);------------------------已修改
-			*/
+		case 'X': //安检口事件
+			RestOrClosWin(event);//将安检口状态设置为准备休息或下班
+			break;
+		case 'Q': //安检口事件
+			RestOrClosWin(event);//将安检口状态设置为准备休息或下班
 			break;
 		}
 	}//if

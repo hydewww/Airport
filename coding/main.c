@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "global.h"
-#include "passenger.h"
-#include "window.h"
+#include "a.h"
 
-Window *Win;
+Window* Win;
 int WinNum;
 time_t TimeStart;
 time_t TimeNow;
@@ -34,9 +32,9 @@ void SetAndBegin() {
 		Win[i].TotalTime = 0;
 		Win[i].WaitNum = 0;
 		Win[i].WinHead=(Passenger*)malloc(sizeof(Passenger));
-		Win[i].WinTail = Win[i].WinHead;
 		Win[i].WinHead->next = NULL;
-		Win[i].WinState = NULL;
+		Win[i].WinTail = Win[i].WinHead;
+		//Win[i].WinState = NULL;
 		Win[i].NowPas = NULL;
 	}
 	//--------------------------------------以上部分为新增（初始化Win数组）------------
@@ -49,11 +47,20 @@ void SetAndBegin() {
 
  main() {
 	SetAndBegin();
-	while (AirportState!=OffWork) {
+	while (AirportState!=OffWork)
+	{
 		AirportOnServe();
 		StateTrans(&thisEvent);
+		StatusOutputCmd();
+		//time(&TimeFinish);
+		//StatusOutputFile();
 	}
-	time(&TimeFinish);
-	StatusOutputCmd();
+	//time(&TimeFinish);
+	//StatusOutputFile();
+	if (AirportState == OffWork)
+	{
+		printf("下班拉！！！！！！！！！！！！！！！！！！！！\n");
+	}
+	system("pause");
 }
 

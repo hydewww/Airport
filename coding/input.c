@@ -1,19 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "global.h"
-#include "passenger.h"
-#include "window.h"
 #include<math.h>
+#include"a.h"
 
 #define MaxGapTime 5 //时间的最大发生间隔（以秒为单位）
 #define	OneOutOfTen 1 + rand() % 100 > 90	//10%为安检口申请休息的概率
 #define MaxCrown 10 //一次性最大人数 
-#define EventNum 10
 #define pi 3.1415926
-#define e 2.718
+#define e 2.71828
+#define EventNum 5
 entry thisEvent;
 int MaxCheck;
+int ii = 0;
 
 void MainInput();
 void AirportOnServe();
@@ -21,6 +20,7 @@ double random();
 
 double random()     //用Box_Muller算法产生高斯分布的随机数
 {
+	srand(time(NULL));
 	double u = 3, N = 1;
 	double r, t, z, x;
 	double s1, s2;
@@ -33,13 +33,14 @@ double random()     //用Box_Muller算法产生高斯分布的随机数
 	return (x / 6);
 }
 
+
 void MainInput() {
 		
 	FILE *finput = fopen("input.dat", "wb+");
 	
 	entry event[EventNum];
 	if (finput) {
-		for (int i = 0; i < EventNum; i++) {
+		for (int i = 0; i < EventNum-1; i++) {
 
 			event[i].no = i;
 			event[i].sec = (int)(random() * MaxGapTime + 1); //用正态分布产生从1到MaxGapTime的时间间隔
@@ -57,31 +58,39 @@ void MainInput() {
 			event[i].ev_valid = 0;
 		}
 		event[EventNum-1].type = 'Q';
+		event[EventNum - 1].ev_valid = 0;
+		event[EventNum - 1].sec = 100000;
 		fwrite(&event, sizeof(entry), EventNum, finput);
 	}
 	else {
 		printf("文件打开失败，请重启程序");
-		exit(EXIT_FAILURE);//---------------------------------------------------------出错
+		//exie(EXIT_FAILURE);---------------------------------------------------------出错
 	}
 	fclose(finput);
 }
 
-void AirportOnServe() {
-	static int i = 0;
-	time_t time_pre_ev = TimeStart;
-	time_t temtime;
+void AirportOnServe()
+{
+	//static int ii = 0;
+	static time_t TimeLastEvent;
+	//time_t time_pre_ev = TimeStart;
+	//time_t temtime;
+
 	FILE *finput = fopen("input.dat", "rb");
-	fseek(finput, i++ * sizeof(entry), SEEK_SET);
-	if (finput == NULL) {
-		printf("ERROR");
-		exit(1);
+	if (finput == NULL)
+	{
+		printf("finput空了少年！");
+		return -1;
 	}
-	fread(&thisEvent, sizeof(entry), 1, finput);
-	time_t test = time(&temtime);
 	
-	if (test> thisEvent.sec + time_pre_ev) {
-		time(&time_pre_ev) ;
+	if (ii == 0 || time(&TimeNow) >= TimeLastEvent)
+	{
+		fseek(finput, ii * sizeof(entry), SEEK_SET);
 		fread(&thisEvent, sizeof(entry), 1, finput);
+		TimeLastEvent = time(&TimeNow) + thisEvent.sec;
+		ii++;
 	}
+	//printf("现在正在发生第%d个事件\n",ii);
 	fclose(finput);
+
 }

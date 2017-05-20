@@ -1,7 +1,5 @@
 #include<stdio.h>
-#include "global.h"
-#include "passenger.h"
-#include "window.h"
+#include"a.h"
 
  int NumOfWin;//安检口总数目
  int MinRestSec;//安检口口最小休息时长
