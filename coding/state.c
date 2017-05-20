@@ -1,7 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-#include"a.h"
+#include"global.h"
+#include"passenger.h"
+#include"window.h"
 
 int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数

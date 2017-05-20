@@ -16,10 +16,10 @@
 //全局变量声明
 extern int AirportState;//机场状态
 extern int TotalOdinCus;//当前总乘客人数
-extern int OdinLineWatNum;//当前缓冲区乘客等待人数
-extern int OdinWatNum;//当前总乘客等待人数
+extern int OdinLineWaitNum;//当前缓冲区乘客等待人数
+extern int OdinWaitNum;//当前总乘客等待人数
 extern int PassengerArriveTask;//给到达的乘客安排窗口号码
-//extern int new_sigh;//同步锁
+extern int new_sigh;//同步锁
 extern struct entry thisEvent;
 extern struct Window *Win;
 //排队缓冲区

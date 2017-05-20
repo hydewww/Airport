@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "a.h"
+#include"global.h"
+#include"passenger.h"
+#include"window.h"
 
 Window* Win;
 int WinNum;

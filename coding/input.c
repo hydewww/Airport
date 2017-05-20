@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <time.h>
 #include<math.h>
-#include"a.h"
+#include"global.h"
+#include"passenger.h"
+#include"window.h"
 
 #define MaxGapTime 5 //时间的最大发生间隔（以秒为单位）
 #define	OneOutOfTen 1 + rand() % 100 > 90	//10%为安检口申请休息的概率
 #define MaxCrown 10 //一次性最大人数 
 #define pi 3.1415926
 #define e 2.71828
-#define EventNum 5
+#define EventNum 10
 entry thisEvent;
 int MaxCheck;
 int ii = 0;
@@ -80,7 +82,7 @@ void AirportOnServe()
 	if (finput == NULL)
 	{
 		printf("finput空了少年！");
-		return -1;
+		exit(1);
 	}
 	
 	if (ii == 0 || time(&TimeNow) >= TimeLastEvent)
