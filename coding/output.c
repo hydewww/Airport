@@ -113,11 +113,6 @@ void StatusOutputCmd() {
 	case 2:printf("工作状态 = 准备下班\n"); break;
 	default: printf("机场状态异常"); exit(1);
 	}
-	//排队缓冲区状态
-	if (Queuehead->next != NULL)
-		printf("排队缓冲区总人数: %d ,首乘客: %d , 尾乘客: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id);		//排队缓冲区队首乘客编号，队尾乘客编号
-	else
-		puts("排队缓冲区总人数: 0");
 	//窗口状态
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
@@ -150,5 +145,29 @@ void StatusOutputCmd() {
 		}
 		printf("\n");
 	}
+
+	//排队缓冲区状态
+	if (Queuehead->next != NULL) {
+		printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum+MaxCustSingleLine-1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
+		Passenger* CurPas = Queuehead->next;
+		int flag = 1;
+		for (int i = 0; i<OdinLineWaitNum; i++) {
+			if (flag)
+				printf("%3d ", CurPas->id);
+			else 
+				printf("\b\b\b\b%3d\b\b\b", CurPas->id);
+			if ((i + 1) % MaxCustSingleLine == 0) {
+				flag = !flag;
+				printf("\n");
+				if (!flag) 
+					for (int j = 0; j < MaxCustSingleLine; j++) 
+						printf("    ");
+			}//if
+			CurPas = CurPas->next;
+		}//for
+		printf("\n");
+	}//if
+	else
+		puts("排队缓冲区总人数: 0");
 	//puts("--------------------------------------");
 }
