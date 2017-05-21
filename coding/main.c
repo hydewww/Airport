@@ -12,9 +12,9 @@ time_t TimeNow;
 time_t TimeFinish;
 int AirportState;
 int PassengerArriveTask;
-
+ 
 void SetAndBegin() {
-
+	
 	MainPara();
 	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
 	//--------------------------------------以下部分为新增（初始化Win数组）------------
@@ -41,10 +41,12 @@ void SetAndBegin() {
 	}
 	//--------------------------------------以上部分为新增（初始化Win数组）------------
 	//memset(Win, 0, sizeof(Win[0]));
+	fclose(fopen("output,txt", "w"));
 	MainInput();
 	time(&TimeStart);
 	AirportState = OnWork;
 	QueueEstablish();
+
 }
 
  main() {
