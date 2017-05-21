@@ -6,12 +6,13 @@
 #include"passenger.h"
 #include"window.h"
 
-#define MaxGapTime 5 //时间的最大发生间隔（以秒为单位）
+#define MaxGapTime 3 //事件的最大发生间隔（以秒为单位）
 #define	OneOutOfTen 1 + rand() % 100 > 90	//10%为安检口申请休息的概率
-#define MaxCrown 10 //一次性最大人数 
+#define MaxCrown 15 //一次性最大人数 
 #define pi 3.1415926
 #define e 2.71828
-#define EventNum 10
+//#define EventNum 10
+
 entry thisEvent;
 int MaxCheck;
 int ii = 0;
@@ -37,10 +38,13 @@ double random()     //用Box_Muller算法产生高斯分布的随机数
 
 
 void MainInput() {
-		
+	int EventNum;
+	printf("输入事件个数：");
+	scanf("%d", &EventNum);
 	FILE *finput = fopen("input.dat", "wb+");
 	
-	entry event[EventNum];
+	//entry event[EventNum];
+	entry* event = (entry*)malloc(EventNum * sizeof(entry));
 	if (finput) {
 		for (int i = 0; i < EventNum-1; i++) {
 
@@ -62,7 +66,7 @@ void MainInput() {
 		event[EventNum-1].type = 'Q';
 		event[EventNum - 1].ev_valid = 0;
 		event[EventNum - 1].sec = 100000;
-		fwrite(&event, sizeof(entry), EventNum, finput);
+		fwrite(event, sizeof(entry), EventNum, finput);
 	}
 	else {
 		printf("文件打开失败，请重启程序");
