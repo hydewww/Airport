@@ -57,6 +57,7 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 	case 'Q':fprintf(fp, "接收到下班指令\n"); break;
 	default:fprintf(fp, "接收到未知事件\n"); break;
 	}
+	fflush(fp);
 	fclose(fp);
 }
 
@@ -73,6 +74,7 @@ void StatusOutputCmd() {
 	PreCmd = TimeNow;	//记录时间
 	//puts("--------------------------------------");
 	system("CLS");
+	//printf("当前事件：%d", thisEvent.no);/* test */
 	printf("时间 : %s", ctime(&TimeNow));
 	//机场状态
 	switch (AirportState) {
@@ -92,27 +94,95 @@ void StatusOutputCmd() {
 
 	//排队缓冲区状态
 	if (Queuehead->next != NULL) {
-		printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum+MaxCustSingleLine-1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
+		int line = (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
+		printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, line);		//排队缓冲区队首乘客编号，队尾乘客编号
 		Passenger* CurPas = Queuehead->next;
-		int flag = 1;
-		for (int i = 0; i<OdinLineWaitNum; i++) {
+		//第一行
+		printf("|");
+		for (int i = 0; i < MaxCustSingleLine; i++) {
+			printf("----");
+		}
+		printf("|\n "); //换行后的空格是缓冲区的开头
+		/*第一行over*/
+
+		int flag = 1;	//1=正 0=倒
+		for (int i = 0; i<line-1; i++) {
+			//输出乘客队列
 			if (flag)
-				printf("%3d ", CurPas->id);
+				for (int j = 0; j < MaxCustSingleLine; j++) {
+					printf("%3d ", CurPas->id);
+					CurPas = CurPas->next;
+				}
 			else 
-				printf("\b\b\b\b%3d\b\b\b", CurPas->id);
-			if ((i + 1) % MaxCustSingleLine == 0) {
-				flag = !flag;
+				for (int j = 0; j < MaxCustSingleLine; j++) {
+					printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
+					CurPas = CurPas->next;
+				}
+			//输出围栏
+			if (flag) {//上行是正
+				printf("|\n");
+				//|---------    |
+				printf("|");
+				for (int j = 0; j < MaxCustSingleLine - 1; j++)
+					printf("----");
+				printf("    |\n");
+
+				// \n |   .xxx.xxx.xxx.xxx|
+				printf("|");//first
+				for (int j = 0; j < MaxCustSingleLine; j++)
+					printf("    ");
+				printf(">\b");//last
+			
+			}
+			else {//上行是倒
 				printf("\n");
-				if (!flag) 
-					for (int j = 0; j < MaxCustSingleLine; j++) 
-						printf("    ");
-			}//if
-			CurPas = CurPas->next;
+				//|    ---------|
+				printf("|    ");
+				for (int j = 0; j < MaxCustSingleLine -1; j++)
+					printf("----");
+				printf("|\n");
+
+				//\n |xxx  xxx  xxx  xxx      |
+				printf("<");
+			}
+			flag = !flag;
 		}//for
+		
+		//倒数第二
+		if (!flag) {//上行是正
+			// xxx xxx xxx
+			while (CurPas != NULL) {
+				printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
+				CurPas = CurPas->next;
+			}
+			printf("\n");
+		}
+		else {//上行是倒
+			  //\n |xxx  xxx  xxx  xxx      |
+			for (int j = 0; j < MaxCustSingleLine; j++) {
+				if (CurPas != NULL) {
+					printf("%3d ", CurPas->id);
+					CurPas = CurPas->next;
+				}
+				else
+					printf("    ");
+			}
+			printf("|\n");
+		}
+		/*倒数第二行over*/
+
+		//最后一行
+		printf("|");
+		for (int i = 0; i < MaxCustSingleLine; i++) {
+			printf("----");
+		}
+		printf("|\n "); //换行后的空格是缓冲区的开头
+		/*最后一行over*/
+
 		printf("\n");
 	}//if
 	else
-		puts("\n排队缓冲区总人数: 0");
+		puts("\n排队缓冲区无人");
 	//puts("--------------------------------------");
 }
 
@@ -130,7 +200,7 @@ void StatusOutputFile() {
 		puts("Error: cannot open the file \"output.txt\".");
 		exit(1);
 	}
-	fprintf(fp, "-----------------------------------------------\n");
+	fprintf(fp, "-------------------------------------------------------\n");
 	fprintf(fp, "时间 : %s", ctime(&TimeNow));
 	//机场状态
 	switch (AirportState) {
@@ -174,10 +244,30 @@ void StatusOutputFile() {
 	}
 
 	//排队缓冲区状态
-	if (Queuehead->next != NULL)
+	if (Queuehead->next != NULL){
 		fprintf(fp, "\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
+		//Passenger* CurPas = Queuehead->next;
+		//int flag = 1;
+		//for (int i = 0; i<OdinLineWaitNum; i++) {
+		//	if (flag)
+		//		fprintf(fp,"%3d ", CurPas->id);
+		//	else
+		//		fprintf(fp,"\b\b\b\b%3d\b\b\b", CurPas->id);
+		//	if ((i + 1) % MaxCustSingleLine == 0) {
+		//		flag = !flag;
+		//		fprintf(fp,"\n");
+		//		if (!flag)
+		//			for (int j = 0; j < MaxCustSingleLine; j++)
+		//				fprintf(fp,"    ");
+		//	}//if
+		//	CurPas = CurPas->next;
+		//}//for
+		fprintf(fp,"\n");
+	}//if
 	else
 		fprintf(fp, "\n排队缓冲区总人数: 0\n");
 
-	fprintf(fp, "-----------------------------------------------\n");
+	fprintf(fp, "-------------------------------------------------------\n");
+	fflush(fp);
+	fclose(fp);
 }
