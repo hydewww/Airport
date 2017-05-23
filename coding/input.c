@@ -80,7 +80,7 @@ void MainInput() {
 	}
 	else {
 		printf("文件打开失败，请重启程序");
-		//exie(EXIT_FAILURE);---------------------------------------------------------出错
+		exit(1);
 	}
 	fclose(finput);
 }
