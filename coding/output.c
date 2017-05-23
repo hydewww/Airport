@@ -6,8 +6,6 @@
 #include<Windows.h>
 #include<process.h>
 
-extern int ii;
-
 //´°¿Ú×´Ì¬
 void WinPrint(Window* win) {
 	//×´Ì¬
