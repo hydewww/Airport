@@ -36,11 +36,21 @@ double random()     //用Box_Muller算法产生高斯分布的随机数
 	return (x / 6);
 }
 
+int InputInt(int* num) {
+	if (scanf("%d", num)) {
+		while (getchar() != '\n');//清空缓冲区
+		return 0;
+	}
+	printf("【请输入正确的数字！】\n\n");
+	while (getchar() != '\n');
+	return 1;
+}
 
 void MainInput() {
 	int EventNum;
-	printf("输入事件个数：");
-	scanf("%d", &EventNum);
+	do {
+		printf("输入事件个数：");
+	} while (InputInt(&EventNum));
 	FILE *finput = fopen("input.dat", "wb+");
 	
 	//entry event[EventNum];

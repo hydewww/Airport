@@ -56,6 +56,7 @@ typedef struct entry {
 //maintain.c
 int MainPara();//维护配置文件
 //input.c
+int InputInt(int* num);
 double random();//正态分布函数
 void MainInput();//生成随机事件
 void AirportOnServe();//读取事件
