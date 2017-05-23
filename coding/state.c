@@ -1,4 +1,8 @@
+
+#include<windows.h>
 #include<stdio.h>
+#include<mmsystem.h>
+#pragma comment(lib,"WINMM.LIB")
 #include<stdlib.h>
 #include<time.h>
 #include"global.h"
@@ -9,6 +13,8 @@ int TotalOdinCus = 0; //当前总乘客数量
 int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
 int OdinWatNum = 0;//当前总乘客等待人数
 int PreClose = 0;//记录准备关闭安检口的数目
+
+
 Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
 Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
 					 //time_t TimeNow;//当前时间
@@ -50,7 +56,7 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 		}
 		else
 		{
-			p->State = 0;//尚未分配安检口
+			p->State = thisEvent.check;//尚未分配安检口
 			p->id = TotalOdinCus;//分配id
 
 			EventOutputFile('G', p->id, 0);//新增事件输出--------------安排Id为XX乘客到排队缓冲区
@@ -207,7 +213,13 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			time(&TimeNow);//获取当前时间
 			if (TimeNow >= Win[i].SerTime)//安检完成
 			{
-				EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客完成安检
+				if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
+				{
+					//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
+					mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+					mciSendString(TEXT("play music"), NULL, 0, NULL);
+				}
+				
 				Win[i].WinState = OpenWin;//状态转换为空闲
 				Win[i].NowPas = NULL;//设置被安检乘客指针为空
 				OdinWatNum--;//排队总人数减一
@@ -223,6 +235,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			if (TimeNow >= Win[i].RestTime)//休息结束
 			{
 				Win[i].WinState = OpenWin;//状态改变为空闲
+				WinNum++;
 				EventOutputFile('J', 0, i + 1);//新增事件输出------------------------------WinId安检口结束休息
 
 			}
@@ -242,6 +255,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				Win[i].WinState = RestWin;//改变安检口状态为正在休息
 				Win[i].RestTime = TimeNow + MinRestSec + rand() % (MaxRestSec + 1);//为安检口设置休息结束时间
 				EventOutputFile('K', 0, i + 1);//新增事件输出-------------------------------------WinID安检口开始休息
+				WinNum--;
 			}
 			/*
 			如果nowpas=null winhead->next!=null 需要处理下一个乘客------------已修改
@@ -265,7 +279,14 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			{
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= Win[i].SerTime)//安检完成
+
 				{
+					if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
+					{
+						//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
+						mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						mciSendString(TEXT("play music"), NULL, 0, NULL);
+					}
 					EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出------------------------------------PasId乘客完成安检
 					Win[i].NowPas = NULL;//设置被安检乘客指针为空
 					OdinWatNum--;//排队总人数减一
@@ -315,6 +336,12 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= Win[i].SerTime)//安检完成
 				{
+					if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
+					{
+						//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
+						mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						mciSendString(TEXT("play music"), NULL, 0, NULL);
+					}
 					EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出-------------------------------------PasId乘客完成安检
 					Win[i].NowPas = NULL;//设置被安检乘客指针为空
 					OdinWatNum--;//排队总人数减一
