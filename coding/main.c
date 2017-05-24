@@ -1,4 +1,8 @@
+#include <windows.h>
 #include <stdio.h>
+#include <mmsystem.h>
+#pragma comment(lib,"WINMM.LIB")
+
 #include <stdlib.h>
 #include <string.h>
 #include "global.h"
@@ -62,6 +66,7 @@ void SetAndBegin()
 
 int main() {
 	SetAndBegin();
+	mciSendString(TEXT("open ¾¯±¨2.mp3 alias music"), NULL, 0, NULL);
 	while (AirportState!=OffWork)
 	{
 		AirportOnServe();

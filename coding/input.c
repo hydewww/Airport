@@ -8,7 +8,7 @@
 
 #define MaxGapTime 5 //事件的最大发生间隔（以秒为单位）
 #define	OneOutOfTen (1 + rand() % 100) > 90	//10%为安检口申请休息的概率
-#define MaxCrown 10 //一次性最大人数 
+#define MaxCrown 11 //一次性最大人数 
 #define MaxVIPCrown 3//一次VIP事件最大人数
 #define pi 3.1415926
 #define e 2.71828
@@ -76,13 +76,13 @@ void MainInput() {
 				event[i].check = 1 + rand() % NumOfWin;
 				event[i].mans = 0;
 			}
-			else {
+			else {  
 				if (random() > PROBABILITY_OF_VIP) {
 					event[i].type = 'V';
 					event[i].mans = ((int)(random() * MaxVIPCrown + 1) % MaxVIPCrown);
 					event[i].check = 0;
 				}
-				else  if (rand()%10>6)
+				else  if (random()>0.60) //危险乘客
 				{
 					event[i].type = 'G';
 					event[i].mans = 1;

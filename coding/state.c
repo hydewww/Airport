@@ -304,7 +304,8 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
 				{
 					//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
-					mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+					mciSendString(TEXT("seek music to start"), NULL, 0, NULL);
+					//mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
 					mciSendString(TEXT("play music"), NULL, 0, NULL);
 				}
 				
@@ -372,7 +373,8 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
 					{
 						//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
-						mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						//mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						mciSendString(TEXT("seek music to start"), NULL, 0, NULL);
 						mciSendString(TEXT("play music"), NULL, 0, NULL);
 					}
 					EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出------------------------------------PasId乘客完成安检
@@ -424,7 +426,8 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 					if (Win[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
 					{
 						//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
-						mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						//mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+						mciSendString(TEXT("seek music to start"), NULL, 0, NULL);
 						mciSendString(TEXT("play music"), NULL, 0, NULL);
 					}
 					EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出-------------------------------------PasId乘客完成安检
@@ -480,17 +483,9 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 			time(&TimeNow);//获取当前时间
 			if (TimeNow >= Win[i].SerTime)//安检完成
 			{
-				if (VIPWin[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
-				{
-					//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
-					mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
-					mciSendString(TEXT("play music"), NULL, 0, NULL);
-				}
-
 				VIPWin[i].WinState = OpenWin;//状态转换为空闲
 				VIPWin[i].NowPas = NULL;//设置被安检乘客指针为空
 				OdinWatNum--;//排队总人数减一
-
 			}
 			else //安检未结束
 			{
@@ -533,12 +528,6 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= VIPWin[i].SerTime)//安检完成
 				{
-					if (VIPWin[i].NowPas->State == 4)//--------------------------------------------------------------安检失败
-					{
-						//EventOutputFile('L', Win[i].NowPas->id, 0);//新增事件输出----------------------PasId乘客安检失败
-						mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
-						mciSendString(TEXT("play music"), NULL, 0, NULL);
-					}
 					EventOutputFile('L', VIPWin[i].NowPas->id, 0);//新增事件输出-------------------------------------PasId乘客完成安检
 					VIPWin[i].NowPas = NULL;//设置被安检乘客指针为空
 					VIPWatNum--;//排队总人数减一
