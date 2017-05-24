@@ -9,7 +9,7 @@ unsigned _stdcall KeyEvent(void * p)
 {
 	char c;
 	srand(time(NULL));
-	while (1)
+	while (AirportState!=OffWork)
 	{
 		if (lock == 0 && thisEvent.ev_valid == 1)
 		{

@@ -83,12 +83,12 @@ int main() {
 	}
 	time(&TimeFinish);
 	//StatusOutputFile();
+	if (AirportState == OffWork)
+	{	
+		FinalOutputCmd();
+	}
 	WaitForSingleObject(KeyBoard, INFINITE);
 	CloseHandle(KeyBoard);
-	if (AirportState == OffWork)
-	{
-		printf("ÏÂ°àÀ­£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡\n");
-	}
 	system("pause");
 	return 0;
 }

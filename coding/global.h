@@ -67,8 +67,6 @@ int InputInt(int* num);
 double random();//正态分布函数
 void MainInput();//生成随机事件
 void AirportOnServe();//读取事件
-//Cmdinput.c
-unsigned __stdcall CmdInput(void* pArguments);
 //state.cpp
 void DistriNum(entry *event);//为乘客分配号码并插入排队缓冲区
 void WinRun();//安检口状态机
@@ -80,4 +78,5 @@ void StateTrans(entry * event);//总控制函数
 void StatusOutputCmd();//命令行输出
 void EventOutputFile(char event, int id, int no);//事件发生文件输出
 void StatusOutputFile();//周期性文件输出
+void FinalOutputCmd();//下班输出
 #endif

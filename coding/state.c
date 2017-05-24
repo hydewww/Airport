@@ -233,7 +233,18 @@ void RestOrClosWin(entry *event)//接收事件完成安检口下班及休息功能
 		{
 			if (Win[i].WinState != CloseWin)//安检口不在关闭状态
 			{
+				if (Win[i].WinState == RestWin)
+				{
+					WinNum++;
+				}
 				Win[i].WinState = ReadyClosWin;//改变安检口状态为准备关闭(正在休息或准备休息的安检口强制准备下班）
+			}
+		}
+		for (i = 0; i < NumOfVIPWin; i++)
+		{
+			if (VIPWin[i].WinState != CloseWin)//安检口不在关闭状态
+			{
+				VIPWin[i].WinState = ReadyClosWin;//改变安检口状态为准备关闭(正在休息或准备休息的安检口强制准备下班）
 			}
 		}
 		EventOutputFile('Q', 0, 0);//新增事件输出-------------------接收到下班指令
@@ -499,7 +510,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 																		  Winhead->next=null 约炮缓冲区----------------------吼的已修改，这都被你发现了
 																		  */
 			{
-				VIPWin[i].WinTail = Win[i].WinHead;//-------------------------------------------DEBUG-------尾和头同指
+				VIPWin[i].WinTail = VIPWin[i].WinHead;//-------------------------------------------DEBUG-------尾和头同指
 				VIPWin[i].WinState = CloseWin;//改变安检口状态为关闭
 				EventOutputFile('S', 0, i + 1);//新增事件输出--------------------------------------WinID安检口关闭
 				//PreClose--; //待关闭安检口数量减一（机场不处于ShutDown状态）
