@@ -17,6 +17,7 @@ time_t	TimeNow;
 time_t	TimeFinish;
 int		AirportState;
 int		PassengerArriveTask;
+int lock = 0;
 
 void InitWin(Window* win) 
 {
@@ -65,18 +66,25 @@ void SetAndBegin()
 }
 
 int main() {
+	lock = 0;
 	SetAndBegin();
 	mciSendString(TEXT("open ¾¯±¨2.mp3 alias music"), NULL, 0, NULL);
+	HANDLE KeyBoard;
+	KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 	while (AirportState!=OffWork)
 	{
+		lock = 1;
 		AirportOnServe();
 		StateTrans(&thisEvent);
 		StatusOutputCmd();
 		//time(&TimeFinish);
 		StatusOutputFile();
+		lock = 0;
 	}
 	time(&TimeFinish);
 	//StatusOutputFile();
+	WaitForSingleObject(KeyBoard, INFINITE);
+	CloseHandle(KeyBoard);
 	if (AirportState == OffWork)
 	{
 		printf("ÏÂ°àÀ­£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡\n");

@@ -22,6 +22,7 @@ extern int OdinLineWaitNum;//当前缓冲区乘客等待人数
 extern int OdinWaitNum;//当前总乘客等待人数
 extern int PassengerArriveTask;//给到达的乘客安排窗口号码
 extern int new_sigh;//同步锁
+extern int lock; //同步锁
 extern struct entry thisEvent;
 extern struct Window *Win;
 extern struct Window *VIPWin;
@@ -61,6 +62,7 @@ typedef struct entry
 //maintain.c
 int MainPara();//维护配置文件
 //input.c
+unsigned _stdcall KeyEvent(void * p);//-------------------------KEYBOARD
 int InputInt(int* num);
 double random();//正态分布函数
 void MainInput();//生成随机事件
@@ -72,7 +74,7 @@ void DistriNum(entry *event);//为乘客分配号码并插入排队缓冲区
 void WinRun();//安检口状态机
 void PreWinRun();//缓冲区进安检口
 int CheckWin();//判断安检口能否关闭 
-void RestOrClosWin(entry event);//接收安检口事件完成安检口下班及休息功能
+void RestOrClosWin(entry *event);//接收安检口事件完成安检口下班及休息功能
 void StateTrans(entry * event);//总控制函数
 //output.c
 void StatusOutputCmd();//命令行输出
