@@ -281,17 +281,17 @@ void FinalOutputCmd() {
 	printf("下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
 	printf("上班时间：%s", ctime(&TimeStart));
 	printf("下班时间: %s", ctime(&TimeFinish));
-	printf("今日服务总人数: %d\n\n", OdinPas+ VIPPas);
+	printf("今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas+ VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
 		printf("WIN%02d  ", i + 1);
 		//窗口状态
-		printf("总共服务人数: %3d  总共服务时间: %3d\n", Win[i].TotalSer, Win[i].TotalTime);
+		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", Win[i].TotalSer, Win[i].TotalTime/60,Win[i].TotalTime%60);
 	}
 	for (int i = 0; i < NumOfVIPWin; i++) {
 		//窗口n
 		printf("VIP%02d  ", i + 1);
 		//窗口状态
-		printf("总共服务人数: %3d  总共服务时间: %3d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime);
+		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime/60,VIPWin[i].TotalTime%60);
 	}
 }
