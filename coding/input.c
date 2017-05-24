@@ -12,7 +12,7 @@
 #define MaxVIPCrown 3//一次VIP事件最大人数
 #define pi 3.1415926
 #define e 2.71828
-#define PROBABILITY_OF_VIP 0.70
+#define PROBABILITY_OF_VIP 0.7
 //#define EventNum 10
 
 entry thisEvent;
@@ -71,7 +71,7 @@ void MainInput() {
 			event[i].no = i;
 			event[i].sec = ((int)(random() * MaxGapTime + 1) % MaxGapTime)+1; //用正态分布产生从1到MaxGapTime的时间间隔
 
-			if (OneOutOfTen) {		//10%的概率为关闭安检口
+			if (OneOutOfTen) {		//10%的概率为休息安检口
 				event[i].type = 'X';
 				event[i].check = 1 + rand() % NumOfWin;
 				event[i].mans = 0;
@@ -80,13 +80,20 @@ void MainInput() {
 				if (random() > PROBABILITY_OF_VIP) {
 					event[i].type = 'V';
 					event[i].mans = ((int)(random() * MaxVIPCrown + 1) % MaxVIPCrown);
+					event[i].check = 0;
+				}
+				else  if (rand()%10>6)
+				{
+					event[i].type = 'G';
+					event[i].mans = 1;
+					event[i].check = 4; //扣留标志
 				}
 				else
 				{
 					event[i].type = 'G';
 					event[i].mans = ((int)(random() * MaxCrown + 1) % MaxCrown);
+					event[i].check = 0;
 				}
-				event[i].check = 0;
 			}
 			event[i].ev_valid = 0;
 		}
