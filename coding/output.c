@@ -47,7 +47,6 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 	case 'F':fprintf(fp, "排队缓冲区已满\n"); break;
 	case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); break;
 	case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); break;
-	case 'B':fprintf(fp, "【%d号乘客未通过安检】\n", PasID); break; //新增未通过安检
 	case 'O':fprintf(fp, "%d号安检口开启\n", WinID); break;
 	case 'S':fprintf(fp, "%d号安检口关闭\n", WinID); break;
 	case 'X':fprintf(fp, "%d号安检口申请休息\n", WinID); break;
@@ -90,7 +89,13 @@ void StatusOutputCmd() {
 		WinPrint(&Win[i]);
 		printf("\n");
 	}
-
+	for (int i = 0; i < NumOfVIPWin; i++) {
+		//窗口n
+		printf("WIN%02d  ", i + 1);
+		//窗口状态
+		WinPrint(&VIPWin[i]);
+		printf("\n");
+	}
 	//排队缓冲区状态
 	if (Queuehead->next != NULL) {
 		int line = (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
@@ -244,7 +249,7 @@ void StatusOutputFile() {
 
 	//排队缓冲区状态
 	if (Queuehead->next != NULL){
-		fprintf(fp, "\n排队缓冲区总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
+		fprintf(fp, "\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
 		//Passenger* CurPas = Queuehead->next;
 		//int flag = 1;
 		//for (int i = 0; i<OdinLineWaitNum; i++) {
