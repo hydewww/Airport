@@ -6,37 +6,92 @@
 #include<Windows.h>
 #include<process.h>
 
-//窗口状态
-void WinPrint(Window* win) {
-	//状态
-	switch (win->WinState) {
-	case 0:printf("    关闭"); break;
-	case 1:printf("  空闲中"); break;
-	case 2:printf("  服务中"); break;
-	case 3:printf("  休息中"); break;
-	case 4:printf("准备休息"); break;
-	case 5:printf("准备关闭"); break;
-	default:printf("\n窗口状态异常！\n"); exit(1); break;
+void StatusOutputCmd();
+void StatusOutputFile();
+void StatusOutput() {
+	StatusOutputCmd();
+	StatusOutputFile;
+}
+
+void FinalOutputCmd();
+void FinalOutputFile();
+void FinalOutput() {
+	FinalOutputCmd();
+	FinalOutputFile();
+}
+
+
+/*StatusOutputCmd调用函数*/
+void QueuePrint();//仿图形界面蛇形缓冲区
+void WinPrint(Window* win);//窗口状态
+/*over*/
+//cmd状态输出 1s
+time_t PreCmd; //记录上次输出时间
+extern int OdinLineWaitNum;
+void StatusOutputCmd() {
+	StatusOutputFile();
+	time(&TimeNow);
+	//距上次输出过了1秒  & 机场正在工作  => 继续
+	if (((difftime(TimeNow, PreCmd)) < 1) && (AirportState != OffWork))
+		return;
+	PreCmd = TimeNow;	//记录时间
+
+	system("CLS");
+	//printf("当前事件：%d", thisEvent.no);/* test */
+	printf("时间 : %s", ctime(&TimeNow));
+	//机场状态
+	switch (AirportState) {
+	case 0:printf("工作状态 = 下班\n"); break;
+	case 1:printf("工作状态 = 正在工作\n"); break;
+	case 2:printf("工作状态 = 准备下班\n"); break;
+	default: printf("机场状态异常"); exit(1);
 	}
-	//正在安检乘客
-	if (win->NowPas) {
-		printf("\t正在安检: %3d ", win->NowPas->id);
+	//窗口状态
+	for (int i = 0; i < NumOfWin; i++) {
+		//窗口n
+		printf("WIN%02d  ", i+1);
+		//窗口状态
+		WinPrint(&Win[i]);
 	}
-	else {
-		printf("\t正在安检:  无 ");
+	for (int i = 0; i < NumOfVIPWin; i++) {
+		//窗口n
+		printf("VIP%02d  ", i + 1);
+		//窗口状态
+		WinPrint(&VIPWin[i]);
 	}
-	//窗口队列
-	if (win->WinHead != win->WinTail) {	//判空
-		printf(" , 队列:");
-		Passenger* cur = win->WinHead;
-		do {
-			cur = cur->next;
-			printf(" %3d", cur->id);
-		} while (cur != win->WinTail);
+
+	//排队缓冲区状态
+	if (Queuehead->next != NULL) 
+		QueuePrint(); //仿图形界面蛇形缓冲区
+	else
+		puts("\n排队缓冲区无人");
+}
+
+//cmd下班输出
+void FinalOutputCmd() {
+	system("cls");
+	printf("下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
+	printf("上班时间：%s", ctime(&TimeStart));
+	printf("下班时间: %s", ctime(&TimeFinish));
+	printf("今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas+ VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
+	for (int i = 0; i < NumOfWin; i++) {
+		//窗口n
+		printf("WIN%02d  ", i + 1);
+		//窗口状态
+		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", Win[i].TotalSer, Win[i].TotalTime/60,Win[i].TotalTime%60);
+	}
+	for (int i = 0; i < NumOfVIPWin; i++) {
+		//窗口n
+		printf("VIP%02d  ", i + 1);
+		//窗口状态
+		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime/60,VIPWin[i].TotalTime%60);
 	}
 }
+
+
+//file事件输出
 void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
-	//StatusOutputFile();
+															//StatusOutputFile();
 	FILE * fp;
 	if (!(fp = fopen("output.txt", "a"))) {
 		puts("Error: cannot open the file \"output.txt\".");
@@ -59,144 +114,42 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 	fclose(fp);
 }
 
-time_t PreCmd; //记录上次输出时间
-extern int OdinLineWaitNum;
-
-//每秒在cmd打印当前状态
-void StatusOutputCmd() {
-	StatusOutputFile();
-	time(&TimeNow);
-	//距上次输出过了1秒  & 机场正在工作  => 继续
-	if (((difftime(TimeNow, PreCmd)) < 1) && (AirportState != OffWork))
-		return;
-	PreCmd = TimeNow;	//记录时间
-	//puts("--------------------------------------");
-	system("CLS");
-	//printf("当前事件：%d", thisEvent.no);/* test */
-	printf("时间 : %s", ctime(&TimeNow));
-	//机场状态
-	switch (AirportState) {
-	case 0:printf("工作状态 = 下班\n"); break;
-	case 1:printf("工作状态 = 正在工作\n"); break;
-	case 2:printf("工作状态 = 准备下班\n"); break;
-	default: printf("机场状态异常"); exit(1);
+//file下班输出  类似cmd
+void FinalOutputFile() {
+	FILE* fp;
+	if (!(fp = fopen("output.txt", "a"))) {
+		puts("Error: cannot open the file \"output.txt\".");
+		exit(1);
 	}
-	//窗口状态
+	fprintf(fp, "-------------------------------------------------------\n");
+
+	fprintf(fp,"下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
+	fprintf(fp,"上班时间：%s", ctime(&TimeStart));
+	fprintf(fp,"下班时间: %s", ctime(&TimeFinish));
+	fprintf(fp,"今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas + VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
-		printf("WIN%02d  ", i+1);
+		fprintf(fp,"WIN%02d  ", i + 1);
 		//窗口状态
-		WinPrint(&Win[i]);
-		printf("\n");
+		fprintf(fp,"总共服务人数: %3d  总共服务时间: %02d:%02d\n", Win[i].TotalSer, Win[i].TotalTime / 60, Win[i].TotalTime % 60);
 	}
 	for (int i = 0; i < NumOfVIPWin; i++) {
 		//窗口n
-		printf("VIP%02d  ", i + 1);
+		fprintf(fp,"VIP%02d  ", i + 1);
 		//窗口状态
-		WinPrint(&VIPWin[i]);
-		printf("\n");
+		fprintf(fp,"总共服务人数: %3d  总共服务时间: %02d:%02d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime / 60, VIPWin[i].TotalTime % 60);
 	}
-	//排队缓冲区状态
-	if (Queuehead->next != NULL) {
-		int line = (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
-		printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, line);		//排队缓冲区队首乘客编号，队尾乘客编号
-		Passenger* CurPas = Queuehead->next;
-		//第一行
-		printf("|");
-		for (int i = 0; i < MaxCustSingleLine; i++) {
-			printf("----");
-		}
-		printf("|\n "); //换行后的空格是缓冲区的开头
-		/*第一行over*/
-
-		int flag = 1;	//1=正 0=倒
-		for (int i = 0; i<line-1; i++) {
-			//输出乘客队列
-			if (flag)
-				for (int j = 0; j < MaxCustSingleLine; j++) {
-					printf("%3d ", CurPas->id);
-					CurPas = CurPas->next;
-				}
-			else 
-				for (int j = 0; j < MaxCustSingleLine; j++) {
-					printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
-					CurPas = CurPas->next;
-				}
-			//输出围栏
-			if (flag) {//上行是正
-				printf("|\n");
-				//|---------    |
-				printf("|");
-				for (int j = 0; j < MaxCustSingleLine - 1; j++)
-					printf("----");
-				printf("    |\n");
-
-				// \n |   .xxx.xxx.xxx.xxx|
-				printf("|");//first
-				for (int j = 0; j < MaxCustSingleLine; j++)
-					printf("    ");
-				printf(">\b");//last
-			
-			}
-			else {//上行是倒
-				printf("\n");
-				//|    ---------|
-				printf("|    ");
-				for (int j = 0; j < MaxCustSingleLine -1; j++)
-					printf("----");
-				printf("|\n");
-
-				//\n |xxx  xxx  xxx  xxx      |
-				printf("<");
-			}
-			flag = !flag;
-		}//for
-		
-		//倒数第二
-		if (!flag) {//上行是正
-			// xxx xxx xxx
-			while (CurPas != NULL) {
-				printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
-				CurPas = CurPas->next;
-			}
-			printf("\n");
-		}
-		else {//上行是倒
-			  //\n |xxx  xxx  xxx  xxx      |
-			for (int j = 0; j < MaxCustSingleLine; j++) {
-				if (CurPas != NULL) {
-					printf("%3d ", CurPas->id);
-					CurPas = CurPas->next;
-				}
-				else
-					printf("    ");
-			}
-			printf("|\n");
-		}
-		/*倒数第二行over*/
-
-		//最后一行
-		printf("|");
-		for (int i = 0; i < MaxCustSingleLine; i++) {
-			printf("----");
-		}
-		printf("|\n "); //换行后的空格是缓冲区的开头
-		/*最后一行over*/
-
-		printf("\n");
-	}//if
-	else
-		puts("\n排队缓冲区无人");
-	//puts("--------------------------------------");
+	
+	fprintf(fp, "-------------------------------------------------------\n");
+	fflush(fp);
+	fclose(fp);
 }
 
-//每3秒当前状态写入txt
+//file状态输出 3s 类似cmd
 time_t PreFile;
 void StatusOutputFile() {
 	time(&TimeNow);
-	double wtf;
-	wtf = difftime(TimeNow, PreFile);
-	if (wtf <3)
+	if (difftime(TimeNow, PreFile)<3)
 		return;
 	PreFile = TimeNow;
 	FILE* fp;
@@ -246,52 +199,138 @@ void StatusOutputFile() {
 		}
 		fprintf(fp, "\n");
 	}
-
 	//排队缓冲区状态
-	if (Queuehead->next != NULL){
-		fprintf(fp, "\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
-		//Passenger* CurPas = Queuehead->next;
-		//int flag = 1;
-		//for (int i = 0; i<OdinLineWaitNum; i++) {
-		//	if (flag)
-		//		fprintf(fp,"%3d ", CurPas->id);
-		//	else
-		//		fprintf(fp,"\b\b\b\b%3d\b\b\b", CurPas->id);
-		//	if ((i + 1) % MaxCustSingleLine == 0) {
-		//		flag = !flag;
-		//		fprintf(fp,"\n");
-		//		if (!flag)
-		//			for (int j = 0; j < MaxCustSingleLine; j++)
-		//				fprintf(fp,"    ");
-		//	}//if
-		//	CurPas = CurPas->next;
-		//}//for
-		fprintf(fp,"\n");
+	if (Queuehead->next != NULL) {
+		fprintf(fp, "排队缓冲区总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
 	}//if
 	else
-		fprintf(fp, "\n排队缓冲区总人数: 0\n");
+		fprintf(fp, "排队缓冲区总人数: 0\n");
 
 	fprintf(fp, "-------------------------------------------------------\n");
 	fflush(fp);
 	fclose(fp);
 }
 
-void FinalOutputCmd() {
-	system("cls");
-	printf("下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
-	printf("上班时间：%s", ctime(&TimeStart));
-	printf("下班时间: %s", ctime(&TimeFinish));
-	printf("今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas+ VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
-	for (int i = 0; i < NumOfWin; i++) {
-		//窗口n
-		printf("WIN%02d  ", i + 1);
-		//窗口状态
-		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", Win[i].TotalSer, Win[i].TotalTime/60,Win[i].TotalTime%60);
+/*StatusOutputCmd调用函数*/
+  //仿图形界面蛇形缓冲区
+void QueuePrint() {	
+	int line = (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
+	printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, line);		//排队缓冲区队首乘客编号，队尾乘客编号
+	
+	Passenger* CurPas = Queuehead->next;
+
+	//第一行
+	printf("|");
+	for (int i = 0; i < MaxCustSingleLine; i++) {
+		printf("----");
 	}
-	for (int i = 0; i < NumOfVIPWin; i++) {
-		//窗口n
-		printf("VIP%02d  ", i + 1);
-		//窗口状态
-		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime/60,VIPWin[i].TotalTime%60);
+	printf("|\n "); //换行后的空格是缓冲区的开头
+	/*第一行over*/
+
+	int flag = 1;	//记录当前行是顺序还是逆序 1=正 0=倒
+	//打印前line-1行
+	for (int i = 0; i<line - 1; i++) {
+		//输出乘客队列
+		if (flag)
+			for (int j = 0; j < MaxCustSingleLine; j++) {
+				printf("%3d ", CurPas->id);
+				CurPas = CurPas->next;
+			}
+		else
+			for (int j = 0; j < MaxCustSingleLine; j++) {
+				printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
+				CurPas = CurPas->next;
+			}
+		//输出围栏
+		if (flag) {//上行是正
+			printf("|\n");
+			//|---------    |
+			printf("|");
+			for (int j = 0; j < MaxCustSingleLine - 1; j++)
+				printf("----");
+			printf("    |\n");
+
+			// \n |   .xxx.xxx.xxx.xxx|
+			printf("|");//first
+			for (int j = 0; j < MaxCustSingleLine; j++)
+				printf("    ");
+			printf(">\b");//last
+		}
+		else {//上行是倒
+			printf("\n");
+			//|    ---------|
+			printf("|    ");
+			for (int j = 0; j < MaxCustSingleLine - 1; j++)
+				printf("----");
+			printf("|\n");
+			//\n |xxx  xxx  xxx  xxx      |
+			printf("<");
+		}
+		flag = !flag;
+	}//打印前line-1行over
+
+	 //倒数第二
+	if (!flag) {//上行是正
+		// xxx xxx xxx
+		while (CurPas != NULL) {
+			printf("\b\b\b\b%3d\b\b\b", CurPas->id);	//倒着输出
+			CurPas = CurPas->next;
+		}
+		printf("\n");
 	}
+	else {//上行是倒
+		  //\n |xxx  xxx  xxx  xxx      |
+		for (int j = 0; j < MaxCustSingleLine; j++) {
+			if (CurPas != NULL) {
+				printf("%3d ", CurPas->id);
+				CurPas = CurPas->next;
+			}
+			else
+				printf("    ");
+		}
+		printf("|\n");
+	}
+	/*倒数第二行over*/
+
+	//最后一行
+	printf("|");
+	for (int i = 0; i < MaxCustSingleLine; i++) {
+		printf("----");
+	}
+	printf("|\n "); //换行后的空格是缓冲区的开头
+	/*最后一行over*/
+
+	puts("");
 }
+  //窗口状态
+void WinPrint(Window* win) {
+	//状态
+	switch (win->WinState) {
+	case 0:printf("    关闭"); break;
+	case 1:printf("  空闲中"); break;
+	case 2:printf("  服务中"); break;
+	case 3:printf("  休息中"); break;
+	case 4:printf("准备休息"); break;
+	case 5:printf("准备关闭"); break;
+	default:printf("\n窗口状态异常！\n"); exit(1); break;
+	}
+	//正在安检乘客
+	if (win->NowPas) {
+		printf("\t正在安检: %3d ", win->NowPas->id);
+	}
+	else {
+		printf("\t正在安检:  无 ");
+	}
+	//窗口队列
+	if (win->WinHead != win->WinTail) {	//判空
+		printf(" , 队列:");
+		Passenger* cur = win->WinHead;
+		do {
+			cur = cur->next;
+			printf(" %3d", cur->id);
+		} while (cur != win->WinTail);
+	}
+	puts("");
+}
+
+

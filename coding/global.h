@@ -75,8 +75,7 @@ int CheckWin();//判断安检口能否关闭
 void RestOrClosWin(entry *event);//接收安检口事件完成安检口下班及休息功能
 void StateTrans(entry * event);//总控制函数
 //output.c
-void StatusOutputCmd();//命令行输出
 void EventOutputFile(char event, int id, int no);//事件发生文件输出
-void StatusOutputFile();//周期性文件输出
-void FinalOutputCmd();//下班输出
+void StatusOutput();//状态输出（cmd、file）
+void FinalOutput();//下班输出（cmd、file）
 #endif

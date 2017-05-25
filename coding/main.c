@@ -16,10 +16,10 @@ time_t	TimeStart;
 time_t	TimeNow;
 time_t	TimeFinish;
 int		AirportState;
-int		PassengerArriveTask;
+int		PassengerArriveTask;	 /*没用过*/
 int lock = 0;
 
-void InitWin(Window* win) 
+void InitWin(Window* win) //窗口初始化
 {
 	win->TotalSer = 0;
 	win->TotalTime = 0;
@@ -32,21 +32,18 @@ void InitWin(Window* win)
 
 void SetAndBegin() 
 {
+
 	MainPara();
+	//窗口初始化
 	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
 	VIPWin = (Window*)malloc(sizeof(Window)*NumOfVIPWin);
-	//--------------------------------------以下部分为新增（初始化Win数组）------------
 	WinNum = MinCheck;
 	for (int i = 0; i < NumOfWin; i++)
 	{
 		if (i < MinCheck)
-		{
 			Win[i].WinState = OpenWin;
-		}
 		else
-		{
 			Win[i].WinState = CloseWin;
-		}
 		InitWin(&Win[i]);
 		Win[i].type = 'O';
 	}
@@ -56,10 +53,10 @@ void SetAndBegin()
 		InitWin(&VIPWin[i]);
 		VIPWin[i].type = 'V';
 	}
-	//--------------------------------------以上部分为新增（初始化Win数组）------------
-	//memset(Win, 0, sizeof(Win[0]));
-	fclose(fopen("output.txt", "w"));
-	MainInput();
+	//初始化Win数组over
+
+	fclose(fopen("output.txt", "w"));//清空output.txt
+	MainInput();//生成事件
 	time(&TimeStart);
 	AirportState = OnWork;
 	QueueEstablish();
@@ -76,16 +73,13 @@ int main() {
 		lock = 1;
 		AirportOnServe();
 		StateTrans(&thisEvent);
-		StatusOutputCmd();
-		//time(&TimeFinish);
-		StatusOutputFile();
+		StatusOutput();
 		lock = 0;
 	}
 	time(&TimeFinish);
-	//StatusOutputFile();
 	if (AirportState == OffWork)
 	{	
-		FinalOutputCmd();
+		FinalOutput();
 	}
 	WaitForSingleObject(KeyBoard, INFINITE);
 	CloseHandle(KeyBoard);
