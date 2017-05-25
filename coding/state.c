@@ -7,105 +7,69 @@
 #include "global.h"
 #include "passenger.h"
 #include "window.h" 
+#include "queue.h"
 
-int OdinPas = 0; //当前总乘客数量
-int VIPPas = 0;//当前VIP乘客数量
-int OdinLineWaitNum = 0;//当前缓冲区乘客等待人数
-int VIPWatNum = 0;//VIP缓冲区等待乘客数
-int OdinWatNum = 0;//当前总乘客等待人数
 int PreClose = 0;//记录准备关闭安检口的数目
 
-Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
-Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
-					 //time_t TimeNow;//当前时间
-Passenger* VIPQueuehead;//VIP排队队列头指针，next指向第一位VIP乘客
-Passenger* VIPQueuetail;//VIP排队队列尾指针，始终指向最后一位VIP乘客
+Queue* OdinQueue;
+Queue* VipQueue;
 
-void QueueEstablish()//创建队列头指针函数
+void QueueEstablish(Queue* queue)//创建队列头指针函数
 {
-	if ((Queuehead = (Passenger*)malloc(sizeof(Passenger))) == NULL)
-	{
-		printf("申请内存失败!\n");
+	if (!(queue = (Queue*)malloc(sizeof(Queue))) || !(queue->QueueHead = (Passenger*)malloc(sizeof(Queue)))) {
+		puts("申请缓冲区内存失败!");
+		exit(1);
 	}
-	if ((VIPQueuehead = (Passenger*)malloc(sizeof(Passenger))) == NULL)
-	{
-		printf("申请内存失败!\n");
+	queue->QueueHead->next = NULL;//开始无乘客
+	queue->QueueTail = queue->QueueHead;//尾指针和头指针同指
+	queue->SumNum = 0;
+	queue->WaitNum = 0;
+}
+
+void EnQueue(Queue* queue) {
+	Passenger* p;
+	if (!(p = (Passenger*)malloc(sizeof(Passenger)))) {
+		puts("乘客进入缓冲区失败");
+		exit(1);
 	}
-	Queuehead->next = NULL;//开始无乘客
-	VIPQueuehead->next = NULL;
-	Queuetail = Queuehead;//尾指针和头指针同指
-	VIPQueuetail = VIPQueuehead;
+	queue->SumNum++;
+	queue->WaitNum++;
+
+	p->State = thisEvent.check;//尚未分配安检口
+	p->id = queue->SumNum;//分配id
+
+	p->SerNum = 0;//0为未安检口
+	p->TaskTime = MinSec + rand() % (MaxSec + 1);//设置安检的时间
+	p->next = NULL;
+	queue->QueueTail->next = p;//将乘客插入排队缓冲区的队尾
+	queue->QueueTail = p;//队尾指针指向尾乘客
+
 }
 
 void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 {
-
 	int number = 0;//本次到达乘客数量计数器
 	Passenger* p = NULL;//乘客指针
-	Passenger* VIP = NULL; //VIP指针
 
 	if (event->type == 'G') {
 		for (number = 0; number < event->mans; number++)
-			/*
-			检查排队缓冲区最大人数 --------------已修改，在本函数添了if判断
-			准备下班也不能进人 ---------------已修改，添加在总控制函数里
-			*/
 		{
 			if (OdinLineWaitNum >= MaxCustSingleLine*MaxLines) //排队缓冲区已满
 			{
-				EventOutputFile('F', 0, 0);//新增事件输出函数-----排队缓冲区满
+				EventOutputFile('F', 0, 0);//事件输出
 				break;
 			}
-			OdinPas++;//总乘客数量加一
-			OdinLineWaitNum++;//当前排队缓冲区乘客加一
-			OdinWatNum++;//当前总等待乘客数加一
-			if ((p = (Passenger*)malloc(sizeof(Passenger))) == NULL)
-			{
-				printf("申请内存失败！");
-			}
-			else
-			{
-				p->State = thisEvent.check;//尚未分配安检口
-				p->id = OdinPas;//分配id
 
-				EventOutputFile('G', p->id, 0);//新增事件输出--------------安排Id为XX乘客到排队缓冲区
-
-				p->SerNum = 0;//0为未安检口
-				p->TaskTime = MinSec + rand() % (MaxSec + 1);//设置安检的时间
-				p->next = NULL;
-				Queuetail->next = p;//将乘客插入排队缓冲区的队尾
-				Queuetail = p;//队尾指针指向尾乘客
-				p = p->next;
-			}
+			/*OdinWatNum++;*/
+			EnQueue(OdinQueue);//入队
+			EventOutputFile('G', OdinQueue->SumNum, 0);//事件输出
 		}
 	}
 	else if (event->type == 'V') {
 		for (number = 0; number < event->mans; number++)
-			/*
-			检查排队缓冲区最大人数 --------------已修改，在本函数添了if判断
-			准备下班也不能进人 ---------------已修改，添加在总控制函数里
-			*/
 		{
-			VIPPas++;//总乘客数量加一
-			VIPWatNum++;
-			if ((VIP = (Passenger*)malloc(sizeof(Passenger))) == NULL)
-			{
-				printf("申请内存失败！");
-			}
-			else
-			{
-				VIP->State = thisEvent.check;//尚未分配安检口
-				VIP->id = VIPPas;//分配id
-
-				EventOutputFile('G', VIP->id, 0);//新增事件输出--------------安排Id为XX乘客到排队缓冲区
-
-				VIP->SerNum = 0;//0为未安检口
-				VIP->TaskTime = MinSec + rand() % (MaxSec + 1);//设置安检的时间
-				VIP->next = NULL;
-				VIPQueuetail->next = VIP;//将乘客插入排队缓冲区的队尾
-				VIPQueuetail = VIP;//队尾指针指向尾乘客
-				VIP = VIP->next;
-			}
+			EnQueue(VipQueue);
+			//----------不输出事件 装作没有缓冲区（手动滑稽
 		}
 	}
 }
@@ -140,6 +104,7 @@ void PreVIPWinRun() //将排队缓冲区的乘客插入到安检口
 									   <=  -----------我感觉=的话已经满人了0.0
 									   */
 		{
+
 			VIPWin[MinWaitWinNum].WinTail->next = VIPQueuehead->next;//将排队缓冲区队头插入该安检口的队尾
 			VIPWin[MinWaitWinNum].WinTail = VIPQueuehead->next;//将安检口队尾改为其下一个
 			VIPQueuehead->next = VIPQueuehead->next->next;//改变排队缓冲区的队头为其下一个
@@ -158,7 +123,7 @@ void PreVIPWinRun() //将排队缓冲区的乘客插入到安检口
 		VIPQueuetail = VIPQueuehead;
 	}
 }
-
+	
 void PreWinRun() //将排队缓冲区的乘客插入到安检口
 {
 	int NowWinNum = 0;//窗口数组编号
