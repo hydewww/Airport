@@ -8,7 +8,7 @@
 
 #define MaxGapTime 5 //事件的最大发生间隔（以秒为单位）
 #define	OneOutOfTen (1 + rand() % 100) > 90	//10%为安检口申请休息的概率
-#define MaxCrown 11 //一次性最大人数 
+#define MaxCrown 20 //一次性最大人数 
 #define MaxVIPCrown 3//一次VIP事件最大人数
 #define pi 3.1415926
 #define e 2.71828
@@ -21,27 +21,20 @@ int entryno = 0;
 
 void MainInput();
 void AirportOnServe();
-double random();
+double random(int,int);
 
-double random()     //用Box_Muller算法产生高斯分布的随机数
+double random(int now,int total)     //用Box_Muller算法产生高斯分布的随机数
 {
-	double u = 3, N = 1;
-	double r, t, z, x;
-	double s1, s2;
-	s1 = (1.0 + rand()) / (RAND_MAX + 1.0);
-	s2 = (1.0 + rand()) / (RAND_MAX + 1.0);
-	r = sqrt(-2 * log(s2) / log(e));
-	t = 2 * pi*s1;
-	z = r*cos(t);
-	x = u + z*N;
-	x /= 6;
-	if (x > 1) {
-		x -= 1;
-	}
-	else if(x < 0) {
-		x += 1;
-	}
-	return x;
+	double N;
+	double sigama = 1;
+	double x = (double)(now) / total * 6*sigama;
+	double mu = 3;
+	double z;
+
+	z = -pow(x - mu, 2) /( 2 * pow(sigama, 2));
+	N = (1 / ((sqrt(2 * pi))*sigama)) * pow(e,z);
+
+	return 2*N;
 }
 
 int InputInt(int* num) {
@@ -56,6 +49,10 @@ int InputInt(int* num) {
 
 void MainInput() {
 
+	int x = 100;
+	for (int i = 0; i < x; i++) {
+		printf("%f\n", random(i, x));
+	}
 	int EventNum;
 	do {
 		printf("输入事件个数：");
@@ -69,7 +66,7 @@ void MainInput() {
 		for (int i = 0; i < EventNum-1; i++) {
 
 			event[i].no = i;
-			event[i].sec = ((int)(random() * MaxGapTime + 1) % MaxGapTime)+1; //用正态分布产生从1到MaxGapTime的时间间隔
+			event[i].sec = ((int)(random(i,EventNum) * MaxGapTime + 1) % MaxGapTime)+1; //用正态分布产生从1到MaxGapTime的时间间隔
 
 			if (OneOutOfTen) {		//10%的概率为休息安检口
 				event[i].type = 'X';
@@ -77,12 +74,12 @@ void MainInput() {
 				event[i].mans = 0;
 			}
 			else {  
-				if (random() > PROBABILITY_OF_VIP) {
+				if (random(i,EventNum) > PROBABILITY_OF_VIP) {
 					event[i].type = 'V';
-					event[i].mans = ((int)(random() * MaxVIPCrown + 1) % MaxVIPCrown);
+					event[i].mans = ((int)(random(i,EventNum) * MaxVIPCrown + 1) % MaxVIPCrown);
 					event[i].check = 0;
 				}
-				else  if (random()>0.60) //危险乘客
+				else  if (random(i,EventNum)>0.60) //危险乘客
 				{
 					event[i].type = 'G';
 					event[i].mans = 1;
@@ -91,7 +88,7 @@ void MainInput() {
 				else
 				{
 					event[i].type = 'G';
-					event[i].mans = ((int)(random() * MaxCrown + 1) % MaxCrown);
+					event[i].mans = ((int)(random(i,EventNum) * MaxCrown + 1) % MaxCrown);
 					event[i].check = 0;
 				}
 			}
