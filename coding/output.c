@@ -1,6 +1,7 @@
 #include"global.h"
 #include"passenger.h"
 #include"window.h"
+#include"queue.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<Windows.h>
@@ -23,11 +24,11 @@ void FinalOutput() {
 
 /*StatusOutputCmd调用函数*/
 void QueuePrint();//仿图形界面蛇形缓冲区
-void WinPrint(Window* win);//窗口状态
+void WinPrint(Window win);//窗口状态
 /*over*/
+
 //cmd状态输出 1s
 time_t PreCmd; //记录上次输出时间
-extern int OdinLineWaitNum;
 void StatusOutputCmd() {
 	StatusOutputFile();
 	time(&TimeNow);
@@ -51,17 +52,17 @@ void StatusOutputCmd() {
 		//窗口n
 		printf("WIN%02d  ", i+1);
 		//窗口状态
-		WinPrint(&Win[i]);
+		WinPrint(Win[i]);
 	}
 	for (int i = 0; i < NumOfVIPWin; i++) {
 		//窗口n
 		printf("VIP%02d  ", i + 1);
 		//窗口状态
-		WinPrint(&VIPWin[i]);
+		WinPrint(VIPWin[i]);
 	}
 
 	//排队缓冲区状态
-	if (Queuehead->next != NULL) 
+	if (OdinQueue->QueueHead->next != NULL) 
 		QueuePrint(); //仿图形界面蛇形缓冲区
 	else
 		puts("\n排队缓冲区无人");
@@ -73,7 +74,7 @@ void FinalOutputCmd() {
 	printf("下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
 	printf("上班时间：%s", ctime(&TimeStart));
 	printf("下班时间: %s", ctime(&TimeFinish));
-	printf("今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas+ VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
+	printf("今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinQueue->SumNum+VipQueue->SumNum, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
 		printf("WIN%02d  ", i + 1);
@@ -101,7 +102,9 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 	case 'G':fprintf(fp, "%d号乘客进入排队缓冲区\n", PasID); break;
 	case 'F':fprintf(fp, "排队缓冲区已满\n"); break;
 	case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); break;
+	case 'c':fprintf(fp, "%d号Vip进入%d号Vip安检口\n", PasID, WinID); break;
 	case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); break;
+	case 'B':fprintf(fp, "[Warning] %d号乘客安检失败!\n", PasID);
 	case 'O':fprintf(fp, "%d号安检口开启\n", WinID); break;
 	case 'S':fprintf(fp, "%d号安检口关闭\n", WinID); break;
 	case 'X':fprintf(fp, "%d号安检口申请休息\n", WinID); break;
@@ -126,7 +129,7 @@ void FinalOutputFile() {
 	fprintf(fp,"下班啦！！！！！！！！！！！！！！！！！！！！\n\n");
 	fprintf(fp,"上班时间：%s", ctime(&TimeStart));
 	fprintf(fp,"下班时间: %s", ctime(&TimeFinish));
-	fprintf(fp,"今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinPas + VIPPas, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
+	fprintf(fp,"今日服务总人数: %d  总共营业时间: %02d:%02d\n\n\n", OdinQueue->SumNum + VipQueue->SumNum, (TimeFinish - TimeStart) / 60, (TimeFinish - TimeStart) % 60);
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
 		fprintf(fp,"WIN%02d  ", i + 1);
@@ -200,8 +203,8 @@ void StatusOutputFile() {
 		fprintf(fp, "\n");
 	}
 	//排队缓冲区状态
-	if (Queuehead->next != NULL) {
-		fprintf(fp, "排队缓冲区总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
+	if (OdinQueue->QueueHead->next != NULL) {
+		fprintf(fp, "排队缓冲区总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinQueue->WaitNum, OdinQueue->QueueHead->next->id, OdinQueue->QueueTail->id, (OdinQueue->WaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine);		//排队缓冲区队首乘客编号，队尾乘客编号
 	}//if
 	else
 		fprintf(fp, "排队缓冲区总人数: 0\n");
@@ -214,10 +217,10 @@ void StatusOutputFile() {
 /*StatusOutputCmd调用函数*/
   //仿图形界面蛇形缓冲区
 void QueuePrint() {	
-	int line = (OdinLineWaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
-	printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinLineWaitNum, Queuehead->next->id, Queuetail->id, line);		//排队缓冲区队首乘客编号，队尾乘客编号
+	int line = (OdinQueue->WaitNum + MaxCustSingleLine - 1) / MaxCustSingleLine;// 行数
+	printf("\n\t\t排队缓冲区\n总人数: %d ,首乘客: %d , 尾乘客: %d , 队列数: %d\n", OdinQueue->WaitNum, OdinQueue->QueueHead->next->id, OdinQueue->QueueTail->id, line);		//排队缓冲区队首乘客编号，队尾乘客编号
 	
-	Passenger* CurPas = Queuehead->next;
+	Passenger* CurPas = OdinQueue->QueueHead->next;
 
 	//第一行
 	printf("|");
@@ -303,9 +306,9 @@ void QueuePrint() {
 	puts("");
 }
   //窗口状态
-void WinPrint(Window* win) {
+void WinPrint(Window win) {
 	//状态
-	switch (win->WinState) {
+	switch (win.WinState) {
 	case 0:printf("    关闭"); break;
 	case 1:printf("  空闲中"); break;
 	case 2:printf("  服务中"); break;
@@ -315,20 +318,20 @@ void WinPrint(Window* win) {
 	default:printf("\n窗口状态异常！\n"); exit(1); break;
 	}
 	//正在安检乘客
-	if (win->NowPas) {
-		printf("\t正在安检: %3d ", win->NowPas->id);
+	if (win.NowPas) {
+		printf("\t正在安检: %3d ", win.NowPas->id);
 	}
 	else {
 		printf("\t正在安检:  无 ");
 	}
 	//窗口队列
-	if (win->WinHead != win->WinTail) {	//判空
+	if (win.WinHead != win.WinTail) {	//判空
 		printf(" , 队列:");
-		Passenger* cur = win->WinHead;
+		Passenger* cur = win.WinHead;
 		do {
 			cur = cur->next;
 			printf(" %3d", cur->id);
-		} while (cur != win->WinTail);
+		} while (cur != win.WinTail);
 	}
 	puts("");
 }

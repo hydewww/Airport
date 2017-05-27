@@ -1,6 +1,9 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 #include<time.h>
+#include"passenger.h"
+#include"queue.h"
+#include"window.h"
 //机场状态
 #define OffWork 0    //下班
 #define OnWork 1     //正在工作
@@ -15,17 +18,16 @@
 
 //全局变量声明
 extern int AirportState;//机场状态
+
 extern int OdinPas;//当前普通乘客总人数
-extern int VIPPas;//当前VIP乘客总人数
-extern int TotalPas;//当前总乘客人数
-extern int OdinLineWaitNum;//当前缓冲区乘客等待人数
 extern int OdinWaitNum;//当前总乘客等待人数
-extern int PassengerArriveTask;//给到达的乘客安排窗口号码
-extern int new_sigh;//同步锁
+
 extern int lock; //同步锁
 extern struct entry thisEvent;
 extern struct Window *Win;
 extern struct Window *VIPWin;
+extern Queue* OdinQueue;
+extern Queue* VipQueue;
 //排队缓冲区
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
 extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成
