@@ -13,7 +13,6 @@
 #define pi 3.1415926
 #define e 2.71828
 #define PROBABILITY_OF_VIP 0.7
-//#define EventNum 10
 
 entry thisEvent;
 int MaxCheck;
@@ -59,7 +58,6 @@ void MainInput() {
 	} while (InputInt(&EventNum));
 	FILE *finput = fopen("input.dat", "wb+");
 	
-	//entry event[EventNum];
 	entry* event = (entry*)malloc(EventNum * sizeof(entry));
 	if (finput) {
 		srand(time(NULL));
@@ -110,13 +108,11 @@ void AirportOnServe()
 {
 	//static int entryno = 0;
 	static time_t TimeLastEvent;
-	//time_t time_pre_ev = TimeStart;
-	//time_t temtime;
 
 	FILE *finput = fopen("input.dat", "rb");
 	if (finput == NULL)
 	{
-		printf("finput空了少年！");
+		printf("读取事件文件失败");
 		exit(1);
 	}
 	
@@ -127,6 +123,5 @@ void AirportOnServe()
 		TimeLastEvent = time(&TimeNow) + thisEvent.sec;
 		entryno++;
 	}
-	//printf("现在正在发生第%d个事件\n",entryno);
 	fclose(finput);
 }

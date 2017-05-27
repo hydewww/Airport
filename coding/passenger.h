@@ -10,8 +10,6 @@ typedef struct Passenger
 	struct Passenger *next;
 } Passenger;
 
-struct Passenger* Queuehead;//排队队列头指针，next指向第一位乘客
-struct Passenger* Queuetail;//排队队列尾指针，始终指向最后一位乘客
 #endif
 
 

@@ -6,9 +6,6 @@ typedef struct Window
 				 RestWin休息中  ReadyRestWin等待休息  ReadyClosWin等待关闭*/
 	int  SerNum;//服务的号码 		
 	long SerTime;//本次服务结束时间		
-	/*
-	z
-	*/
 	long RestTime;//本次休息结束时间
 	long TotalSer;//总共服务人数
 	long TotalTime;//总共服务时间
