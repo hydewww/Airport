@@ -11,7 +11,7 @@ void StatusOutputCmd();
 void StatusOutputFile();
 void StatusOutput() {
 	StatusOutputCmd();
-	StatusOutputFile;
+	StatusOutputFile();
 }
 
 void FinalOutputCmd();
@@ -30,7 +30,6 @@ void WinPrint(Window win);//窗口状态
 //cmd状态输出 1s
 time_t PreCmd; //记录上次输出时间
 void StatusOutputCmd() {
-	StatusOutputFile();
 	time(&TimeNow);
 	//距上次输出过了1秒  & 机场正在工作  => 继续
 	if (((difftime(TimeNow, PreCmd)) < 1) && (AirportState != OffWork))
@@ -99,19 +98,19 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 		exit(1);
 	}
 	switch (event) {
-	case 'G':fprintf(fp, "%d号乘客进入排队缓冲区\n", PasID); break;
-	case 'F':fprintf(fp, "排队缓冲区已满\n"); break;
-	case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); break;
-	case 'c':fprintf(fp, "%d号Vip进入%d号Vip安检口\n", PasID, WinID); break;
-	case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); break;
-	case 'B':fprintf(fp, "[Warning] %d号乘客安检失败!\n", PasID);
-	case 'O':fprintf(fp, "%d号安检口开启\n", WinID); break;
-	case 'S':fprintf(fp, "%d号安检口关闭\n", WinID); break;
-	case 'X':fprintf(fp, "%d号安检口申请休息\n", WinID); break;
-	case 'K':fprintf(fp, "%d号安检口开始休息\n", WinID); break;
-	case 'J':fprintf(fp, "%d号安检口结束休息\n", WinID); break;
-	case 'Q':fprintf(fp, "接收到下班指令\n"); break;
-	default:fprintf(fp, "接收到未知事件\n"); break;
+	case 'G':fprintf(fp, "%d号乘客进入排队缓冲区\n", PasID); printf("%d号乘客进入排队缓冲区\n", PasID); break;
+	case 'F':fprintf(fp, "排队缓冲区已满\n"); printf( "排队缓冲区已满\n"); break;
+	case 'C':fprintf(fp, "%d号乘客进入%d号安检口\n", PasID, WinID); printf("%d号乘客进入%d号安检口\n", PasID, WinID); break;
+	case 'c':fprintf(fp, "%d号Vip进入%d号Vip安检口\n", PasID, WinID); printf("%d号Vip进入%d号Vip安检口\n", PasID, WinID); break;
+	case 'L':fprintf(fp, "%d号乘客完成安检离开\n", PasID); printf("%d号乘客完成安检离开\n", PasID); break;
+	case 'B':fprintf(fp, "[Warning] %d号乘客安检失败!\n", PasID);printf("[Warning] %d号乘客安检失败!\n", PasID); break;
+	case 'O':fprintf(fp, "%d号安检口开启\n", WinID); printf("%d号安检口开启\n", WinID); break;
+	case 'S':fprintf(fp, "%d号安检口关闭\n", WinID);printf("%d号安检口关闭\n", WinID); break;
+	case 'X':fprintf(fp, "%d号安检口申请休息\n", WinID);printf("%d号安检口申请休息\n", WinID); break;
+	case 'K':fprintf(fp, "%d号安检口开始休息\n", WinID);printf("%d号安检口开始休息\n", WinID); break;
+	case 'J':fprintf(fp, "%d号安检口结束休息\n", WinID);printf("%d号安检口结束休息\n", WinID); break;
+	case 'Q':fprintf(fp, "接收到下班指令\n"); printf("接收到下班指令\n"); break;
+	default:fprintf(fp, "接收到未知事件\n");printf("接收到未知事件\n"); break;
 	}
 	fflush(fp);
 	fclose(fp);
