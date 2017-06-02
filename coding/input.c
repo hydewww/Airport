@@ -13,7 +13,7 @@
 #define MaxVIPCrown 3//一次VIP事件最大人数
 #define pi 3.1415926
 #define e 2.71828
-#define PROBABILITY_OF_VIP 0.7
+#define PROBABILITY_OF_VIP 0.65
 
 entry thisEvent;
 int MaxCheck;
@@ -118,7 +118,7 @@ void AirportOnServe()
 	}
 	if (lock == 0)
 	{
-		if (entryno == 0 || time(&TimeNow) >= TimeLastEvent)
+		if((AirportState!=ShutDown)&& (entryno == 0 || time(&TimeNow) >= TimeLastEvent))
 		{
 			fseek(finput, entryno * sizeof(entry), SEEK_SET);
 			fread(&thisEvent, sizeof(entry), 1, finput);

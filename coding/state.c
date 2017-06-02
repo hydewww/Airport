@@ -232,7 +232,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			{
 				Win[i].WinState = OpenWin;//状态转换为空闲
 				OdinWatNum--;//排队总人数减一
-
+				
 				CheckOver(&Win[i]);//------------------
 
 			}
@@ -312,7 +312,6 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 {
 	int i = 0;//安检口数组编号
-	int n = 0;//此次状态处理循环中已增设安检口数量
 	int NowState;//安检口当前状态
 	for (i = 0; i < NumOfVIPWin; i++)//遍历安检口数组，进行乘客处理及安检口状态转换
 	{
@@ -345,6 +344,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 			{
 				VIPWin[i].WinTail = VIPWin[i].WinHead;//DEBUG-------尾和头同指
 				VIPWin[i].WinState = CloseWin;//改变安检口状态为关闭
+				VipWinNum--; 
 				EventOutputFile('S', 0, i + 1);//事件输出
 				//PreClose--; //待关闭安检口数量减一（机场不处于ShutDown状态）
 
@@ -374,7 +374,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 //检查能否下班
 int CheckWin() //检查安检口是否能下班
 {
-	if (WinNum == 0) //所有工作已结束
+	if (WinNum == 0&&VipWinNum==0) //所有工作已结束
 	{
 		return OffWork; //返回下班
 	}

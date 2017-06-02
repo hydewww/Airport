@@ -35,7 +35,8 @@ extern int MaxSeqLen;// 最大允许等待长度
 extern int EasySeqLen;// 短期等待长度
 //安检口
 extern int NumOfWin;//安检口总数目
-extern int WinNum;//安检口工作数目
+extern int WinNum;//普通安检口工作数目
+extern int VipWinNum;//Vip安检口工作数目
 extern int MinCheck;// 最少开放安检口数量
 extern int MaxCheck;// 最多开放安检口数量
 extern int MaxCustCheck;// 安检口队伍最大长度
@@ -72,7 +73,7 @@ void AirportOnServe();//读取事件
 //state.cpp
 void DistriNum(entry *event);//为乘客分配号码并插入排队缓冲区
 void WinRun();//安检口状态机
-void PreWinRun();//缓冲区进安检口
+void PreWinRun(int);//缓冲区进安检口
 int CheckWin();//判断安检口能否关闭 
 void RestOrClosWin(entry *event);//接收安检口事件完成安检口下班及休息功能
 void StateTrans(entry * event);//总控制函数

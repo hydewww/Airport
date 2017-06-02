@@ -13,6 +13,7 @@
 Window* Win;
 Window* VIPWin;
 int		WinNum;
+int		VipWinNum;
 time_t	TimeStart;
 time_t	TimeNow;
 time_t	TimeFinish;
@@ -44,6 +45,7 @@ void SetAndBegin()
 	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
 	VIPWin = (Window*)malloc(sizeof(Window)*NumOfVIPWin);
 	WinNum = MinCheck;
+	VipWinNum = NumOfVIPWin;
 	for (int i = 0; i < NumOfWin; i++)
 	{
 		if (i < MinCheck)
