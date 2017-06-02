@@ -1,9 +1,11 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
+
 #include<time.h>
 #include"passenger.h"
 #include"queue.h"
 #include"window.h"
+
 //机场状态
 #define OffWork 0    //下班
 #define OnWork 1     //正在工作
@@ -67,7 +69,7 @@ int MainPara();//维护配置文件
 //input.c
 unsigned _stdcall KeyEvent(void * p);//-------------------------KEYBOARD
 int InputInt(int* num);
-double random();//正态分布函数
+double random(int ,int);//正态分布函数
 void MainInput();//生成随机事件
 void AirportOnServe();//读取事件
 //state.cpp

@@ -1,7 +1,8 @@
-#include<stdio.h>
-#include"global.h"
-#include"passenger.h"
-#include"window.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
 
  int NumOfWin;			//1.普通安检口数目
  int NumOfVIPWin;		//2.VIP安检口数目
@@ -24,10 +25,10 @@ int MainPara()
 	if ((fp = fopen("para.dat", "rb")) == NULL) //以只读方式打开配置文件para.dat
 	{
 		printf("Error! Can not open para.dat!\n");  //若无法打开，则报错
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	fseek(fp, 0, SEEK_SET); //置文件指针于文件头部
-	printf("当前配置文件信息:\n");
+	printf("\t当前配置文件信息:\n");
 	//从配置文件读取数据
 	fread(&NumOfWin, sizeof(int), 1, fp);
 	printf("1. 普通安检口总数目:          %3d\n", NumOfWin);

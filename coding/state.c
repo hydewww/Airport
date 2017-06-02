@@ -9,6 +9,7 @@
 #include "passenger.h"
 #include "window.h" 
 #include "queue.h"
+
 #define VIP 1
 #define ODIN 0
 int PreClose = 0;//记录准备关闭安检口的数目
@@ -19,7 +20,7 @@ void EnQueue(Queue* queue) {
 	Passenger* p;
 	if (!(p = (Passenger*)malloc(sizeof(Passenger)))) {
 		puts("乘客进入缓冲区失败");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	queue->SumNum++;
 	queue->WaitNum++;

@@ -2,28 +2,29 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include<windows.h>
+#include <windows.h>
 #include "global.h"
 #include "passenger.h"
 #include "window.h"
 
 #define MaxGapTime 5 //事件的最大发生间隔（以秒为单位）
-#define	OneOutOfTen (1 + rand() % 100) > 90	//10%为安检口申请休息的概率
 #define MaxCrown 20 //一次性最大人数 
-#define MaxVIPCrown 3//一次VIP事件最大人数
+#define MaxVIPCrown 5//一次VIP事件最大人数
 #define pi 3.1415926
 #define e 2.71828
-#define PROBABILITY_OF_VIP 0.65
+#define	PROBABILITY_OF_REST  10	//10%为安检口申请休息的概率
+#define PROBABILITY_OF_VIP 20	//vip乘客生成概率为20%
+#define PROBABILITY_OF_DANGEROURS 10 //危险乘客生成概率10%
 
 entry thisEvent;
-int MaxCheck;
-int entryno = 0;
+int   MaxCheck;
+int   entryno = 0;
 
-void MainInput();
-void AirportOnServe();
+void   MainInput();
+void   AirportOnServe();
 double random(int,int);
 
-double random(int now,int total)     //用Box_Muller算法产生高斯分布的随机数
+double random(int now,int total)     //按事件号分布的正态函数
 {
 	double N;
 	double sigama = 1;
@@ -37,7 +38,7 @@ double random(int now,int total)     //用Box_Muller算法产生高斯分布的随机数
 	return 2*N;
 }
 
-int InputInt(int* num) {
+int InputInt(int* num) {		//正确输入数字的函数
 	if (scanf("%d", num)) {
 		while (getchar() != '\n');//清空缓冲区
 		return 0;
@@ -49,10 +50,6 @@ int InputInt(int* num) {
 
 void MainInput() {
 
-	int x = 100;
-	for (int i = 0; i < x; i++) {
-		printf("%f\n", random(i, x));
-	}
 	int EventNum;
 	do {
 		printf("输入事件个数：");
@@ -67,18 +64,18 @@ void MainInput() {
 			event[i].no = i;
 			event[i].sec = ((int)(random(i,EventNum) * MaxGapTime + 1) % MaxGapTime)+1; //用正态分布产生从1到MaxGapTime的时间间隔
 
-			if (OneOutOfTen) {		//10%的概率为休息安检口
+			if ((1 + rand() % 100) < PROBABILITY_OF_REST) {		//10%的概率为休息安检口
 				event[i].type = 'X';
 				event[i].check = 1 + rand() % NumOfWin;
 				event[i].mans = 0;
 			}
 			else {  
-				if (random(i,EventNum) > PROBABILITY_OF_VIP) {
+				if ((1 + rand() % 100) < PROBABILITY_OF_VIP) {  //VIP乘客生成
 					event[i].type = 'V';
 					event[i].mans = ((int)(random(i,EventNum) * MaxVIPCrown + 1) % MaxVIPCrown);
 					event[i].check = 0;
 				}
-				else  if (random(i,EventNum)>0.60) //危险乘客
+				else  if ((1 + rand() % 100) < PROBABILITY_OF_DANGEROURS) //危险乘客
 				{
 					event[i].type = 'G';
 					event[i].mans = 1;
@@ -100,25 +97,24 @@ void MainInput() {
 	}
 	else {
 		printf("文件打开失败，请重启程序");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	fclose(finput);
 }
 
-void AirportOnServe()
+void AirportOnServe()  //机场在运行状态是按照时间间隔读入时间
 {
-	//static int entryno = 0;
 	static time_t TimeLastEvent;
 
 	FILE *finput = fopen("input.dat", "rb");
 	if (finput == NULL)
 	{
 		printf("读取事件文件失败");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (lock == 0)
 	{
-		if((AirportState!=ShutDown)&& (entryno == 0 || time(&TimeNow) >= TimeLastEvent))
+		if((AirportState != ShutDown)&& (entryno == 0 || time(&TimeNow) >= TimeLastEvent))
 		{
 			fseek(finput, entryno * sizeof(entry), SEEK_SET);
 			fread(&thisEvent, sizeof(entry), 1, finput);

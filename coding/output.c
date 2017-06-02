@@ -1,14 +1,15 @@
-#include"global.h"
-#include"passenger.h"
-#include"window.h"
-#include"queue.h"
-#include<stdio.h>
-#include<stdlib.h>
-#include<Windows.h>
-#include<process.h>
+#include "global.h"
+#include "passenger.h"
+#include "window.h"
+#include "queue.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <Windows.h>
+#include <process.h>
 
 void StatusOutputCmd();
 void StatusOutputFile();
+
 void StatusOutput() {
 	StatusOutputCmd();
 	StatusOutputFile();
@@ -16,6 +17,7 @@ void StatusOutput() {
 
 void FinalOutputCmd();
 void FinalOutputFile();
+
 void FinalOutput() {
 	FinalOutputCmd();
 	FinalOutputFile();
@@ -53,7 +55,7 @@ void StatusOutputCmd() {
 	case 0:printf("工作状态 = 下班\n"); break;
 	case 1:printf("工作状态 = 正在工作\n"); break;
 	case 2:printf("工作状态 = 准备下班\n"); break;
-	default: printf("机场状态异常"); exit(1);
+	default: printf("机场状态异常"); exit(EXIT_FAILURE);
 	}
 	//窗口状态
 	for (int i = 0; i < NumOfWin; i++) {
@@ -104,7 +106,7 @@ void EventOutputFile(char event, int PasID, int WinID) {	//PasID乘客 WinID安检口
 	FILE * fp;
 	if (!(fp = fopen("output.txt", "a"))) {
 		puts("Error: cannot open the file \"output.txt\".");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	switch (event) {
 	case 'G':fprintf(fp, "%d号乘客进入排队缓冲区\n", PasID); printf("%d号乘客进入排队缓冲区\n", PasID); break;
@@ -130,7 +132,7 @@ void FinalOutputFile() {
 	FILE* fp;
 	if (!(fp = fopen("output.txt", "a"))) {
 		puts("Error: cannot open the file \"output.txt\".");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	fprintf(fp, "-------------------------------------------------------\n");
 
@@ -166,7 +168,7 @@ void StatusOutputFile() {
 	FILE* fp;
 	if (!(fp = fopen("output.txt", "a"))) {
 		puts("Error: cannot open the file \"output.txt\".");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	fprintf(fp, "-------------------------------------------------------\n");
 	fprintf(fp, "时间 : %s", ctime(&TimeNow));
@@ -175,7 +177,7 @@ void StatusOutputFile() {
 	case 0:fprintf(fp, "工作状态 = 下班\n"); break;
 	case 1:fprintf(fp, "工作状态 = 正在工作\n"); break;
 	case 2:fprintf(fp, "工作状态 = 准备下班\n"); break;
-	default: fprintf(fp, "机场状态异常"); exit(1);
+	default: fprintf(fp, "机场状态异常"); exit(EXIT_FAILURE);
 	}
 
 	//窗口状态
@@ -190,7 +192,7 @@ void StatusOutputFile() {
 		case 3:fprintf(fp, "  休息中"); break;
 		case 4:fprintf(fp, "准备休息"); break;
 		case 5:fprintf(fp, "准备关闭"); break;
-		default:fprintf(fp, "\n窗口状态异常！\n"); exit(1); break;
+		default:fprintf(fp, "\n窗口状态异常！\n"); exit(EXIT_FAILURE); break;
 		}
 		//正在安检
 		if (Win[i].NowPas) {
@@ -323,7 +325,7 @@ void WinPrint(Window win) {
 	case 3:printf("  休息中"); break;
 	case 4:printf("准备休息"); break;
 	case 5:printf("准备关闭"); break;
-	default:printf("\n窗口状态异常！\n"); exit(1); break;
+	default:printf("\n窗口状态异常！\n"); exit(EXIT_FAILURE); break;
 	}
 	//正在安检乘客
 	if (win.NowPas) {
