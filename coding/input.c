@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include<windows.h>
 #include "global.h"
 #include "passenger.h"
 #include "window.h"
@@ -115,13 +116,20 @@ void AirportOnServe()
 		printf("读取事件文件失败");
 		exit(1);
 	}
-	
-	if (entryno == 0 || time(&TimeNow) >= TimeLastEvent)
+	if (lock == 0)
 	{
-		fseek(finput, entryno * sizeof(entry), SEEK_SET);
-		fread(&thisEvent, sizeof(entry), 1, finput);
-		TimeLastEvent = time(&TimeNow) + thisEvent.sec;
-		entryno++;
+		if (entryno == 0 || time(&TimeNow) >= TimeLastEvent)
+		{
+			fseek(finput, entryno * sizeof(entry), SEEK_SET);
+			fread(&thisEvent, sizeof(entry), 1, finput);
+			TimeLastEvent = time(&TimeNow) + thisEvent.sec;
+			entryno++;
+		}
+		lock = 1;
+	}
+	else
+	{
+		Sleep(100);
 	}
 	fclose(finput);
 }

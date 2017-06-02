@@ -74,12 +74,11 @@ int main() {
 	lock = 0;
 	mciSendString(TEXT("open ¾¯±¨2.mp3 alias music"), NULL, 0, NULL);
 	HANDLE KeyBoard;
+	SetAndBegin();
 	KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 
-	SetAndBegin();
 	while (AirportState!=OffWork)
 	{
-		lock = 1;
 		AirportOnServe();
 		StateTrans(&thisEvent);
 		StatusOutput();
