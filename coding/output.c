@@ -28,13 +28,22 @@ void WinPrint(Window win);//窗口状态
 /*over*/
 
 //cmd状态输出 1s
-time_t PreCmd; //记录上次输出时间
+//time_t PreCmd; //记录上次输出时间---------------------------------------
+clock_t PreCmd=0; //修改用clock()函数
+clock_t NowCmd=0;
 void StatusOutputCmd() {
-	time(&TimeNow);
+	
+	/*time(&TimeNow);
 	//距上次输出过了1秒  & 机场正在工作  => 继续
-	if (((difftime(TimeNow, PreCmd)) < 1) && (AirportState != OffWork))
+	if (((difftime(TimeNow, PreCmd)) < 2) && (AirportState != OffWork))
+		//return;
+	PreCmd = TimeNow;	//记录时间*/
+
+	NowCmd=clock(); //修改用clock函数，
+	if (((NowCmd - PreCmd) / CLOCKS_PER_SEC) < 1.5 && (AirportState != OffWork))
 		return;
-	PreCmd = TimeNow;	//记录时间
+	PreCmd = NowCmd;
+
 
 	system("CLS");
 	//printf("当前事件：%d", thisEvent.no);/* test */
