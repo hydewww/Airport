@@ -36,59 +36,6 @@ void InitWin(Window* win) //窗口初始化
 	win->NowPas = NULL;
 }
 
-void InitInterface() //欢迎界面
-{
-	printf("\n\n\n\n");
-
-	for (int j = 0; j < 8; j++) {
-		printf(" ");
-	}
-	for (int i = 0; i < 100; i++) {
-		printf("*");
-	}
-		printf("*\n");
-
-	for (int i = 0; i < 20; i++) {
-
-		if (i == 9) {
-			for (int j = 0; j < 8; j++) {
-				printf(" ");
-			}
-			printf("*");
-			for (int j = 0; j < 40; j++) {
-				printf(" ");
-			}
-			printf("欢迎来到DKY48机场！");
-			for (int j = 0; j < 40; j++) {
-				printf(" ");
-			}
-			printf("*\n");
-		}
-		else {
-			for (int j = 0; j < 8; j++) {
-				printf(" ");
-			}
-			printf("*");
-			for (int j = 0; j < 99; j++)
-				printf(" ");
-			printf("*\n");
-		}
-	
-	}
-
-	for (int j = 0; j < 8; j++) {
-		printf(" ");
-	}
-
-	for (int i = 0; i < 100; i++)
-		printf("*");
-	printf("*\n\n\n");
-
-	getchar();
-	system("CLS");
-	while (getchar() != '\n')
-		;
-}
 
 void SetAndBegin() 
 {

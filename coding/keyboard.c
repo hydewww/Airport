@@ -33,7 +33,6 @@ unsigned _stdcall KeyEvent(void * p)
 				thisEvent.type = 'X';
 				thisEvent.check = rand() % 10 + 1;
 				thisEvent.ev_valid = 0;
-				printf("%d号安检口申请休息\n", thisEvent.check);
 				break;
 			case 'v':
 				thisEvent.type = 'V';
@@ -49,7 +48,13 @@ unsigned _stdcall KeyEvent(void * p)
 				_endthreadex(0);
 				return 0;
 				break;
-
+			case 'w':
+				thisEvent.type = 'G';
+				thisEvent.ev_valid = 0;
+				thisEvent.mans = 1;
+				thisEvent.check = 4;
+				printf("一名潜在危险乘客到达\n");
+				break;
 			default:
 				printf("无效输入\n");
 				break;
