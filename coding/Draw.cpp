@@ -62,7 +62,7 @@ void Draw() //ÒÔÏÂÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Ê
 	OdiWin = (Pos*)malloc(sizeof(Pos)*NumOfWin);
 	VipWin=  (Pos*)malloc(sizeof(Pos)*NumOfVIPWin);
 
-	loadimage(&Rimg, _T("C:\\Users\\Mr.Mango\\Desktop\\³Ë¿Í.jpg"), RXlong, RYlong);
+	loadimage(&Rimg, _T("³Ë¿Í.jpg"), RXlong, RYlong);
 
 	initgraph(Xlong, Ylong); //ÉÏÏÂÁô°×100
 	setbkcolor(WHITE);
@@ -100,7 +100,7 @@ void SetWin() //----------------------------------------------------------------
 		DDy = (Dy-CYlong)/2;
 	}
 
-	loadimage(&Cimg, _T("C:\\Users\\Mr.Mango\\Desktop\\°²¼ì¿Ú.jpg"),CXlong ,CYlong);	// ¶ÁÈ¡Í¼Æ¬µ½ img ¶ÔÏóÖÐ
+	loadimage(&Cimg, _T("°²¼ì¿Ú.jpg"),CXlong ,CYlong);	// ¶ÁÈ¡Í¼Æ¬µ½ img ¶ÔÏóÖÐ
 	int i = 0; 
 	int x = 0;
 	int y = y0+DDy;
@@ -125,10 +125,10 @@ void SetButton()
 {
 	BXlong = 130;
 	BYlong = BXlong*BProp;
-	loadimage(&Bimg.Onimg, _T("C:\\Users\\Mr.Mango\\Desktop\\ÉÏ°à.jpg"), BXlong, BYlong);
-	loadimage(&Bimg.Offimg, _T("C:\\Users\\Mr.Mango\\Desktop\\ÏÂ°à.jpg"), BXlong, BYlong);
-	loadimage(&Bimg.Comeimg, _T("C:\\Users\\Mr.Mango\\Desktop\\À´ÈË.jpg"), BXlong, BYlong);
-	loadimage(&Bimg.ComeDownimg, _T("C:\\Users\\Mr.Mango\\Desktop\\À´ÈË2.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.Onimg, _T("ÉÏ°à.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.Offimg, _T("ÏÂ°à.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.Comeimg, _T("À´ÈË.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.ComeDownimg, _T("À´ÈË2.jpg"), BXlong, BYlong);
 
 	Bimg.Come.x = Xlong - 30 - BXlong;
 	Bimg.Come.y = Ylong - 30 - BYlong;
