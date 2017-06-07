@@ -83,4 +83,5 @@ void StateTrans(entry * event);//总控制函数
 void EventOutputFile(char event, int id, int no);//事件发生文件输出
 void StatusOutput();//状态输出（cmd、file）
 void FinalOutput();//下班输出（cmd、file）
+void InitInterface();
 #endif
