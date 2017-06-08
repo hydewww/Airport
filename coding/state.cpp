@@ -33,7 +33,7 @@ void EnQueue(Queue* queue) {
 	p->next = NULL;
 	queue->QueueTail->next = p;//将乘客插入排队缓冲区的队尾
 	queue->QueueTail = p;//队尾指针指向尾乘客
-	EnLineCache++;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进缓冲区Cahce
+
 }
 void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 {
@@ -50,6 +50,7 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 			}
 			OdinWatNum++;//---------------
 			EnQueue(OdinQueue);//-----------------入队
+			EnLineCache++;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进缓冲区Cahce
 			EventOutputFile('G', OdinQueue->SumNum, 0);//事件输出
 		}
 	}
@@ -95,7 +96,10 @@ void PreWinRun(int IsVip) {
 			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
 			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
 			queue->WaitNum--;//排队缓冲区乘客-1
-			EnCheckCache.no[(EnCheckCache.tail++)% CacheNum] = MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
+			if (IsVip) {
+				
+			}
+			EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
 			ResetCheckCache();//^^^^^^^^^^^^^^^^
 			if(IsVip)
 				EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
@@ -335,7 +339,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 			time(&TimeNow);//获取当前时间
 			if (TimeNow >= Win[i].SerTime)//安检完成
 			{
-				CheckOver(&VIPWin[i],i);//---------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+				CheckOver(&VIPWin[i],i+NumOfWin);//---------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 				VIPWin[i].WinState = OpenWin;//状态转换为空闲
 
 			}
@@ -362,7 +366,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= VIPWin[i].SerTime)//安检完成
 				{
-					CheckOver(&VIPWin[i],i);//-----------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+					CheckOver(&VIPWin[i],i + NumOfWin);//-----------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 				}
 
 			}

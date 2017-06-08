@@ -5,7 +5,6 @@
 #include"passenger.h"
 #include"queue.h"
 #include"window.h"
-#include"toy.h"
 
 //机场状态
 #define OffWork 0    //下班

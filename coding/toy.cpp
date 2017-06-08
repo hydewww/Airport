@@ -6,7 +6,8 @@
 #include<time.h>
 int checklock = 0;//------这个lock用安检口是否满人代替
 #define SleepTime 50
-
+#define Odin 0
+#define Vip  1
 
 int  DeltaS =1; //----------------------小格精细程度 一人可分为几个小格
 #define RXlong 20
@@ -137,11 +138,30 @@ void CreateSingleCheckMap(int no) {
 	last[no] = i-1;
 }
 
+void CreateSingleVipMap(int no) {
+	no = no + NumOfWin;
+
+	CheckMap[no] = (Position*)malloc((MaxCustCheck+1)*DeltaS * sizeof(Position));//-------------
+	int NowX = -(RXlong / DeltaS);//-------------------------
+	int NowY = 40  +no*RYlong;//-----------------------
+	int i;
+	for (i = 0; i < (MaxCustCheck + 1)*DeltaS; i++) {
+		NowX += RXlong / DeltaS;
+		CheckMap[no][i].x = NowX;
+		CheckMap[no][i].y = NowY;
+		CheckMap[no][i].Used = 0;
+	}
+	last[no] = i - 1;
+
+}
 void CreateCheckMap() {
-	CheckMap = (Map*)malloc(NumOfWin * sizeof(Map));
-	last = (int*)malloc(NumOfWin * sizeof(int));
+	CheckMap = (Map*)malloc((NumOfWin+NumOfVIPWin) * sizeof(Map));
+	last = (int*)malloc((NumOfWin + NumOfVIPWin) * sizeof(int));
 	for (int i = 0; i < NumOfWin; i++) {
 		CreateSingleCheckMap(i);
+	}
+	for (int i = 0; i < NumOfVIPWin; i++) {
+		CreateSingleVipMap(i);
 	}
 }
 
@@ -149,23 +169,23 @@ void CreateCheckMap() {
 
 //------------------------------------------------------------------------------------------------------GoGOGO
 //移动！
-void MoveRun(Position* New, Position* Old) {
+void MoveRun(Position* New, Position* Old,int IsVip) {
 	setcolor(WHITE);
 	fillellipse(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);
-	putimage(New->x, New->y, &Rimg);
+	putimage(New->x, New->y, IsVip?&VRimg:&Rimg);
 	Old->Used = 0;
 	New->Used = 1;
 }
 
 //准备移动！
-void Move(Map map,int NumOfPos) {
+void Move(Map map,int NumOfPos,int IsVip) {
 	//int NumOfPos = SingleLinePos;
 	int go=0; //看能不能移动
 
 	for (int i = 0; i < NumOfPos; i++) {
 		if (map[i].Used) {	
 			if (go) {	
-				MoveRun(&map[i - 1], &map[i]);	//这里的人能动 红红果我们走!！
+				MoveRun(&map[i - 1], &map[i],IsVip);	//这里的人能动 红红果我们走!！
 			}
 			else {
 				i += DeltaS-1;	//这里的人不能动 是友军 去下个人那里！
@@ -196,19 +216,39 @@ int EnLine() {
 	return 1;
 }
 
+
+int EnVip(int no);
 //去安检口啦！
 int EnCheck(int no) {
-	//处理缓冲区头 看看能不能走
-	//if (checklock && LineMap[0].Used) {			//安检口未满 & 队头有人
-	if (LineMap[0].Used) {			//队头有人
-		MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
-		LineMap[0].Used = 0;
-		CheckMap[no][last[no]].Used = 1;
-		return 1;
+	//普通乘客
+	if (no < NumOfWin) {
+		if (LineMap[0].Used) {			//队头有人
+			MoveRun(&CheckMap[no][last[no]], &LineMap[0],Odin);	//走你
+			LineMap[0].Used = 0;
+			CheckMap[no][last[no]].Used = 1;
+			return 1;
+		}
+		return 0;
 	}
-	return 0;
+	//Vip乘客 没有缓冲区 直接进安检口 操作不太一样
+	else {
+		EnVip(no);
+	}
 }
 
+//Vip乘客 没有缓冲区 直接进安检口 操作不太一样
+int EnVip(int no) {
+	int last = MaxCustCheck;	//最后那个点
+								//判断会不会重叠
+	for (int i = last - DeltaS + 1; i < last; i++) {
+		if (CheckMap[no][i].Used)
+			return 0;
+	}
+
+	putimage(CheckMap[no][last].x, CheckMap[no][last].y, &VRimg);
+	CheckMap[no][last].Used = 1;
+	return 1;
+}
 
 //滚蛋！！！！！
 int DeCheck(int no) {
@@ -237,7 +277,6 @@ void PreEnLine() {
 		if (EnLine())
 			EnLineCache--;
 }
-
 
 void PreEnCheck() {
 	if (EnCheckCache.head != EnCheckCache.tail) {
@@ -282,12 +321,22 @@ void toy() {
 		PreDeCheck();
 		PreMove = NowMove;
 		for (int i = 0; i < NumOfWin; i++) {
-			Move(CheckMap[i], (MinStep + i) * DeltaS);//安检口动
+			Move(CheckMap[i], (MinStep + i) * DeltaS,Odin);//安检口动
+		}
+		for (int i = 0; i < NumOfVIPWin; i++) {
+			Move(CheckMap[i+NumOfWin], (MaxCustCheck + 1) * DeltaS,Vip);//安检口动
 		}
 		PreEnCheck();
-		Move(LineMap, SingleLinePos*MaxLines);//缓冲区动
+		Move(LineMap, SingleLinePos*MaxLines,Odin);//缓冲区动
 		PreEnLine();
 	}
+
+	//调vip用
+	//if (kbhit()) {
+	//	getch();
+	//	EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] =  NumOfWin;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
+	//	ResetCheckCache();//^^^^^^^^^^^^^^^
+	//}
 }
 
 
