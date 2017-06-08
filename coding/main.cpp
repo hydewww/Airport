@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <mmsystem.h>
 #pragma comment(lib,"WINMM.LIB")
-
+#include<conio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "global.h"
@@ -70,6 +70,8 @@ void SetAndBegin()
 
 	AirportState = OnWork;
 	time(&TimeStart);
+
+	SingleLinePos = MaxCustSingleLine * DeltaS;
 }
 
 
@@ -107,16 +109,17 @@ int main() {
 
 	lock = 0;
 	mciSendString(TEXT("open ¾¯±¨2.mp3 alias music"), NULL, 0, NULL);
-	HANDLE KeyBoard;
+	//HANDLE KeyBoard;
 	SetAndBegin();
-	KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
-
+	//KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
+	InitDraw();
 	while (AirportState!=OffWork)
 	{
 		AirportOnServe();
 		StateTrans(&thisEvent);
 		StatusOutput();
 		lock = 0;
+		toy();
 	}
 
 	time(&TimeFinish);
@@ -124,8 +127,8 @@ int main() {
 	{	
 		FinalOutput();
 	}
-	WaitForSingleObject(KeyBoard, INFINITE);
-	CloseHandle(KeyBoard);
+	//WaitForSingleObject(KeyBoard, INFINITE);
+	//CloseHandle(KeyBoard);
 	FreeMem();//ÊÍ·ÅmallocÄÚ´æ
 	system("pause");
 	return 0;

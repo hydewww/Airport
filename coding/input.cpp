@@ -7,7 +7,7 @@
 #include "passenger.h"
 #include "window.h"
 
-#define MaxGapTime 5 //事件的最大发生间隔（以秒为单位）
+#define MaxGapTime 10 //事件的最大发生间隔（以秒为单位）
 #define MaxCrown 20 //一次性最大人数 
 #define MaxVIPCrown 5//一次VIP事件最大人数
 #define pi 3.1415926

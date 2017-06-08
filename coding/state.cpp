@@ -33,7 +33,7 @@ void EnQueue(Queue* queue) {
 	p->next = NULL;
 	queue->QueueTail->next = p;//将乘客插入排队缓冲区的队尾
 	queue->QueueTail = p;//队尾指针指向尾乘客
-
+	EnLineCache++;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进缓冲区Cahce
 }
 void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 {
@@ -62,7 +62,6 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 	}
 }
 /*进入缓冲区*/
-
 
 //缓冲区进安检口
 void PreWinRun(int IsVip) {
@@ -96,6 +95,8 @@ void PreWinRun(int IsVip) {
 			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
 			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
 			queue->WaitNum--;//排队缓冲区乘客-1
+			EnCheckCache.no[(EnCheckCache.tail++)% CacheNum] = MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
+			ResetCheckCache();//^^^^^^^^^^^^^^^^
 			if(IsVip)
 				EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
 			else
@@ -168,7 +169,7 @@ void CheckBegin(Window* win) {
 		win->WinTail = win->WinHead; //让尾和头和同指
 	}
 }
-void CheckOver(Window* win) {
+void CheckOver(Window* win,int no) {
 	if (win->NowPas->State == 4)//安检失败
 	{
 		EventOutputFile('B', win->NowPas->id, 0);//事件输出
@@ -179,6 +180,8 @@ void CheckOver(Window* win) {
 	else
 		EventOutputFile('L', win->NowPas->id, 0);
 
+	DeCheckCache.no[(DeCheckCache.tail++)% CacheNum] = no;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^出安检口Cache
+	ResetCheckCache();
 	free(win->NowPas);//--------------------释放内存
 	win->NowPas = NULL;//设置被安检乘客指针为空
 }
@@ -233,8 +236,8 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			{
 				Win[i].WinState = OpenWin;//状态转换为空闲
 				OdinWatNum--;//排队总人数减一
-				
-				CheckOver(&Win[i]);//------------------
+
+				CheckOver(&Win[i],i);//------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 			}
 			else //安检未结束
@@ -276,7 +279,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				if (TimeNow >= Win[i].SerTime)//安检完成
 
 				{
-					CheckOver(&Win[i]);//-------------
+					CheckOver(&Win[i],i);//-------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 					OdinWatNum--;//排队总人数减一
 				}
 			}
@@ -300,7 +303,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= Win[i].SerTime)//安检完成
 				{
-					CheckOver(&Win[i]);//-------------
+					CheckOver(&Win[i],i);//-------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 					OdinWatNum--;//------------------------------------有人正在安检 这里没减0 0
 				}
 			}
@@ -332,7 +335,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 			time(&TimeNow);//获取当前时间
 			if (TimeNow >= Win[i].SerTime)//安检完成
 			{
-				CheckOver(&VIPWin[i]);//---------------------
+				CheckOver(&VIPWin[i],i);//---------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 				VIPWin[i].WinState = OpenWin;//状态转换为空闲
 
 			}
@@ -359,7 +362,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 				time(&TimeNow);//获取当前时间
 				if (TimeNow >= VIPWin[i].SerTime)//安检完成
 				{
-					CheckOver(&VIPWin[i]);//-----------------
+					CheckOver(&VIPWin[i],i);//-----------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 				}
 
 			}

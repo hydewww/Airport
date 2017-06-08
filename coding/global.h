@@ -5,6 +5,7 @@
 #include"passenger.h"
 #include"queue.h"
 #include"window.h"
+#include"toy.h"
 
 //机场状态
 #define OffWork 0    //下班
@@ -51,6 +52,19 @@ extern int NumOfVIPWin;//VIP安检口数目
 extern time_t TimeStart;//开始时间
 extern time_t TimeFinish;//结束时间 
 extern time_t TimeNow;//现在的时间
+//GUI
+extern int EnLineCache;	//未进入动画的缓冲区乘客
+const int CacheNum = 50; //缓存数
+struct En_Check_Cache {
+	int no[CacheNum];
+	int head;
+	int tail;
+};
+extern struct En_Check_Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
+extern int DeltaS;	//格子精细程度
+extern int SingleLinePos;//每列的格子数
+
+
 
 typedef struct entry 
 {
@@ -84,4 +98,8 @@ void EventOutputFile(char event, int id, int no);//事件发生文件输出
 void StatusOutput();//状态输出（cmd、file）
 void FinalOutput();//下班输出（cmd、file）
 void InitInterface();
+//toy.cpp
+void InitDraw();
+void ResetCheckCache();
+void toy();
 #endif
