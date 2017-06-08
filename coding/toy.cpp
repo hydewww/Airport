@@ -3,120 +3,149 @@
 #include<graphics.h>
 #include<stdlib.h>
 
+int checklock = 0;//------这个lock用安检口是否满人代替
+#define SleepTime 50
 
-int  DeltaS =10; //地图精细程度 1为一次一格 2为一次0.5格
+
+int  DeltaS =1; //----------------------小格精细程度 一人可分为几个小格
 #define RXlong 20
 #define RYlong 20
 IMAGE  Rimg;
 
 
-int checklock=0;
-
 //地图中的每一个小格
 typedef struct Position {
-	int no;
+	//int CheckNo;
 	int x;
 	int y;
 	int Used;
 }Position;
 typedef Position* Map;
 
-//地图中位置数
 
-Map TestMap;
-int NumOfTestMap = 50; //地图中乘客最大人数
-int TestMapPos = NumOfTestMap * DeltaS;
+//----------------------------------------------------------------------------------------------排队缓冲区map
+//extern int MaxCustSingleLine;// 单队列最大等待乘客数
+//extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成
+int MaxCustSingleLine = 10;
+int MaxLines = 5;
+int SingleLinePos = MaxCustSingleLine * DeltaS; //每列的身位
+Map LineMap;
+void CreateLineMap() {
 
-int CustNum = 10;
-int LineNum = 5;
+	LineMap = (Position*)malloc( SingleLinePos * MaxLines * sizeof(Position));
+	if (LineMap==NULL) {
+		exit(1);
+	}
+	int NowX = 160;	//--------------------左上角X
+	int NowY = 40;	//--------------------左上角Y
 
-//建立地图
-//void CreateTestMap() {
-//	
-//	TestMap = (Position*)malloc(TestMapPos *sizeof(Position));
-//	int NowX = 0;
-//	int NowY = 0;
-//	int reverse = 0;
-//
-//	for (int i = 0; i < 5*(10*DeltaS);i++) {
-//		TestMap[i].x = NowX;
-//		TestMap[i].y = NowY;
-//		TestMap[i].no = i;
-//		TestMap[i].Used = 0;
-//		
-//
-//		if ((i+1) % (10*DeltaS) == 0) {
-//			NowY += RYlong;
-//			reverse = !reverse;
-//			continue;
-//		}
-//
-//		if (reverse) {
-//			NowX -= RXlong / DeltaS;
-//		}
-//		else {
-//			NowX += RXlong / DeltaS;
-//		}
-//
-//	}
-//
-//}
-
-
-
-
-void CreateTestMap() {
-
-	TestMap = (Position*)malloc(TestMapPos * sizeof(Position));
-	int NowX = 200;
-	int NowY = 0;
-	int mode = 1;
+	int mode = 1;	
 	int reverse=1;
 
-	for (int i = 0; i < 5 * (CustNum * DeltaS); i++) {
-		TestMap[i].x = NowX;
-		TestMap[i].y = NowY;
-		TestMap[i].no = i;
-		TestMap[i].Used = 0;
-
-
-		if ( (i+DeltaS)  % (CustNum * DeltaS) == 0) {
+	for (int i = 0; i < 5 * SingleLinePos; i++) {
+		//赋初值
+		LineMap[i].x = NowX;
+		LineMap[i].y = NowY;
+		//LineMap[i].CheckNo = i;
+		LineMap[i].Used = 0;
+		//改变模式
+		if ( (i+DeltaS)  % SingleLinePos == 0) {	//拐弯
 			mode = 0;
 		}
-		else if (i  % (CustNum*DeltaS) == 0) {
+		else if (i  % SingleLinePos == 0) {		//直线
 			mode =reverse;
 			reverse = -reverse;
 		}
-
+		//位置变化
 		switch(mode){
-		case -1: NowX -= RXlong / DeltaS; break;
-		case 0: NowY += RYlong / DeltaS; break;
-		case 1:NowX += RXlong / DeltaS; break;
+		case -1: NowY -= RYlong / DeltaS; break;	//向上
+		case 0: NowX += RXlong / DeltaS; break;		//向右
+		case 1:NowY += RYlong / DeltaS; break;		//向下
 		}
-
-	}
-
+	}//end of for
 }
-Position checklast;
-Map CheckMap;
-void CreateCheckMap() {
-	CheckMap = (Position*)malloc(10*DeltaS * sizeof(Position));
+//排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-	int NowX = 0;
-	int NowY = 0;
+//-----------------------------------------------------------------------------------------------安检口map
+//extern int NumOfWin;
+int NumOfWin = 10;
+Map* CheckMap;
+int* last;
+//extern CXlong;
+//extern int MaxCustCheck;
+int CXlong = 300;
+int MaxCustCheck = 5;
 
-	for (int i = 0; i < 10*DeltaS; i++) {
-		CheckMap[i].x = NowX;
-		CheckMap[i].y = NowY;
-		CheckMap[i].no = i;
-		CheckMap[i].Used = 0;
+#define MinStep 12
+
+void CreateSingleCheckMap(int no) {
+	CheckMap[no] = (Position*)malloc((MinStep+no)*DeltaS * sizeof(Position));//--------------
+
+	int NowX = - (RXlong / DeltaS);//-------------------------
+	int NowY = 40+no*RYlong;//-----------------------
+
+	int i=0;
+
+	//setcolor(BLACK);
+	//rectangle(NowX+RXlong, NowY + RYlong, NowX + RXlong + RXlong, NowY + RYlong + RYlong);
+	//向右
+	for (int j = 0; j < (MaxCustCheck+2)*DeltaS; i++,j++) {
 		NowX += RXlong / DeltaS;
+		CheckMap[no][i].x = NowX;
+		CheckMap[no][i].y = NowY;
+		//CheckMap[no][i].CheckNo = i;
+		CheckMap[no][i].Used = 0;
+
 	}
-	checklast = CheckMap[10 * DeltaS -1];
+	//putimage(NowX,NowY, &Rimg);
+
+	//向上
+	for (int j = 0; j < (2+no)*DeltaS; i++, j++) {	
+		NowY -= RYlong / DeltaS;
+		CheckMap[no][i].x = NowX;
+		CheckMap[no][i].y = NowY;
+		//CheckMap[no][i].CheckNo = i;
+		CheckMap[no][i].Used = 0;
+
+	}
+	//putimage(NowX, NowY, &Rimg);
+
+	//向右
+	for (int j = 0; j < 2 * DeltaS; i++, j++) {
+		NowX += RXlong / DeltaS;
+		CheckMap[no][i].x = NowX;
+		CheckMap[no][i].y = NowY;
+		//CheckMap[no][i].CheckNo = i;
+		CheckMap[no][i].Used = 0;
+
+	}
+	//putimage(NowX, NowY, &Rimg);
+
+	//向下
+	for (int j = 0; j <  DeltaS; i++, j++) {
+		NowY += RXlong / DeltaS;
+		CheckMap[no][i].x = NowX;
+		CheckMap[no][i].y = NowY;
+		//CheckMap[no][i].CheckNo = i;
+		CheckMap[no][i].Used = 0;
+
+	}
+	//putimage(NowX, NowY, &Rimg);
+
+	last[no] = i-1;
 }
 
+void CreateCheckMap() {
+	CheckMap = (Map*)malloc(NumOfWin * sizeof(Map));
+	last = (int*)malloc(NumOfWin * sizeof(int));
+	for (int i = 0; i < NumOfWin; i++) {
+		CreateSingleCheckMap(i);
+	}
+}
 
+//安检口map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+//------------------------------------------------------------------------------------------------------GoGOGO
 //移动！
 void MoveRun(Position* New, Position* Old) {
 	setcolor(WHITE);
@@ -126,22 +155,18 @@ void MoveRun(Position* New, Position* Old) {
 	New->Used = 1;
 }
 
-//处理整张地图
-void Move(Map map,Position checklast) {
-	int NumOfPos = TestMapPos;
+//准备移动！
+void Move(Map map,int NumOfPos) {
+	//int NumOfPos = SingleLinePos;
 	int go=0; //看能不能移动
 
-	//处理头
-	if (checklock)
-		MoveRun(&checklast, &map[0]);
-	
 	for (int i = 0; i < NumOfPos; i++) {
 		if (map[i].Used) {	
 			if (go) {	
-				MoveRun(&map[i - 1], &map[i]);	//这里有人+能动 红红果我们走
+				MoveRun(&map[i - 1], &map[i]);	//这里的人能动 红红果我们走!！
 			}
 			else {
-				i += DeltaS-1;	//这里有人？还不能动？去下个人那里！
+				i += DeltaS-1;	//这里的人不能动 是友军 去下个人那里！
 				go = 0;
 			}
 		}
@@ -150,13 +175,16 @@ void Move(Map map,Position checklast) {
 		}
 	}
 }
+//GoGoGo^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-void EnterMap(Map map) {
-	int NumOfPos = TestMapPos;
+//--------------------------------------------------------------------------------------------------------地图状态转化
+//到机场啦！
+void EnterMap(Map map,int NumOfPos) {
+	//int NumOfPos = LineMapPos;
 	int last = NumOfPos - DeltaS ;	//最后那个点
 	
-	//不能重叠
-	for (int i = last - DeltaS + 1; i < last; i++) {
+	//判断会不会重叠
+	for (int i = last - DeltaS + 1; i < last; i++) {	
 		if (map[i].Used)
 			return;
 	}
@@ -165,29 +193,53 @@ void EnterMap(Map map) {
 	map[last].Used = 1;
 }
 
+//去安检口啦！
+void EnCheck(int no) {
+	//处理缓冲区头 看看能不能走
+	if (checklock && LineMap[0].Used) {			//安检口未满 & 队头有人
+		MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
+		LineMap[0].Used = 0;
+		CheckMap[no][last[no]].Used = 1;
+	}
+}
+
+void DeCheck(int no) {
+	CheckMap[no][0].Used = 0;
+}
+//地图状态转化^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 
 
 
 int main() {
-	initgraph(1500, 800);
+	initgraph(1200, 600);
 	loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
 	setbkcolor(WHITE);
 	cleardevice();
-	CreateTestMap();
+	CreateLineMap();
 	CreateCheckMap();
-	//MOUSEMSG m;
 	char c;
 	while (1) {
+		for (int i = 0; i < NumOfWin; i++) {
+			Move(CheckMap[i], (MinStep+i) * DeltaS);//安检口动
+		}
+		//EnCheck(0);						//缓冲区头动
+		Move(LineMap, SingleLinePos*MaxLines);//缓冲区动
 
-		Move(TestMap,checklast);
 		if (kbhit()) {
 			c=getch();
-			if (c == 'l')
-				checklock = !checklock;
+			if(c=='l')
+				checklock = !checklock; 
+			else if (c <= '9'&&c >= '0') {
+				c = c - '0';
+				EnCheck(c);
+			}
 			else
-				EnterMap(TestMap);
+				EnterMap(LineMap, SingleLinePos*MaxLines);
 		}
-		Sleep(50);
+		Sleep(SleepTime);
 	}
 	if (getch());
 }
