@@ -27,7 +27,8 @@ typedef Position* Map;
 //----------------------------------------------------------------------------------------------排队缓冲区map
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
 extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成
-#define Thickness 4	//缓冲区边框粗细
+#define Thickness 6	//缓冲区边框粗细
+#define Middle Thickness/2
 Map LineMap;
 void CreateLineMap() {
 
@@ -42,12 +43,12 @@ void CreateLineMap() {
 	int reverse = 1;
 
 	//画边框
-	setlinestyle(PS_SOLID, Thickness, NULL, 0);
+	setlinestyle(PS_SOLID| PS_ENDCAP_FLAT, Thickness, NULL, 0);
 	setcolor(BLACK);
-	line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
-	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
+	line(NowX+ (Thickness + RXlong), NowY+Middle, NowX + MaxLines*(Thickness + RXlong), NowY+Middle);//最上
+	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Middle, NowX+MaxLines*(Thickness+RXlong)+Thickness, NowY + MaxCustSingleLine*(Thickness + RYlong) + Middle);//最下
 	for (int i = 1; i < MaxLines; i++) {
-		line(NowX + i*(Thickness + RXlong), NowY, NowX+ i*(Thickness + RXlong), NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
+		line(NowX + i*(Thickness + RXlong)+Middle, NowY, NowX+ i*(Thickness + RXlong)+Middle, NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
 	}
 
 	NowX += Thickness;
@@ -66,7 +67,7 @@ void CreateLineMap() {
 			mode = reverse;
 			reverse = -reverse;
 			setcolor(WHITE);
-			line(NowX-Thickness, NowY, NowX-Thickness, NowY + RYlong);
+			line(NowX-Middle, NowY, NowX-Middle, NowY + RYlong);
 		}
 
 		//位置变化
@@ -79,16 +80,16 @@ void CreateLineMap() {
 
 	//画缓冲区入口
 	if(!mode)
-		line(NowX - RXlong-Thickness, NowY-Thickness, NowX - Thickness, NowY-Thickness);
+		line(NowX - RXlong-Thickness, NowY-Middle, NowX, NowY-Middle);
 	else
-		line(NowX-RXlong, NowY - RYlong, NowX - RXlong + RXlong, NowY - RYlong);
+		line(NowX-RXlong-Thickness, NowY + RYlong-Middle, NowX , NowY + RYlong-Middle);
 	
 	//画最左最右
 	setcolor(BLACK);
-	line(NowX, NowY-Thickness, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
+	line(NowX-Middle, NowY-Thickness, NowX-Middle, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
 	NowX = RXlong * 8;	
 	NowY = RYlong * 2;	
-	line(NowX , NowY, NowX , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
+	line(NowX+Middle , NowY, NowX+Middle , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
 }
 //排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -190,7 +191,7 @@ void CreateCheckMap() {
 //移动！
 void MoveRun(Position* New, Position* Old,int IsVip) {
 	setcolor(WHITE);
-	fillellipse(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+	fillrectangle(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
 	putimage(New->x, New->y, IsVip?&VRimg:&Rimg);					
 	Old->Used = 0;
 	New->Used = 1;
