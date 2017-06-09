@@ -14,6 +14,7 @@ IMAGE  Rimg;
 IMAGE VRimg;
 
 
+
 //地图中的每一个小格
 typedef struct Position {
 	int x;
@@ -26,6 +27,7 @@ typedef Position* Map;
 //----------------------------------------------------------------------------------------------排队缓冲区map
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
 extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成
+#define Thickness 4	//缓冲区边框粗细
 Map LineMap;
 void CreateLineMap() {
 
@@ -39,6 +41,17 @@ void CreateLineMap() {
 	int mode = 1;
 	int reverse = 1;
 
+	//画边框
+	setlinestyle(PS_SOLID, Thickness, NULL, 0);
+	setcolor(BLACK);
+	line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
+	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
+	for (int i = 1; i < MaxLines; i++) {
+		line(NowX + i*(Thickness + RXlong), NowY, NowX+ i*(Thickness + RXlong), NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
+	}
+
+	NowX += Thickness;
+	NowY += Thickness;
 	for (int i = 0; i < MaxLines * MaxCustSingleLine; i++) {
 		//赋初值
 		LineMap[i].x = NowX;
@@ -52,15 +65,30 @@ void CreateLineMap() {
 		else if (i  % MaxCustSingleLine == 0) {	//直线
 			mode = reverse;
 			reverse = -reverse;
+			setcolor(WHITE);
+			line(NowX-Thickness, NowY, NowX-Thickness, NowY + RYlong);
 		}
 
 		//位置变化
 		switch (mode) {
-		case -1: NowY -= RYlong; break;		//向上
-		case 0: NowX += RXlong; break;		//向右
-		case 1:NowY += RYlong; break;		//向下
+		case -1: NowY -= (RYlong+Thickness); break;		//向上
+		case 0: NowX += (RXlong+Thickness); break;		//向右
+		case 1:NowY += (RYlong+Thickness); break;		//向下
 		}
 	}//end of for
+
+	//画缓冲区入口
+	if(!mode)
+		line(NowX - RXlong-Thickness, NowY-Thickness, NowX - Thickness, NowY-Thickness);
+	else
+		line(NowX-RXlong, NowY - RYlong, NowX - RXlong + RXlong, NowY - RYlong);
+	
+	//画最左最右
+	setcolor(BLACK);
+	line(NowX, NowY-Thickness, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
+	NowX = RXlong * 8;	
+	NowY = RYlong * 2;	
+	line(NowX , NowY, NowX , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
 }
 //排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
