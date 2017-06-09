@@ -5,13 +5,13 @@
 #include<stdlib.h>
 #include<time.h>
 int checklock = 0;//------这个lock用安检口是否满人代替
-#define SleepTime 50
+#define SleepTime 0
 #define Odin 0
 #define Vip  1
 
 int  DeltaS =1; //----------------------小格精细程度 一人可分为几个小格
-#define RXlong 20
-#define RYlong 20
+#define RXlong 40
+#define RYlong 40
 IMAGE  Rimg;
 IMAGE VRimg;
 
@@ -39,8 +39,8 @@ void CreateLineMap() {
 	if (LineMap==NULL) {
 		exit(1);
 	}
-	int NowX = 160;	//--------------------左上角X
-	int NowY = 40;	//--------------------左上角Y
+	int NowX =RXlong*8;	//--------------------左上角X
+	int NowY =RYlong*2;	//--------------------左上角Y
 
 	int mode = 1;	
 	int reverse=1;
@@ -85,7 +85,7 @@ void CreateSingleCheckMap(int no) {
 	CheckMap[no] = (Position*)malloc((MinStep+no)*DeltaS * sizeof(Position));//--------------
 
 	int NowX = - (RXlong / DeltaS);//-------------------------
-	int NowY = 40+no*RYlong;//-----------------------
+	int NowY = RYlong*2+no*RYlong;//-----------------------
 
 	int i=0;
 
@@ -143,7 +143,7 @@ void CreateSingleVipMap(int no) {
 
 	CheckMap[no] = (Position*)malloc((MaxCustCheck+1)*DeltaS * sizeof(Position));//-------------
 	int NowX = -(RXlong / DeltaS);//-------------------------
-	int NowY = 40  +no*RYlong;//-----------------------
+	int NowY = RYlong*2 +no*RYlong;//-----------------------
 	int i;
 	for (i = 0; i < (MaxCustCheck + 1)*DeltaS; i++) {
 		NowX += RXlong / DeltaS;
@@ -253,7 +253,7 @@ int EnVip(int no) {
 //滚蛋！！！！！
 int DeCheck(int no) {
 	if (CheckMap[no][0].Used) {
-		fillellipse(CheckMap[no][0].x, CheckMap[no][0].y, CheckMap[no][0].x + RXlong, CheckMap[no][0].y + RYlong);
+		fillellipse(CheckMap[no][0].x, CheckMap[no][0].y, CheckMap[no][0].x + RXlong, CheckMap[no][0].y + RYlong);//删除安检完乘客
 		CheckMap[no][0].Used = 0;
 		return 1;
 	}
@@ -331,12 +331,25 @@ void toy() {
 		PreEnLine();
 	}
 
+
+
 	//调vip用
 	//if (kbhit()) {
 	//	getch();
 	//	EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] =  NumOfWin;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
 	//	ResetCheckCache();//^^^^^^^^^^^^^^^
 	//}
+}
+int BeginOK(int i) //到位后才设置时间
+{
+	if (CheckMap[i][1].Used == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 

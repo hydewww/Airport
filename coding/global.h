@@ -101,4 +101,5 @@ void InitInterface();
 void InitDraw();
 void ResetCheckCache();
 void toy();
+int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
 #endif

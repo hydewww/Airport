@@ -96,9 +96,7 @@ void PreWinRun(int IsVip) {
 			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
 			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
 			queue->WaitNum--;//排队缓冲区乘客-1
-			if (IsVip) {
-				
-			}
+
 			EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
 			ResetCheckCache();//^^^^^^^^^^^^^^^^
 			if(IsVip)
@@ -226,6 +224,10 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 		case OpenWin: //安检口处于空闲状态
 			if (Win[i].WinHead->next != NULL)//有人在此安检口排队
 			{
+				if (BeginOK(i)==0)
+				{
+					break;
+				}
 				Win[i].WinState = OnSerWin;//改变安检口状态为正在服务
 				CheckBegin(&Win[i]);//-------------
 			}
@@ -329,6 +331,10 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 		case OpenWin: //安检口处于空闲状态
 			if (VIPWin[i].WinHead->next != NULL)//有人在此安检口排队
 			{
+				if (BeginOK(i+NumOfWin) == 0)
+				{
+					break;
+				}
 				VIPWin[i].WinState = OnSerWin;//改变安检口状态为正在服务
 				CheckBegin(&VIPWin[i]);//--------------------------
 			}
