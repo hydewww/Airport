@@ -70,8 +70,6 @@ void SetAndBegin()
 
 	AirportState = OnWork;
 	time(&TimeStart);
-
-	SingleLinePos = MaxCustSingleLine * DeltaS;
 }
 
 

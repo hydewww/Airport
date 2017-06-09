@@ -54,13 +54,12 @@ extern time_t TimeNow;//现在的时间
 //GUI
 extern int EnLineCache;	//未进入动画的缓冲区乘客
 const int CacheNum = 50; //缓存数
-struct En_Check_Cache {
+typedef struct Cache {
 	int no[CacheNum];
 	int head;
 	int tail;
-};
-extern struct En_Check_Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
-extern int DeltaS;	//格子精细程度
+}Cache;
+extern Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
 extern int SingleLinePos;//每列的格子数
 
 
