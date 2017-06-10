@@ -71,7 +71,7 @@ void CreateLineMap() {
 			mode = reverse;
 			reverse = -reverse;
 			setcolor(WHITE);
-			line(NowX-Thickness, NowY, NowX-Thickness, NowY + RYlong);
+			line(NowX-Thickness+1, NowY-1, NowX-Thickness+1, NowY + RYlong);
 		}
 
 		//λ�ñ仯
