@@ -8,10 +8,11 @@
 #define FlashTime 50
 #define Odin 0
 #define Vip  1
-#define RXlong 30
-#define RYlong 30
+//#define RXlong 30
+//#define RYlong 30
 IMAGE  Rimg;
 IMAGE VRimg;
+IMAGE BACKimg;
 
 
 
@@ -35,8 +36,11 @@ void CreateLineMap() {
 	if (LineMap == NULL) {
 		exit(1);
 	}
-	int NowX = RXlong * 8;	//--------------------左上角X
-	int NowY = RYlong * 2;	//--------------------左上角Y
+	//int NowX = RXlong * 8;	//--------------------左上角X
+	//int NowY = RYlong * 2;	//--------------------左上角Y
+
+	int NowX = OdiWin[0].x +  9* RXlong+0.2*CXlong; 
+	int NowY = OdiWin[0].y + 0.1*CYlong;
 
 	int mode = 1;
 	int reverse = 1;
@@ -45,13 +49,14 @@ void CreateLineMap() {
 	setlinestyle(PS_SOLID, Thickness, NULL, 0);
 	setcolor(BLACK);
 	line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
-	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
+	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong+2), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
 	for (int i = 1; i < MaxLines; i++) {
-		line(NowX + i*(Thickness + RXlong), NowY, NowX+ i*(Thickness + RXlong), NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
+		line(NowX + i*(Thickness + RXlong+2), NowY, NowX+ i*(Thickness + RXlong+2), NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
 	}
 
-	NowX += Thickness;
+	NowX += Thickness/2+1;
 	NowY += Thickness;
+	
 	for (int i = 0; i < MaxLines * MaxCustSingleLine; i++) {
 		//赋初值
 		LineMap[i].x = NowX;
@@ -72,7 +77,7 @@ void CreateLineMap() {
 		//位置变化
 		switch (mode) {
 		case -1: NowY -= (RYlong+Thickness); break;		//向上
-		case 0: NowX += (RXlong+Thickness); break;		//向右
+		case 0: NowX += (RXlong+Thickness+2); break;		//向右
 		case 1:NowY += (RYlong+Thickness); break;		//向下
 		}
 	}//end of for
@@ -86,9 +91,9 @@ void CreateLineMap() {
 	//画最左最右
 	setcolor(BLACK);
 	line(NowX, NowY-Thickness, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
-	NowX = RXlong * 8;	
-	NowY = RYlong * 2;	
-	line(NowX , NowY, NowX , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
+	NowX = OdiWin[0].x  + 9*RXlong + 0.2*CXlong;
+	NowY = OdiWin[0].y + 0.1*CYlong;
+	line(NowX-Thickness , NowY, NowX-Thickness , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
 }
 //排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -97,6 +102,9 @@ extern int NumOfWin;	//安检口数
 extern int NumOfVIPWin;	//vip安检口数
 extern int CXlong;		//安检口宽度
 extern int MaxCustCheck;//安检口最多乘客
+extern int DDy;
+extern int Xlong;
+extern int Ylong;
 
 #define MinStep 12//------------------需要修改
 
@@ -107,8 +115,8 @@ int* last;		//安检口最后一格数组
 void CreateSingleCheckMap(int no) {
 	CheckMap[no] = (Position*)malloc((MinStep + no) * sizeof(Position));
 
-	int NowX = -RXlong;//-------------------------
-	int NowY = RYlong * 2 + no*RYlong;//-----------------------
+	int NowX = OdiWin[no].x + 0.2*CXlong;//-------------------------
+	int NowY = OdiWin[no].y + 0.1*CYlong;//-----------------------
 
 	int i = 0;
 
@@ -126,7 +134,8 @@ void CreateSingleCheckMap(int no) {
 
 	//向上
 	for (int j = 0; j < (2 + no); i++, j++) {
-		NowY -= RYlong;
+		//NowY -= RYlong;
+		NowY -= (CYlong + 2 * DDy);
 		CheckMap[no][i].x = NowX;
 		CheckMap[no][i].y = NowY;
 		CheckMap[no][i].Used = 0;
@@ -144,7 +153,8 @@ void CreateSingleCheckMap(int no) {
 
 	//向下
 	for (int j = 0; j < 1; i++, j++) {
-		NowY += RXlong;
+		//NowY += RXlong;
+		NowY += (CYlong + 2 * DDy);
 		CheckMap[no][i].x = NowX;
 		CheckMap[no][i].y = NowY;
 		CheckMap[no][i].Used = 0;
@@ -159,8 +169,10 @@ void CreateSingleVipMap(int no) {
 	no = no + NumOfWin;
 
 	CheckMap[no] = (Position*)malloc((MaxCustCheck + 1) * sizeof(Position));
-	int NowX = -(RXlong);//-------------------------
-	int NowY = RYlong * 2 + no*RYlong;//-----------------------
+	//int NowX = -(RXlong);//-------------------------
+	//int NowY = RYlong * 2 + no*RYlong;//-----------------------
+	int NowX = VipWin[0].x + 0.2*CXlong;
+	int NowY = VipWin[0].y + 0.1*CYlong;
 	int i;
 	for (i = 0; i < (MaxCustCheck + 1); i++) {
 		NowX += RXlong;
@@ -190,7 +202,8 @@ void CreateCheckMap() {
 //移动！
 void MoveRun(Position* New, Position* Old,int IsVip) {
 	setcolor(WHITE);
-	fillellipse(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+	//fillellipse(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+	putimage(Old->x, Old->y, &BACKimg);
 	putimage(New->x, New->y, IsVip?&VRimg:&Rimg);					
 	Old->Used = 0;
 	New->Used = 1;
@@ -269,7 +282,8 @@ int EnVip(int no) {
 int DeCheck(int no) {
 	if (CheckMap[no][0].Used) {
 		setcolor(WHITE);
-		fillellipse(CheckMap[no][0].x, CheckMap[no][0].y, CheckMap[no][0].x + RXlong, CheckMap[no][0].y + RYlong);	//背景色填充
+		//fillellipse(CheckMap[no][0].x, CheckMap[no][0].y, CheckMap[no][0].x + RXlong, CheckMap[no][0].y + RYlong);	//背景色填充
+		putimage(CheckMap[no][0].x, CheckMap[no][0].y,  &BACKimg);
 		CheckMap[no][0].Used = 0;
 		return 1;
 	}
@@ -326,12 +340,20 @@ void PreDeCheck() {
 
 
 void InitDraw() {
-	initgraph(1200, 600);
-	loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
-	loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
+	initgraph(Xlong, Ylong);
+	//loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
+	//loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
 	setbkcolor(WHITE);
 	cleardevice();
-
+	//安检口图片初始化
+	SetWin();
+	//安检口状态初始化
+	InitState();
+	//按键初始化
+	SetButton();
+	loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
+	loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
+	loadimage(&BACKimg, _T("背景.jpg"), RXlong, RYlong);
 	//地图初始化
 	CreateLineMap();
 	CreateCheckMap();
@@ -352,6 +374,7 @@ void toy() {
 	if ((NowMoveTime - PreMoveTime) > FlashTime) {
 		PreMoveTime = NowMoveTime;	//更新时间
 		PreDeCheck();	//出安检口
+		UpdateState();//安检状态更新
 		for (int i = 0; i < NumOfWin; i++) {
 			Move(CheckMap[i], (MinStep + i),Odin);//普通安检口动
 		}

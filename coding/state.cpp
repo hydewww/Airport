@@ -335,6 +335,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 				{
 					break;
 				}
+				
 				VIPWin[i].WinState = OnSerWin;//改变安检口状态为正在服务
 				CheckBegin(&VIPWin[i]);//--------------------------
 			}
@@ -343,7 +344,7 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 			break;
 		case OnSerWin: //安检口处于正在安检状态
 			time(&TimeNow);//获取当前时间
-			if (TimeNow >= Win[i].SerTime)//安检完成
+			if (TimeNow >= VIPWin[i].SerTime)//安检完成
 			{
 				CheckOver(&VIPWin[i],i+NumOfWin);//---------------------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 				VIPWin[i].WinState = OpenWin;//状态转换为空闲

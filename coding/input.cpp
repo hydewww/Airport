@@ -125,7 +125,7 @@ void AirportOnServe()  //机场在运行状态是按照时间间隔读入时间
 	}
 	else
 	{
-		Sleep(100);
+		Sleep(10);
 	}
 	fclose(finput);
 }

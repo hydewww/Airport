@@ -1,4 +1,5 @@
 #include <windows.h>
+#include<process.h>
 #include <stdio.h>
 #include <mmsystem.h>
 #pragma comment(lib,"WINMM.LIB")
@@ -107,17 +108,18 @@ int main() {
 
 	lock = 0;
 	mciSendString(TEXT("open ¾¯±¨2.mp3 alias music"), NULL, 0, NULL);
-	//HANDLE KeyBoard;
+	HANDLE Mouse;
 	SetAndBegin();
 	//KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 	InitDraw();
+	Mouse=(HANDLE)_beginthreadex(NULL, 0,MouseEvent, NULL, 0, NULL);
 	while (AirportState!=OffWork)
 	{
 		AirportOnServe();
 		StateTrans(&thisEvent);
 		StatusOutput();
-		lock = 0;
 		toy();
+		lock = 0;
 	}
 
 	time(&TimeFinish);
@@ -125,8 +127,8 @@ int main() {
 	{	
 		FinalOutput();
 	}
-	//WaitForSingleObject(KeyBoard, INFINITE);
-	//CloseHandle(KeyBoard);
+	WaitForSingleObject(Mouse, INFINITE);
+	CloseHandle(Mouse);
 	FreeMem();//ÊÍ·ÅmallocÄÚ´æ
 	system("pause");
 	return 0;

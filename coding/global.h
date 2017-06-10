@@ -52,8 +52,13 @@ extern time_t TimeStart;//开始时间
 extern time_t TimeFinish;//结束时间 
 extern time_t TimeNow;//现在的时间
 //GUI
+extern int CXlong; //安检口
+extern int CYlong;
+extern int RXlong;
+extern int RYlong;
 extern int EnLineCache;	//未进入动画的缓冲区乘客
 const int CacheNum = 50; //缓存数
+
 typedef struct Cache {
 	int no[CacheNum];
 	int head;
@@ -61,7 +66,13 @@ typedef struct Cache {
 }Cache;
 extern Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
 extern int SingleLinePos;//每列的格子数
-
+typedef struct Pos //安检口坐标
+{
+	int x;
+	int y;
+}Pos;
+extern Pos *OdiWin;
+extern Pos *VipWin;
 
 
 typedef struct entry 
@@ -101,4 +112,10 @@ void InitDraw();
 void ResetCheckCache();
 void toy();
 int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
+//Draw.cpp
+void SetWin();//初始化安检口图像
+void SetButton(); //初始化按键
+unsigned _stdcall MouseEvent(void* p); //鼠标事件
+void InitState();//安检口状态初始化
+void UpdateState(); //安检口状态变化
 #endif
