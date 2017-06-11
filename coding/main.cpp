@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
+#include <graphics.h>
 #include <mmsystem.h>
 #pragma comment(lib,"WINMM.LIB")
 #include<conio.h>
@@ -10,6 +11,9 @@
 #include "window.h"
 #include "queue.h"
 
+#define BOX_WIDTH 100	//选项盒的宽
+#define BOX_HEGIHT 50	//选项盒的高
+
 Window* Win;
 Window* VIPWin;
 int		WinNum;
@@ -19,6 +23,7 @@ time_t	TimeNow;
 time_t	TimeFinish;
 int		AirportState;
 int		lock = 0;
+int		EventNum;
 Queue*  OdinQueue;
 Queue*  VipQueue;
 
@@ -39,8 +44,8 @@ void InitWin(Window* win) //窗口初始化
 
 void SetAndBegin() 
 {
-	InitInterface();
-	MainPara();
+	//InitInterface();
+	//MainPara();
 	//窗口初始化
 	Win = (Window*)malloc(sizeof(Window)*NumOfWin);
 	VIPWin = (Window*)malloc(sizeof(Window)*NumOfVIPWin);
@@ -103,15 +108,21 @@ void FreeMem() {
 	free(VipQueue);
 }
 
-int main() {
+bool judgeButton(int x, int y, int bx, int by,int width, int height) {
+	if (x >= bx&&x <= bx + width&&y >= by&&y <= by + height)
+		return true;
+	return false;
+}
 
-	lock = 0;
-	mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
-	//HANDLE KeyBoard;
+void BeginServe() {
+
+	TCHAR s[10];
+	InputBox(s, 10, _T("请输入事件个数"));
+	EventNum = _ttoi(s);
+	
 	SetAndBegin();
-	//KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 	InitDraw();
-	while (AirportState!=OffWork)
+	while (AirportState != OffWork)
 	{
 		AirportOnServe();
 		StateTrans(&thisEvent);
@@ -122,12 +133,45 @@ int main() {
 
 	time(&TimeFinish);
 	if (AirportState == OffWork)
-	{	
+	{
 		FinalOutput();
 	}
 	//WaitForSingleObject(KeyBoard, INFINITE);
 	//CloseHandle(KeyBoard);
 	FreeMem();//释放malloc内存
 	system("pause");
+}
+
+
+int main() {
+
+	lock = 0;
+	mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+	ParaData();
+	//HANDLE KeyBoard;
+	InitInter();
+
+	
+	MOUSEMSG msg;
+	while (true) {
+		if (MouseHit())// 当有鼠标消息的时候执行
+		{
+			msg = GetMouseMsg();
+			if (msg.uMsg == WM_LBUTTONDOWN) {
+				if (judgeButton(msg.x, msg.y, 1000, 300, BOX_WIDTH,BOX_HEGIHT)) {		//开始进行安检
+					BeginServe();
+				}
+				if (judgeButton(msg.x, msg.y, 1000, 400, BOX_WIDTH, BOX_HEGIHT)) {		//修改配置文件
+					MainPara();
+				}
+				if (judgeButton(msg.x, msg.y, 1000, 500, BOX_WIDTH, BOX_HEGIHT)) {		//退出程序
+					return 0;
+				}
+			}
+		}
+	}
+
+	//KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
+
 	return 0;
 }

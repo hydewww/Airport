@@ -2,10 +2,14 @@
 #define _GLOBAL_H_
 
 #include<time.h>
+#include <tchar.h> 
 #include"passenger.h"
 #include"queue.h"
 #include"window.h"
 
+
+#define WINDOWS_X  1200 //整个界面的宽
+#define WINDOWS_Y 600  //整个界面的高
 //机场状态
 #define OffWork 0    //下班
 #define OnWork 1     //正在工作
@@ -62,7 +66,7 @@ typedef struct Cache {
 extern Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
 extern int SingleLinePos;//每列的格子数
 
-
+extern int EventNum;
 
 typedef struct entry 
 {
@@ -76,8 +80,8 @@ typedef struct entry
 
 
 //函数声明
-//maintain.c
-int MainPara();//维护配置文件
+////maintain.c
+//int MainPara();//维护配置文件
 //input.c
 unsigned _stdcall KeyEvent(void * p);//-------------------------KEYBOARD
 int InputInt(int* num);
@@ -101,4 +105,11 @@ void InitDraw();
 void ResetCheckCache();
 void toy();
 int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
+//welcome.cpp
+void InitInter();
+bool judgeButton(int x, int y, int bx, int by,int width,int height);
+void drawButton(int x, int y, int width, int height, TCHAR *str);
+//configure.cpp
+int ParaData();
+void MainPara();
 #endif
