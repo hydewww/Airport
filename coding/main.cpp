@@ -23,7 +23,6 @@ time_t	TimeNow;
 time_t	TimeFinish;
 int		AirportState;
 int		lock = 0;
-int		EventNum;
 Queue*  OdinQueue;
 Queue*  VipQueue;
 
@@ -115,10 +114,6 @@ bool judgeButton(int x, int y, int bx, int by,int width, int height) {
 }
 
 void BeginServe() {
-
-	TCHAR s[10];
-	InputBox(s, 10, _T("请输入事件个数"));
-	EventNum = _ttoi(s);
 	
 	SetAndBegin();
 	InitDraw();
@@ -142,23 +137,15 @@ void BeginServe() {
 	system("pause");
 }
 
+int InitInterCheck() {
 
-int main() {
-
-	lock = 0;
-	mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
-	ParaData();
-	//HANDLE KeyBoard;
-	InitInter();
-
-	
 	MOUSEMSG msg;
 	while (true) {
 		if (MouseHit())// 当有鼠标消息的时候执行
 		{
 			msg = GetMouseMsg();
 			if (msg.uMsg == WM_LBUTTONDOWN) {
-				if (judgeButton(msg.x, msg.y, 1000, 300, BOX_WIDTH,BOX_HEGIHT)) {		//开始进行安检
+				if (judgeButton(msg.x, msg.y, 1000, 300, BOX_WIDTH, BOX_HEGIHT)) {		//开始进行安检
 					BeginServe();
 				}
 				if (judgeButton(msg.x, msg.y, 1000, 400, BOX_WIDTH, BOX_HEGIHT)) {		//修改配置文件
@@ -170,6 +157,16 @@ int main() {
 			}
 		}
 	}
+}
+
+int main() {
+
+	lock = 0;
+	mciSendString(TEXT("open 警报2.mp3 alias music"), NULL, 0, NULL);
+	ParaData();
+	//HANDLE KeyBoard;
+	InitInter();
+	InitInterCheck();
 
 	//KeyBoard = (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 

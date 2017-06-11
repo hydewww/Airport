@@ -8,7 +8,7 @@
 #include"window.h"
 
 
-#define WINDOWS_X  1200 //整个界面的宽
+#define WINDOWS_X  1500 //整个界面的宽
 #define WINDOWS_Y 600  //整个界面的高
 //机场状态
 #define OffWork 0    //下班
@@ -112,4 +112,7 @@ void drawButton(int x, int y, int width, int height, TCHAR *str);
 //configure.cpp
 int ParaData();
 void MainPara();
+//main.cpp
+int InitInterCheck();
+void BeginServe();
 #endif
