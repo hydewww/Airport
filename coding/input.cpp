@@ -50,6 +50,10 @@ int InputInt(int* num) {		//正确输入数字的函数
 
 void MainInput() {
 
+	int EventNum;
+	do {
+		printf("输入事件个数：");
+	} while (InputInt(&EventNum));
 	FILE *finput = fopen("input.dat", "wb+");
 	
 	entry* event = (entry*)malloc(EventNum * sizeof(entry));
@@ -121,7 +125,7 @@ void AirportOnServe()  //机场在运行状态是按照时间间隔读入时间
 	}
 	else
 	{
-		Sleep(100);
+		Sleep(10);
 	}
 	fclose(finput);
 }
