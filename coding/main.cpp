@@ -146,6 +146,9 @@ int InitInterCheck() {
 			msg = GetMouseMsg();
 			if (msg.uMsg == WM_LBUTTONDOWN) {
 				if (judgeButton(msg.x, msg.y, 1000, 300, BOX_WIDTH, BOX_HEGIHT)) {		//开始进行安检
+					TCHAR s[10];
+					InputBox(s, 10, _T("请输入事件个数"));
+					EventNum = _ttoi(s);
 					BeginServe();
 				}
 				if (judgeButton(msg.x, msg.y, 1000, 400, BOX_WIDTH, BOX_HEGIHT)) {		//修改配置文件

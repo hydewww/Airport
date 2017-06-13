@@ -230,6 +230,9 @@ void MainPara() {
 					InitInterCheck();
 				}
 				if (judgeButton(msg.x, msg.y, 1350, 500, 100, 50)) {
+					TCHAR s[10];
+					InputBox(s, 10, _T("请输入事件个数"));
+					EventNum = _ttoi(s);
 					closegraph();
 					BeginServe();
 				}

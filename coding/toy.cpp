@@ -346,9 +346,6 @@ void InitDraw() {
 	//loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
 	setbkcolor(WHITE);
 	cleardevice();
-	TCHAR s[10];
-	InputBox(s, 10, _T("请输入事件个数"));
-	EventNum = _ttoi(s);
 	//安检口图片初始化
 	SetWin();
 	//安检口状态初始化
