@@ -9,7 +9,7 @@
 
 
 
-void drawButton(int x, int y,int width,int height ,TCHAR *str) {
+void drawButton(int x, int y,int width,int height ,char *str) {
 
 	LOGFONT f;
 	gettextstyle(&f);                     // 获取当前字体设置

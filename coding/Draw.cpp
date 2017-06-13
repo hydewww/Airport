@@ -2,40 +2,45 @@
 #include <graphics.h>
 #include <conio.h>
 #include<Windows.h>
+#include<process.h>
 #include<stdio.h>
 #include"global.h"
 #include"passenger.h"
 #include"window.h"
 
-#define CProp 0.2305 //°²¼ì¿ÚY±ß/X±ß
+#define CProp 1 //°²¼ì¿ÚY±ß/X±ß
 #define BProp 0.5769 //°´Å¥Y±ß/X±ß
-#define RXlong 30
-#define RYlong 30
-#define Xlong 1300  //ÆÁÄ»µÄXÖá³¤¶Ì  ÏòÓÒÊÇX
-#define Ylong 1000  //ÆÁÄ»µÄYÖá³¤¶Ì ÏòÏÂÊÇY
-
-extern "C" void Draw();
-int AirportState = 0;
-int lock = 0;
-int y0;//Áô°×
+#define SProp 0.5643 //×´Ì¬´°¿ÚY±ß/X±ß
+//#define Xlong 1300  //ÆÁÄ»µÄXÖá³¤¶Ì  ÏòÓÒÊÇX
+//#define Ylong 1000  //ÆÁÄ»µÄYÖá³¤¶Ì ÏòÏÂÊÇY
+//int lock = 0;
+int y00=100;//Áô°×
 int Dy; //
+int DDy;
+int RXlong;
+int RYlong;
+int Xlong=1500;
+int Ylong=800;
+int StateXlong;
+int StateYlong;
 
-typedef struct Pos
-{
-	int x;
-	int y;
-}Pos;
 
 typedef struct ButtonImg {
 	IMAGE Onimg; //ÉÏ°à
 	IMAGE Offimg; //ÏÂ°à
 	IMAGE Comeimg; //À´ÈË°´Å¥
 	IMAGE ComeDownimg; //À´ÈË°´Å¥--°´ÏÂ×´Ì¬
+	IMAGE VIPComeimg;
+	IMAGE VIPComeDownimg;
+	IMAGE DanComeimg;//Î£ÏÕ³Ë¿Íµ½À´
+	IMAGE DanComeDownimg;//Î£ÏÕ³Ë¿Íµ½À´°´ÏÂ
 
 	Pos On;
 	Pos Off;
 	Pos Come;
 	Pos ComeDown;
+	Pos VIPCome;
+	Pos DanCome;
 }ButtonImg;
 
 Pos *OdiWin;
@@ -47,15 +52,26 @@ int BXlong; //°´Å¥
 int BYlong;
 
 IMAGE Cimg; //°²¼ì¿Ú
-IMAGE Rimg; //³Ë¿Í
+//IMAGE Rimg; //³Ë¿Í
 ButtonImg Bimg; //¸÷ÖÖ°´Å¥
 IMAGE BBackimg; //°´Å¥±³¾°
 IMAGE RBackimg; //³Ë¿Í±³¾°
 
+typedef struct Stateimg
+{
+	IMAGE Sclose;
+	IMAGE Spreclose;
+	IMAGE Sopen;
+	IMAGE Sonserve;
+	IMAGE Srest;
+	IMAGE Sprerest;
+};
+
+Stateimg Simg;
 void MouseOK(); //Êó±êÊÂ¼ş¿ÉÒÔ·¢Éú
-void MouseEvent(); //Êó±êÊÂ¼ş
 void SetWin(); //ÉèÖÃ°²¼ì¿Ú
 void SetButton(); //ÉèÖÃ°´Å¥
+/*
 void Draw() //ÒÔÏÂÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Êı£¬µ¥´¿ÓÃÀ´²âÊÔ³õÊ¼»¯°²¼ì¿Ú¹¦ÄÜ£¨Ã»Ïëµ½°Ñ0.0£©
 {
 	MainPara();
@@ -76,19 +92,19 @@ void Draw() //ÒÔÏÂÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Ê
 	closegraph();
 }
 //ÒÔÉÏÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Êı£¬µ¥´¿ÓÃÀ´²âÊÔ³õÊ¼»¯°²¼ì¿Ú¹¦ÄÜ
-
+*/
 void SetWin() //--------------------------------------------------------------------»­°²¼ì¿Ú£¬Ëã×ø±ê£¬×óÉÏ½Ç×ø±ê´æÔÚOdiWin[]ºÍVipWin[]
 {
-
+	OdiWin = (Pos*)malloc(sizeof(Pos)*NumOfWin);
+	VipWin = (Pos*)malloc(sizeof(Pos)*NumOfVIPWin);
 	int x0 = 0;  //Âù¶¨ÒåÒÔÏÂ
-	y0 = 80; //ÉÏÏÂÁô°×80
-	Dy = (Ylong - 2 * y0) / (NumOfWin + NumOfVIPWin); //ÓÃÀ´³õÊ¼»¯»­Í¼µÄ£¬¿ÉÒÔ²»ÓÃ¹Ü
+	y00 = 100; //ÉÏÏÂÁô°×80
+	Dy = (Ylong - 2 * y00) / (NumOfWin + NumOfVIPWin); //ÓÃÀ´³õÊ¼»¯»­Í¼µÄ£¬¿ÉÒÔ²»ÓÃ¹Ü
 
-	int DDy = 0;  //ÓÃÀ´³õÊ¼»¯»­Í¼µÄ,¿ÉÒÔ²»ÓÃ¹Ü
 
 	if ((NumOfWin + NumOfVIPWin) <= 10)
 	{
-		CXlong = 300;
+		CXlong = 62;
 		CYlong = CXlong*CProp;
 		DDy = (Dy - CYlong) / 2;
 
@@ -102,8 +118,8 @@ void SetWin() //----------------------------------------------------------------
 
 	loadimage(&Cimg, _T("°²¼ì¿Ú.jpg"),CXlong ,CYlong);	// ¶ÁÈ¡Í¼Æ¬µ½ img ¶ÔÏóÖĞ
 	int i = 0; 
-	int x = 0;
-	int y = y0+DDy;
+	int x = CYlong/SProp;
+	int y = y00+DDy;
 
 	for (i = 0; i < NumOfWin; i++)
 	{
@@ -119,40 +135,57 @@ void SetWin() //----------------------------------------------------------------
 		putimage(x, y, &Cimg);
 		y = y + 2 * DDy+CYlong;
 	}
+	RYlong = CYlong*0.8; //¸ù¾İ°²¼ì¿Ú´óĞ¡ÉèÖÃ³Ë¿Í´óĞ¡
+	RXlong = RYlong;
 
 }//--------------------------------------------------------------------»­°²¼ì¿Ú£¬Ëã×ø±ê£¬×óÉÏ½Ç×ø±ê´æÔÚOdiWin[]ºÍVipWin[]
+
 void SetButton()
 {
-	BXlong = 130;
+	BXlong = 120;
 	BYlong = BXlong*BProp;
 	loadimage(&Bimg.Onimg, _T("ÉÏ°à.jpg"), BXlong, BYlong);
 	loadimage(&Bimg.Offimg, _T("ÏÂ°à.jpg"), BXlong, BYlong);
 	loadimage(&Bimg.Comeimg, _T("À´ÈË.jpg"), BXlong, BYlong);
 	loadimage(&Bimg.ComeDownimg, _T("À´ÈË2.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.VIPComeimg, _T("À´VIP.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.VIPComeDownimg, _T("À´VIP2.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.DanComeimg, _T("À´Î£ÏÕ³Ë¿Í.jpg"), BXlong, BYlong);
+	loadimage(&Bimg.DanComeDownimg, _T("À´Î£ÏÕ³Ë¿Í2.jpg"), BXlong, BYlong);
 
 	Bimg.Come.x = Xlong - 30 - BXlong;
 	Bimg.Come.y = Ylong - 30 - BYlong;
 	Bimg.ComeDown.x = Xlong - 30 - BXlong;
 	Bimg.ComeDown.y = Ylong - 30 - BYlong;
 
+	Bimg.VIPCome.x= Xlong - 30 - BXlong;
+	Bimg.VIPCome.y = Bimg.Come.y - 10 - BYlong;
+
+	Bimg.DanCome.x= Xlong - 30 - BXlong;
+	Bimg.DanCome.y = Bimg.VIPCome.y - 10 - BYlong;
+
 	Bimg.On.x = Xlong - 30 - BXlong;
-	Bimg.On.y= Ylong - 30*2 - BYlong*2;
+	Bimg.On.y = Bimg.DanCome.y - 10 - BYlong;
 	Bimg.Off.x = Xlong - 30 - BXlong;
-	Bimg.Off.y = Ylong - 30 * 2 - BYlong * 2;
+	Bimg.Off.y = Bimg.DanCome.y - 10 - BYlong;
 
 	getimage(&BBackimg, Bimg.On.x, Bimg.On.y, BXlong, BYlong); //È¡±³¾°£¬ÎªÁËÖ®ºóµÄ¸²¸Ç¸üĞÂ
 
 	putimage(Bimg.Come.x, Bimg.Come.y, &Bimg.Comeimg);
-	putimage(Bimg.On.x, Bimg.On.y, &Bimg.Onimg);
+	putimage(Bimg.Off.x, Bimg.Off.y, &Bimg.Offimg);
+	putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &Bimg.VIPComeimg);
+	putimage(Bimg.DanCome.x, Bimg.DanCome.y, &Bimg.DanComeimg);
 
 }
-void MouseEvent()
+
+
+unsigned _stdcall MouseEvent(void *p)
 {
 	int x = 0;
 	int y = 0;
 	int n = 0;
 	MOUSEMSG m;
-	while(1/*AirportState!=OffWork*/)
+	while(AirportState != OffWork&&AirportState != ShutDown)
 	{
 		if (MouseHit())
 		{
@@ -166,31 +199,40 @@ void MouseEvent()
 					{
 						putimage(Bimg.Off.x, Bimg.Off.y, &BBackimg); //»¹Ô­±³¾°
 						putimage(Bimg.Off.x, Bimg.Off.y, &Bimg.Offimg);
-						/*
+						
 						MouseOK(); //Í¼»­½çÃæË²Ê±ÏàÓ¦£¬ÄÚ²¿ÓĞÑÓ³Ù
-						*/
-						AirportState = OnWork;
+						
+						thisEvent.type = 'Q';
+						thisEvent.ev_valid = 0;
+						_endthreadex(0);
+						return 0;
 					}
 					else if (AirportState == OnWork)
 					{
 						putimage(Bimg.Off.x, Bimg.Off.y, &BBackimg); //»¹Ô­±³¾°
 						putimage(Bimg.Off.x, Bimg.Off.y, &Bimg.Onimg);
-						/*
+						
 						MouseOK(); //Í¼»­½çÃæË²Ê±ÏàÓ¦£¬ÄÚ²¿ÓĞÑÓ³Ù
-						*/
-						AirportState == ShutDown;
+						
+						thisEvent.type = 'Q';
+						thisEvent.ev_valid = 0;
+						_endthreadex(0);
+						return 0;
 					}
 				}
 				else if (m.x >= Bimg.Come.x&&m.x <= (Bimg.Come.x + BXlong) && m.y >= Bimg.Come.y&&m.y <= (Bimg.Come.y + BYlong)) //À´³Ë¿Í°´Å¥
 				{
 					putimage(Bimg.Come.x, Bimg.Come.y, &BBackimg); //»¹Ô­±³¾°
-					putimage(Bimg.Come.x, Bimg.Come.y, &Bimg.ComeDownimg);
-					/*
-						thisEvent.type = 'G';
-						thisEvent.mans = 1;
-						thisEvent.check = 0;
-						thisEvent.ev_valid = 0;
-					*/
+					putimage(Bimg.Come.x, Bimg.Come.y, &Bimg.ComeDownimg);	
+					
+					MouseOK();
+
+					//·¢ÉúÊÂ¼ş
+					thisEvent.type = 'G';
+					thisEvent.mans = 1;
+					thisEvent.check = 0;
+					thisEvent.ev_valid = 0;
+					
 					while (1)
 					{
 						m = GetMouseMsg();
@@ -204,24 +246,141 @@ void MouseEvent()
 				}
 				else if (m.x >= OdiWin[0].x&&m.x <= (OdiWin[0].x + CXlong) && m.y >= OdiWin[0].y&&m.y <= (VipWin[NumOfVIPWin - 1].y + CYlong)) //°²¼ì¿ÚĞİÏ¢
 				{
-					/*
-					MouseOK(); //Í¼»­½çÃæË²Ê±ÏàÓ¦£¬ÄÚ²¿ÓĞÑÓ³Ù
-					*/
-					/*
-					thisEvent.type = 'X';
-					thisEvent.check = ;
-					thisEvent.ev_valid = 0;
-					*/
-					n= ((m.y - y0) / Dy + 1);
-					putimage(OdiWin[n - 1].x + 100, OdiWin[n - 1].y+15 , &Rimg);
-
 					
+					MouseOK(); //Í¼»­½çÃæË²Ê±ÏàÓ¦£¬ÄÚ²¿ÓĞÑÓ³Ù
+					n = ((m.y - y00) / Dy + 1);
+					
+					thisEvent.type = 'X';
+					thisEvent.check = n; //Ëã³öĞİÏ¢µÄ°²¼ì¿Ú
+					thisEvent.ev_valid = 0;
+					
+					//putimage(OdiWin[n - 1].x + 100, OdiWin[n - 1].y+15 , &Bimg.Comeimg);	
+				}
+				else if (m.x >= Bimg.VIPCome.x&&m.x <= (Bimg.VIPCome.x + BXlong) && m.y >= Bimg.VIPCome.y&&m.y <= (Bimg.VIPCome.y + BYlong))//À´VIP
+				{
+					putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &BBackimg); //»¹Ô­±³¾°
+					putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &Bimg.VIPComeDownimg);
 
+					MouseOK();
+
+					//·¢ÉúÊÂ¼ş
+					thisEvent.type = 'V';
+					thisEvent.mans = 1;
+					thisEvent.check = 0;
+					thisEvent.ev_valid = 0;
+
+					while (1)
+					{
+						m = GetMouseMsg();
+						if (m.uMsg == WM_LBUTTONUP)
+						{
+							putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &BBackimg); //»¹Ô­±³¾°
+							putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &Bimg.VIPComeimg);
+							break;
+						}
+					}
+				}
+				else if (m.x >= Bimg.DanCome.x&&m.x <= (Bimg.DanCome.x + BXlong) && m.y >= Bimg.DanCome.y&&m.y <= (Bimg.DanCome.y + BYlong)) //À´Î£ÏÕ³Ë¿Í
+				{
+					putimage(Bimg.DanCome.x, Bimg.DanCome.y, &BBackimg); //»¹Ô­±³¾°
+					putimage(Bimg.DanCome.x, Bimg.DanCome.y, &Bimg.DanComeDownimg);
+
+					MouseOK();
+
+					//·¢ÉúÊÂ¼ş
+					thisEvent.type = 'G';
+					thisEvent.mans = 1;
+					thisEvent.check = 4;
+					thisEvent.ev_valid = 0;
+
+					while (1)
+					{
+						m = GetMouseMsg();
+						if (m.uMsg == WM_LBUTTONUP)
+						{
+							putimage(Bimg.DanCome.x, Bimg.DanCome.y, &BBackimg); //»¹Ô­±³¾°
+							putimage(Bimg.DanCome.x, Bimg.DanCome.y, &Bimg.DanComeimg);
+							break;
+						}
+					}
 				}
 			}//if(Êó±êÓĞ°´ÏÂ£©
 		}//if(Êó±êÓĞ×´Ì¬±ä»¯)
 	}//while(AirportState!=Offwork)
+	_endthreadex(0);
+	return 0;
 }
+
+void InitState()
+{
+	StateYlong = CYlong;
+	StateXlong = StateYlong / SProp;
+	loadimage(&Simg.Sclose, _T("¹Ø±Õ.jpg"), StateXlong, StateYlong);
+	loadimage(&Simg.Spreclose, _T("×¼±¸¹Ø±Õ.jpg"), StateXlong, StateYlong);
+	loadimage(&Simg.Sopen, _T("¿ÕÏĞ.jpg"), StateXlong, StateYlong);
+	loadimage(&Simg.Sonserve, _T("·şÎñÖĞ.jpg"), StateXlong, StateYlong);
+	loadimage(&Simg.Srest, _T("ĞİÏ¢ÖĞ.jpg"), StateXlong, StateYlong);
+	loadimage(&Simg.Sprerest, _T("×¼±¸ĞİÏ¢.jpg"), StateXlong, StateYlong);
+
+	for (int i = 0; i < NumOfWin; i++)
+	{
+		putimage(0, OdiWin[i].y,&Simg.Sclose);
+	}
+	for (int i = 0; i < NumOfVIPWin; i++)
+	{
+		putimage(0, VipWin[i].y, &Simg.Sclose);
+	}
+	
+}
+
+void UpdateState()
+{
+	int i = 0;
+	for (i = 0; i < NumOfWin; i++)
+	{
+		switch (Win[i].WinState)
+		{
+		case CloseWin:
+			putimage(0, OdiWin[i].y, &Simg.Sclose);
+			break;
+		case ReadyClosWin:
+			putimage(0, OdiWin[i].y, &Simg.Spreclose);
+			break;
+		case OpenWin:
+			putimage(0, OdiWin[i].y, &Simg.Sopen);
+			break;
+		case OnSerWin:
+			putimage(0, OdiWin[i].y, &Simg.Sonserve);
+			break;
+		case RestWin:
+			putimage(0, OdiWin[i].y, &Simg.Srest);
+			break;
+		case ReadyRestWin:
+			putimage(0, OdiWin[i].y, &Simg.Sprerest);
+			break;
+		}
+	}
+	for (i = 0; i < NumOfVIPWin; i++)
+	{
+		switch (VIPWin[i].WinState)
+		{
+		case CloseWin:
+			putimage(0, VipWin[i].y, &Simg.Sclose);
+			break;
+		case ReadyClosWin:
+			putimage(0, VipWin[i].y, &Simg.Spreclose);
+			break;
+		case OpenWin:
+			putimage(0, VipWin[i].y, &Simg.Sopen);
+			break;
+		case OnSerWin:
+			putimage(0, VipWin[i].y, &Simg.Sonserve);
+			break;
+		}
+	}
+}
+
+
 
 void MouseOK()
 {
@@ -231,51 +390,3 @@ void MouseOK()
 	}
 	lock = 1;
 }
-//Ê®·Ö´ÖÂÔ´ó¸Å²»¿¿Æ×µÄË¼Â·Ä£°å1.0
-/*
-{
-	While(Î´ÏÂ°à£©------------------------------------------------------------×ÜÑ­»·£¬
-	{
-		//ÎªÁË·ÀÖ¹²¿·ÖÊÂ¼ş·¢ÉúÌ«¿ì¶¯»­À´²»¼°»­£¬½«»­Í¼ÊÂ¼ş´æÔÚÒ»¸öÑ­»·¶ÓÁĞÖĞ£¨²»¸ãÁ´±íÁË£¬Ì«ÀÛÁË£¬£©
-		typedef struct DrawEvent{
-		 char Dtype£» // ÀàĞÍ
-		 int  mans£»  //ÈËÊı
-		 int  WinID£» //°²¼ì¿ÚID
-		 int OldorNew£» // ·ÀÖ¹²¿·ÖÊÂ¼ş¼ä¸ôÌ«³¤ÖØ¸´¶ÁÈ¡
-		} DrawEvent;
-
-		Ñ¡ÔñÒª»­µÄÀàĞÍ£¨³Ë¿Í½øÈëÅÅ¶Ó»º³åÇø£¬´ÓÅÅ¶Ó»º³åÇø½øÈë°²¼ì¿Ú£¬´Ó°²¼ì¿Ú°²¼ìÍê±Ï½øÈëºò»úÌü£©------------»­Í¼£¬Ò»ÖÖÊÂ¼şÄÜÍ¬Ê±ÈÃ¶àÎ»³Ë¿ÍÒ»Æğ¶¯
-		{
-			1.(³Ë¿Í´Ó´óÃÅ½øÈëÅÅ¶Ó»º³åÇø)
-			{
-				
-			}
-			2.£¨´ÓÅÅ¶Ó»º³åÇø½øÈë°²¼ì¿Ú,Í¬Ê±¸üĞÂÅÅ¶Ó»º³åÇø¶ÓÎé£©
-			{
-
-			}
-			3.£¨´Ó°²¼ì¿Ú°²¼ìÍê±Ï½øÈëºò»úÌü£¬Í¬Ê±¸üĞÂ°²¼ì¿Ú¶ÓÎé£©
-			{
-
-			}
-			4.(°²¼ìÊ§°Ü£¬Í¬Ê±¸üĞÂ°²¼ì¿Ú¶ÓÎé)
-			{
-
-			}
-			5.£¨ÎŞÒª»­£©
-			{
-
-			}
-		}
-
-		¼ì²âÊó±êÊÂ¼ş£¨ÏÂ°à£¬À´³Ë¿Í£¬ĞİÏ¢µÈ£©---------------------------------------------Êó±êÊÂ¼ş
-		{
-			´¦ÀíÏà¹ØÊÂ¼ş---------Í¬¼üÅÌÊäÈë
-		}
-	}
-
-}
-
-
-
-*/

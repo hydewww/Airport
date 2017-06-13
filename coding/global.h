@@ -2,14 +2,13 @@
 #define _GLOBAL_H_
 
 #include<time.h>
-#include <tchar.h> 
 #include"passenger.h"
 #include"queue.h"
 #include"window.h"
 
+#define WINDOWS_X 1500 
+#define WINDOWS_Y 600
 
-#define WINDOWS_X  1500 //整个界面的宽
-#define WINDOWS_Y 600  //整个界面的高
 //机场状态
 #define OffWork 0    //下班
 #define OnWork 1     //正在工作
@@ -25,6 +24,7 @@
 //全局变量声明
 extern int AirportState;//机场状态
 
+extern int EventNum;
 extern int OdinPas;//当前普通乘客总人数
 extern int OdinWaitNum;//当前总乘客等待人数
 
@@ -56,8 +56,13 @@ extern time_t TimeStart;//开始时间
 extern time_t TimeFinish;//结束时间 
 extern time_t TimeNow;//现在的时间
 //GUI
+extern int CXlong; //安检口
+extern int CYlong;
+extern int RXlong;
+extern int RYlong;
 extern int EnLineCache;	//未进入动画的缓冲区乘客
 const int CacheNum = 50; //缓存数
+
 typedef struct Cache {
 	int no[CacheNum];
 	int head;
@@ -65,8 +70,14 @@ typedef struct Cache {
 }Cache;
 extern Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
 extern int SingleLinePos;//每列的格子数
+typedef struct Pos //安检口坐标
+{
+	int x;
+	int y;
+}Pos;
+extern Pos *OdiWin;
+extern Pos *VipWin;
 
-extern int EventNum;
 
 typedef struct entry 
 {
@@ -80,7 +91,7 @@ typedef struct entry
 
 
 //函数声明
-////maintain.c
+//maintain.c
 //int MainPara();//维护配置文件
 //input.c
 unsigned _stdcall KeyEvent(void * p);//-------------------------KEYBOARD
@@ -105,10 +116,16 @@ void InitDraw();
 void ResetCheckCache();
 void toy();
 int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
+//Draw.cpp
+void SetWin();//初始化安检口图像
+void SetButton(); //初始化按键
+unsigned _stdcall MouseEvent(void* p); //鼠标事件
+void InitState();//安检口状态初始化
+void UpdateState(); //安检口状态变化
 //welcome.cpp
 void InitInter();
 bool judgeButton(int x, int y, int bx, int by,int width,int height);
-void drawButton(int x, int y, int width, int height, TCHAR *str);
+void drawButton(int x, int y, int width, int height, char *str);
 //configure.cpp
 int ParaData();
 void MainPara();
