@@ -4,7 +4,6 @@
 #include<graphics.h>
 #include<stdlib.h>
 #include<time.h>
-
 #define FlashTime 50
 #define Odin 0
 #define Vip  1
@@ -14,8 +13,7 @@ IMAGE  Rimg;
 IMAGE VRimg;
 IMAGE BACKimg;
 
-int		EventNum;
-
+int EventNum;
 
 //地图中的每一个小格
 typedef struct Position {
@@ -51,6 +49,8 @@ void CreateLineMap() {
 	setcolor(BLACK);
 	line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
 	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong+2), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
+		
+
 	for (int i = 1; i < MaxLines; i++) {
 		line(NowX + i*(Thickness + RXlong+2), NowY, NowX+ i*(Thickness + RXlong+2), NowY+ MaxCustSingleLine*(Thickness + RYlong));//中间
 	}
@@ -92,6 +92,7 @@ void CreateLineMap() {
 	//画最左最右
 	setcolor(BLACK);
 	line(NowX, NowY-Thickness, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
+
 	NowX = OdiWin[0].x  + 9*RXlong + 0.2*CXlong;
 	NowY = OdiWin[0].y + 0.1*CYlong;
 	line(NowX-Thickness , NowY, NowX-Thickness , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
@@ -107,7 +108,7 @@ extern int DDy;
 extern int Xlong;
 extern int Ylong;
 
-#define MinStep 12//------------------需要修改
+#define MinStep 10//------------------需要修改
 
 Map* CheckMap;	//安检口map数组
 int* last;		//安检口最后一格数组 
@@ -115,7 +116,9 @@ int* last;		//安检口最后一格数组
 //普通安检口map
 void CreateSingleCheckMap(int no) {
 	CheckMap[no] = (Position*)malloc((MinStep + no) * sizeof(Position));
-
+	if (CheckMap[no] == NULL) {
+		exit(1);
+	}
 	int NowX = OdiWin[no].x + 0.2*CXlong;//-------------------------
 	int NowY = OdiWin[no].y + 0.1*CYlong;//-----------------------
 
@@ -134,7 +137,7 @@ void CreateSingleCheckMap(int no) {
 	//putimage(NowX,NowY, &Rimg);
 
 	//向上
-	for (int j = 0; j < (2 + no); i++, j++) {
+	for (int j = 0; j < (1 + no); i++, j++) {
 		//NowY -= RYlong;
 		NowY -= (CYlong + 2 * DDy);
 		CheckMap[no][i].x = NowX;
@@ -153,13 +156,13 @@ void CreateSingleCheckMap(int no) {
 	//putimage(NowX, NowY, &Rimg);
 
 	//向下
-	for (int j = 0; j < 1; i++, j++) {
-		//NowY += RXlong;
-		NowY += (CYlong + 2 * DDy);
-		CheckMap[no][i].x = NowX;
-		CheckMap[no][i].y = NowY;
-		CheckMap[no][i].Used = 0;
-	}
+	//for (int j = 0; j < 0; i++, j++) {
+	//	//NowY += RXlong;
+	//	NowY += (CYlong + 2 * DDy);
+	//	CheckMap[no][i].x = NowX;
+	//	CheckMap[no][i].y = NowY;
+	//	CheckMap[no][i].Used = 0;
+	//}
 	//putimage(NowX, NowY, &Rimg);
 
 	last[no] = i - 1;
@@ -182,8 +185,8 @@ void CreateSingleVipMap(int no) {
 		CheckMap[no][i].Used = 0;
 	}
 	last[no] = i - 1;
-
 }
+
 void CreateCheckMap() {
 	CheckMap = (Map*)malloc((NumOfWin + NumOfVIPWin) * sizeof(Map));
 	last = (int*)malloc((NumOfWin + NumOfVIPWin) * sizeof(int));
@@ -201,11 +204,13 @@ void CreateCheckMap() {
 
 //------------------------------------------------------------------------------------------------------GoGOGO
 //移动！
-void MoveRun(Position* New, Position* Old,int IsVip) {
-	setcolor(WHITE);
-	//fillellipse(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+void MoveRun(Position* New, Position* Old, int IsVip) {
+	//setcolor(WHITE);
+	//fillrectangle(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+	IMAGE MoveImg;
+	getimage(&MoveImg, Old->x, Old->y, RXlong, RYlong);
 	putimage(Old->x, Old->y, &BACKimg);
-	putimage(New->x, New->y, IsVip?&VRimg:&Rimg);					
+	putimage(New->x, New->y, &MoveImg);
 	Old->Used = 0;
 	New->Used = 1;
 }
@@ -369,11 +374,13 @@ void InitDraw() {
 clock_t PreMoveTime;
 clock_t NowMoveTime;
 //动起来吧！
+
 void toy() {
 	NowMoveTime = clock();
 	//这里顺序不能变！！！ 有玄学的奥秘！！！
 	if ((NowMoveTime - PreMoveTime) > FlashTime) {
 		PreMoveTime = NowMoveTime;	//更新时间
+
 		PreDeCheck();	//出安检口
 		UpdateState();//安检状态更新
 		for (int i = 0; i < NumOfWin; i++) {
