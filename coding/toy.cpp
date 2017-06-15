@@ -4,7 +4,7 @@
 #include<graphics.h>
 #include<stdlib.h>
 #include<time.h>
-#define FlashTime 100
+#define FlashTime 50
 #define Odin 0
 #define Vip  1
 //#define RXlong 30
@@ -238,16 +238,19 @@ void Move(Map map,int NumOfPos,int IsVip) {
 
 //--------------------------------------------------------------------------------------------------------地图状态转化
 //到机场啦！
+extern void ShowID(int id, int x, int y);//新增显示ID函数
 int EnLine() {
 	int NumOfPos = MaxCustSingleLine*MaxLines;
 	int last = NumOfPos - 1 ;	//最后那个点
-	
+	static int id = 0;
 	//判断会不会重叠
 	if (LineMap[last].Used)
 		return 0;
+	id++;
 
 	putimage(LineMap[last].x, LineMap[last].y, &Rimg);
 	LineMap[last].Used = 1;
+	ShowID(id, LineMap[last].x, LineMap[last].y);
 	return 1;
 }
 
@@ -274,13 +277,14 @@ int EnCheck(int no) {
 //Vip乘客 没有缓冲区 直接进安检口 操作不太一样
 int EnVip(int no) {
 	int last = MaxCustCheck;	//最后那个点
-
+	static int Vipid = 0;
 	//判断会不会重叠
 	if (CheckMap[no][last].Used)
 		return 0;
-
+	Vipid++;
 	putimage(CheckMap[no][last].x, CheckMap[no][last].y, &VRimg);
 	CheckMap[no][last].Used = 1;
+	ShowID(Vipid, CheckMap[no][last].x, CheckMap[no][last].y);
 	return 1;
 }
 
@@ -368,9 +372,9 @@ void InitDraw() {
 	EnLineCache = 0;
 	EnCheckCache.head = EnCheckCache.tail = 0;
 	DeCheckCache.head = DeCheckCache.tail = 0;
-
-	//StarClock初始化
+	StarClock();
 	InitStar();
+
 }
 
 clock_t PreMoveTime;
@@ -382,7 +386,6 @@ void toy() {
 	//这里顺序不能变！！！ 有玄学的奥秘！！！
 	if ((NowMoveTime - PreMoveTime) > FlashTime) {
 		PreMoveTime = NowMoveTime;	//更新时间
-
 		StarClock();
 		PreDeCheck();	//出安检口
 		UpdateState();//安检状态更新

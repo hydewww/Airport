@@ -380,6 +380,32 @@ void UpdateState()
 	}
 }
 
+void ShowID(int id,int x,int y)
+{
+	TCHAR ID[5];
+	//settextcolor(BLACK);
+	//outtextxy(40, 40, ID);
+	int i = 0;
+	int ii = 0;
+	char temp;
+	for (i = 0; id > 0; id /= 10, i++)
+	{
+		ID[i] = (id % 10) + '0';
+	}
+	ID[i] = '\0';
+	i--;
+	for (ii = 0; i>ii; i--, ii++)
+	{
+		temp = ID[ii];
+		ID[ii] = ID[i];
+		ID[i] = temp;
+	}
+	settextcolor(BLACK);
+	setbkmode(TRANSPARENT);
+	outtextxy(x + 0.3*RXlong, y + 0.3*RYlong, ID);
+
+}
+
 
 
 void MouseOK()
