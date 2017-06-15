@@ -30,15 +30,24 @@ extern int OdinWaitNum;//当前总乘客等待人数
 
 extern int lock; //同步锁
 extern struct entry thisEvent;
-extern struct Window *Win;
-extern struct Window *VIPWin;
-extern Queue* OdinQueue;
-extern Queue* VipQueue;
+
+typedef struct entry
+{
+	int  no; //事件序号
+	int  sec;//事件发生时间间隔
+	char type;//事件类型：C-乘客到达，V-VIP乘客到达，X-安检口申请暂停，Q-下班；
+	int  mans; //事件属性1-到达人数
+	int  check; //事件属性2-申请休息的安检口编号 
+	int  ev_valid; //事件是否被读取
+}entry;
+
 //排队缓冲区
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
 extern int MaxLines;// 蛇形缓冲区最多由MaxLines个直队组成
 extern int MaxSeqLen;// 最大允许等待长度
 extern int EasySeqLen;// 短期等待长度
+extern Queue* OdinQueue;
+extern Queue* VipQueue;
 //安检口
 extern int NumOfWin;//安检口总数目
 extern int WinNum;//普通安检口工作数目
@@ -51,14 +60,18 @@ extern int MinSec;// 安检口最小安检时长 单位是秒
 extern int MinRestSec;//安检口口最小休息时长
 extern int MaxRestSec;//安检口最大休息时长
 extern int NumOfVIPWin;//VIP安检口数目
+extern struct Window *Win;
+extern struct Window *VIPWin;
 //时间
 extern time_t TimeStart;//开始时间
 extern time_t TimeFinish;//结束时间 
 extern time_t TimeNow;//现在的时间
 //GUI
-extern int CXlong; //安检口
+extern int Xlong;	//窗口大小
+extern int Ylong;
+extern int CXlong;	//安检口
 extern int CYlong;
-extern int RXlong;
+extern int RXlong;	//乘客大小
 extern int RYlong;
 extern int EnLineCache;	//未进入动画的缓冲区乘客
 const int CacheNum = 50; //缓存数
@@ -77,17 +90,6 @@ typedef struct Pos //安检口坐标
 }Pos;
 extern Pos *OdiWin;
 extern Pos *VipWin;
-
-
-typedef struct entry 
-{
-	int  no; //事件序号
-	int  sec;//事件发生时间间隔
-	char type;//事件类型：C-乘客到达，V-VIP乘客到达，X-安检口申请暂停，Q-下班；
-	int  mans; //事件属性1-到达人数
-	int  check; //事件属性2-申请休息的安检口编号 
-	int  ev_valid; //事件是否被读取
-}entry;
 
 
 //函数声明
@@ -132,4 +134,7 @@ void MainPara();
 //main.cpp
 int InitInterCheck();
 void BeginServe();
+//StarClock.cpp
+void InitStar();
+void StarClock();
 #endif
