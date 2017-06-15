@@ -4,7 +4,7 @@
 #include<graphics.h>
 #include<stdlib.h>
 #include<time.h>
-#define FlashTime 50
+#define FlashTime 100
 #define Odin 0
 #define Vip  1
 //#define RXlong 30
@@ -108,7 +108,7 @@ extern int DDy;
 extern int Xlong;
 extern int Ylong;
 
-#define MinStep 10//------------------需要修改
+#define MinStep MaxCustCheck+5//------------------需要修改
 
 Map* CheckMap;	//安检口map数组
 int* last;		//安检口最后一格数组 
@@ -204,7 +204,7 @@ void CreateCheckMap() {
 
 //------------------------------------------------------------------------------------------------------GoGOGO
 //移动！
-void MoveRun(Position* New, Position* Old, int IsVip) {
+void MoveRun(Position* New, Position* Old) {
 	//setcolor(WHITE);
 	//fillrectangle(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
 	IMAGE MoveImg;
@@ -216,14 +216,14 @@ void MoveRun(Position* New, Position* Old, int IsVip) {
 }
 
 //准备移动！
-void Move(Map map,int NumOfPos,int IsVip) {
+void Move(Map map,int NumOfPos) {
 	//int NumOfPos = MaxCustSingleLine;
 	int go=0; //看能不能移动
 
 	for (int i = 0; i < NumOfPos; i++) {
 		if (map[i].Used) {	
 			if (go) {	
-				MoveRun(&map[i - 1], &map[i],IsVip);	//这里的人能动 红红果我们走!！
+				MoveRun(&map[i - 1], &map[i]);	//这里的人能动 红红果我们走!！
 			}
 			else {
 				go = 0;//这里的人不能动 是友军 去下个人那里！
@@ -231,6 +231,27 @@ void Move(Map map,int NumOfPos,int IsVip) {
 		}
 		else {
 			go = 1;	//这里没人 快攻陷这里
+		}
+	}
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++很迷很迷很迷的安检口id攻略法*/
+int SpecialMap[20];
+int Splast;
+void SpecialMove() {
+	int posid, winid;
+	for (int i = 0; i < Splast; i++) {
+		if (SpecialMap[i] == -1) {
+			continue;
+		}
+		posid = SpecialMap[i] + (MaxCustCheck + 1) - (NumOfWin - i) - 1;
+		winid = SpecialMap[i];
+
+		MoveRun(&(CheckMap[winid][posid - 1]), &(CheckMap[winid][posid]));
+
+		SpecialMap[i] = -1;
+		if (i > 0 && posid>6) {
+			SpecialMap[i - 1] = winid;
 		}
 	}
 }
@@ -254,16 +275,17 @@ int EnLine() {
 	return 1;
 }
 
-
 int EnVip(int no);
 //去安检口啦！
 int EnCheck(int no) {
 	//普通乘客
 	if (no < NumOfWin) {
 		if (LineMap[0].Used) {			//队头有人
-			MoveRun(&CheckMap[no][last[no]], &LineMap[0],Odin);	//走你
+			MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
 			LineMap[0].Used = 0;
 			CheckMap[no][last[no]].Used = 1;
+
+			SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 			return 1;
 		}
 		return 0;
@@ -315,7 +337,7 @@ int BeginOK(int i) //到位后才设置时间
 //地图状态转化^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //------------------------------------------------------------------------------------------------------缓存
-struct Cache  EnCheckCache, DeCheckCache;
+Cache  EnCheckCache, DeCheckCache;
 int EnLineCache;//缓冲区cache
 
 void ResetCheckCache() {
@@ -350,7 +372,7 @@ void PreDeCheck() {
 
 
 void InitDraw() {
-	initgraph(Xlong, Ylong);
+	initgraph(Xlong, Ylong,SHOWCONSOLE);
 	//loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
 	//loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
 	setbkcolor(WHITE);
@@ -372,15 +394,19 @@ void InitDraw() {
 	EnLineCache = 0;
 	EnCheckCache.head = EnCheckCache.tail = 0;
 	DeCheckCache.head = DeCheckCache.tail = 0;
-	StarClock();
+
+	//Starclock初始化
 	InitStar();
 
+	//++++++++++++++++++++++++++++++++++++++++++++SpecialMap初始化
+	Splast = NumOfWin + 5;
+	for (int i = 0; i < Splast; i++) {
+		SpecialMap[i] = -1;
+	}
 }
 
 clock_t PreMoveTime;
 clock_t NowMoveTime;
-//动起来吧！
-
 void toy() {
 	NowMoveTime = clock();
 	//这里顺序不能变！！！ 有玄学的奥秘！！！
@@ -389,14 +415,17 @@ void toy() {
 		StarClock();
 		PreDeCheck();	//出安检口
 		UpdateState();//安检状态更新
+		/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 		for (int i = 0; i < NumOfWin; i++) {
-			Move(CheckMap[i], (MinStep + i),Odin);//普通安检口动
+			Move(CheckMap[i], MaxCustCheck+1);//普通安检口动 前6格
 		}
+		SpecialMove();
+		/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 		for (int i = 0; i < NumOfVIPWin; i++) {
-			Move(CheckMap[i+NumOfWin], (MaxCustCheck + 1) ,Vip);//vip安检口动
+			Move(CheckMap[i+NumOfWin], (MaxCustCheck + 1));//vip安检口动
 		}
 		PreEnCheck();	//进安检口
-		Move(LineMap, MaxCustSingleLine*MaxLines,Odin);//缓冲区动
+		Move(LineMap, MaxCustSingleLine*MaxLines);//缓冲区动
 		PreEnLine();	//进缓冲区
 	}
 }
