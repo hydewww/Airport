@@ -4,7 +4,7 @@
 #include<graphics.h>
 #include<stdlib.h>
 #include<time.h>
-#define FlashTime 50
+#define FlashTime 100
 #define Odin 0
 #define Vip  1
 //#define RXlong 30
@@ -369,6 +369,8 @@ void InitDraw() {
 	EnCheckCache.head = EnCheckCache.tail = 0;
 	DeCheckCache.head = DeCheckCache.tail = 0;
 
+	//StarClock初始化
+	InitStar();
 }
 
 clock_t PreMoveTime;
@@ -381,6 +383,7 @@ void toy() {
 	if ((NowMoveTime - PreMoveTime) > FlashTime) {
 		PreMoveTime = NowMoveTime;	//更新时间
 
+		StarClock();
 		PreDeCheck();	//出安检口
 		UpdateState();//安检状态更新
 		for (int i = 0; i < NumOfWin; i++) {
