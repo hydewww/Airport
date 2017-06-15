@@ -49,11 +49,11 @@ int ParaData()
 	fclose(fp);//关闭文件指针
 }
 
-void PrintPara(int *NumOfData,TCHAR num[][3],TCHAR *tems) {
+void PrintPara(int *NumOfData,TCHAR StrNumOfData[],TCHAR *tems) {
 	
 	IMAGE airport;
 
-	TCHAR s[12][50] = {
+	TCHAR OriginalStr[12][50] = {
 		"1.普通安检口数目:",
 		"2.VIP安检口数目:",
 		"3.最少开放安检口数量:",
@@ -72,15 +72,15 @@ void PrintPara(int *NumOfData,TCHAR num[][3],TCHAR *tems) {
 	putimage(0, 0, &airport);
 	for (int i = 0; i < 12; i++) {
 		if (i < 6) {
-			itoa(NumOfData[i], num[i], 10);
-			lstrcpy(tems, s[i]);
-			lstrcat(tems, num[i]);
+			itoa(NumOfData[i], StrNumOfData, 10);
+			lstrcpy(tems, OriginalStr[i]);
+			lstrcat(tems, StrNumOfData);
 			drawButton(200, 50 + 80 * i, BOX_WIDTH, BOX_HEGIHT, tems);
 		}
 		else {
-			itoa(NumOfData[i], num[i], 10);
-			lstrcpy(tems, s[i]);
-			lstrcat(tems, num[i]);
+			itoa(NumOfData[i], StrNumOfData, 10);
+			lstrcpy(tems, OriginalStr[i]);
+			lstrcat(tems, StrNumOfData);
 			drawButton(740, 50 + 80 * (i - 6), BOX_WIDTH, BOX_HEGIHT, tems);
 		}
 	}
@@ -106,12 +106,12 @@ void MainPara() {
 	NumOfData[11] = EasySeqLen;
 	
 
-	TCHAR num[12][3] = { 0 };
+	TCHAR StrNumOfData[5];
 	
-	TCHAR temstr[3]; //待修改的字符串
+	TCHAR temNum[5]; //待修改的字符串
 	TCHAR tems[30];
 
-	PrintPara(NumOfData,num,tems);
+	PrintPara(NumOfData,StrNumOfData,tems);
 
 	FILE * fp; //文件指针
 	if ((fp = fopen("para.dat", "rb+")) == NULL) //以只读方式打开配置文件para.dat
@@ -129,98 +129,98 @@ void MainPara() {
 			msg = GetMouseMsg();
 			if (msg.uMsg == WM_LBUTTONDOWN) {
 				if (judgeButton(msg.x, msg.y, 200, 50, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					NumOfWin = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					NumOfWin = _ttoi(temNum);
 					NumOfData[0] = NumOfWin;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 0, SEEK_SET);
 					fwrite(&NumOfWin, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 200, 130, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					NumOfVIPWin = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					NumOfVIPWin = _ttoi(temNum);
 					NumOfData[1] = NumOfVIPWin;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 1, SEEK_SET);
 					fwrite(&NumOfVIPWin, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 200, 210, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MinCheck = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MinCheck = _ttoi(temNum);
 					NumOfData[2] = MinCheck;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 2, SEEK_SET);
 					fwrite(&MinCheck, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 200, 290, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxCustCheck = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxCustCheck = _ttoi(temNum);
 					NumOfData[3] = MaxCustCheck;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 3, SEEK_SET);
 					fwrite(&MaxCustCheck, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 200, 370, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxRestSec = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxRestSec = _ttoi(temNum);
 					NumOfData[4] = MaxRestSec;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 4, SEEK_SET);
 					fwrite(&MaxRestSec, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 200, 450, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MinRestSec = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MinRestSec = _ttoi(temNum);
 					NumOfData[5] = MinRestSec;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 5, SEEK_SET);
 					fwrite(&MinRestSec, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 50, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxSec = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxSec = _ttoi(temNum);
 					NumOfData[6] = MaxSec;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 6, SEEK_SET);
 					fwrite(&MaxSec, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 130, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MinSec = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MinSec = _ttoi(temNum);
 					NumOfData[7] = MinSec;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 7, SEEK_SET);
 					fwrite(&MinSec, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 210, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxCustSingleLine = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxCustSingleLine = _ttoi(temNum);
 					NumOfData[8] = MaxCustSingleLine;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 8, SEEK_SET);
 					fwrite(&MaxCustSingleLine, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 290, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxLines = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxLines = _ttoi(temNum);
 					NumOfData[9] = MaxLines;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 9, SEEK_SET);
 					fwrite(&MaxLines, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 370, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					MaxSeqLen = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					MaxSeqLen = _ttoi(temNum);
 					NumOfData[10] = MaxSeqLen;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 10, SEEK_SET);
 					fwrite(&MaxSeqLen, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 740, 450, BOX_WIDTH, BOX_HEGIHT)) {
-					InputBox(temstr, 3, "请输入要修改的值:");
-					EasySeqLen = _ttoi(temstr);
+					InputBox(temNum, 3, "请输入要修改的值:");
+					EasySeqLen = _ttoi(temNum);
 					NumOfData[11] = EasySeqLen;
-					PrintPara(NumOfData, num, tems);
+					PrintPara(NumOfData, StrNumOfData, tems);
 					fseek(fp, sizeof(int) * 11, SEEK_SET);
 					fwrite(&EasySeqLen, sizeof(int), 1, fp);
 				}
@@ -230,9 +230,9 @@ void MainPara() {
 					InitInterCheck();
 				}
 				if (judgeButton(msg.x, msg.y, 1350, 500, 100, 50)) {
-					TCHAR s[10];
-					InputBox(s, 10, _T("请输入事件个数"));
-					EventNum = _ttoi(s);
+					TCHAR OriginalStr[10];
+					InputBox(OriginalStr, 10, _T("请输入事件个数"));
+					EventNum = _ttoi(OriginalStr);
 					closegraph();
 					BeginServe();
 				}

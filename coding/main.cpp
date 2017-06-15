@@ -1,4 +1,5 @@
 #include <windows.h>
+#include<process.h>	
 #include <stdio.h>
 #include <graphics.h>
 #include <mmsystem.h>
@@ -115,8 +116,11 @@ bool judgeButton(int x, int y, int bx, int by,int width, int height) {
 
 void BeginServe() {
 	
+	lock = 0;
 	SetAndBegin();
 	InitDraw();
+	HANDLE Mouse;
+	Mouse = (HANDLE)_beginthreadex(NULL, 0, MouseEvent, NULL, 0, NULL);
 	while (AirportState != OffWork)
 	{
 		AirportOnServe();
@@ -125,14 +129,16 @@ void BeginServe() {
 		lock = 0;
 		toy();
 	}
-
-	time(&TimeFinish);
-	if (AirportState == OffWork)
+	toy();
 	{
+		closegraph();
 		FinalOutput();
 	}
-	//WaitForSingleObject(KeyBoard, INFINITE);
-	//CloseHandle(KeyBoard);
+	/*
+	WaitForSingleObject(KeyBoard, INFINITE);
+	CloseHandle(KeyBoard);*/
+	WaitForSingleObject(Mouse, INFINITE);
+	CloseHandle(Mouse);
 	FreeMem();//ÊÍ·ÅmallocÄÚ´æ
 	system("pause");
 }

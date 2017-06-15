@@ -4,6 +4,9 @@
 #include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <graphics.h>
+#include <conio.h>
+#include <string.h>
 #include <Windows.h>
 #include <process.h>
 
@@ -18,8 +21,9 @@ void StatusOutput() {
 
 void FinalOutputCmd();
 void FinalOutputFile();
+void FinalOutputGraph();
 void FinalOutput() {
-	FinalOutputCmd();
+	FinalOutputGraph();
 	FinalOutputFile();
 }
 
@@ -102,6 +106,72 @@ void FinalOutputCmd() {
 		printf("VIP%02d  ", i + 1);
 		//窗口状态
 		printf("总共服务人数: %3d  总共服务时间: %02d:%02d\n", VIPWin[i].TotalSer, VIPWin[i].TotalTime/60,VIPWin[i].TotalTime%60);
+	}
+}
+
+TCHAR *ConnectStr(int NumOfData,TCHAR *OriginalStr) {
+
+	TCHAR tems[20];
+	TCHAR StrNumOfData[20];
+
+	itoa(NumOfData, StrNumOfData, 10);
+	lstrcpy(tems, OriginalStr);
+	lstrcat(tems, StrNumOfData);
+
+	return tems;
+}
+
+void FinalOutputGraph() {
+	
+	initgraph(1200,600);
+
+	LOGFONT f;
+	gettextstyle(&f);                     // 获取当前字体设置
+	f.lfHeight = 28;                      // 设置字体高度为 48
+	_tcscpy_s(f.lfFaceName, "宋体");    // 设置字体为“宋体”
+	f.lfQuality = ANTIALIASED_QUALITY;    // 设置输出效果为抗锯齿  
+	settextstyle(&f);                     // 设置字体样式
+
+	TCHAR OriginalStr[8][20] = {
+		"上班时间: ",
+		"下班时间: ",
+		"今日服务总人数: ",
+		"总共营业时间: ",
+		"总共服务人数: ",
+		"总共服务时间: ",
+		"WIN",
+		"VIP",
+	};
+
+	TCHAR temNum[5];
+	ctime(&TimeStart);
+	ctime(&TimeFinish);
+	outtextxy(120,200,"下班啦!!!!!!!!");/*
+	outtextxy(120, 250, ConnectStr(TimeStart, OriginalStr[0]));
+	outtextxy(120, 300, ConnectStr(TimeFinish, OriginalStr[1]));*/
+	outtextxy(220, 350, ConnectStr(OdinQueue->SumNum + VipQueue->SumNum, OriginalStr[2]));
+	//outtextxy(400, 350, ConnectStr((TimeFinish - TimeStart) % 60, OriginalStr[3]));
+
+	for (int i = 0; i < NumOfWin; i++) {
+		//窗口n
+		TCHAR tems[50];
+		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
+		lstrcat(tems, ConnectStr(Win[i].TotalSer, OriginalStr[4]));
+		lstrcat(tems, ConnectStr(Win[i].TotalTime % 60, OriginalStr[5]));
+
+		outtextxy(550, 200+35*i, tems);
+		//窗口状态
+
+	}
+	for (int i = 0; i < NumOfVIPWin; i++) {
+		//窗口n
+		TCHAR tems[50];
+		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
+		lstrcat(tems, ConnectStr(VIPWin[i].TotalSer, OriginalStr[4]));
+		lstrcat(tems, ConnectStr(VIPWin[i].TotalTime % 60, OriginalStr[7]));
+
+		outtextxy(550, 550, tems);
+		//窗口状态
 	}
 }
 
