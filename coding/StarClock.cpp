@@ -38,7 +38,7 @@ STAR star[MAXSTAR];
 void ResetStar(int i)
 {
 
-	int random = rand() % 180 + 90;
+	int random = rand() % 180+180;
 	star[i].x = StarRadius*cos(random *TWOPI / 360);
 	star[i].y = StarRadius*sin(random * TWOPI / 360);
 	star[i].step = (rand() % 5000) / 1000.0 + 1;
@@ -53,7 +53,7 @@ void MoveStar()
 	setorigin(OX, OY);
 	for (int i = 0; i < MAXSTAR; i++) {
 		// ¼ÆËãÐÂÎ»ÖÃ
-		star[i].x += star[i].step;
+		star[i].y += star[i].step;
 		if (star[i].x*star[i].x + star[i].y*star[i].y > StarRadius*StarRadius)
 			ResetStar(i);
 
