@@ -134,14 +134,12 @@ void CreateSingleCheckMap(int no) {
 		CheckMap[no][i].x = NowX;
 		CheckMap[no][i].y = NowY;
 		CheckMap[no][i].Used = 0;
-		//安检等待线
 		if (j == 0) {
 			setlinestyle(PS_SOLID, 2, NULL, 0);
 			setcolor(RED);
 			line(NowX+RXlong+1 , OdiWin[no].y, NowX+RXlong+1 , OdiWin[no].y + CYlong);
 			NowX += 2;
 			setlinecolor(WHITE);
-			setlinestyle(PS_SOLID, 1);
 		}
 	}
 	//putimage(NowX,NowY, &Rimg);
@@ -198,11 +196,12 @@ void CreateSingleVipMap(int no) {
 		if (i == 0) {
 			setlinestyle(PS_SOLID, 2, NULL, 0);
 			setcolor(RED);
-			line(NowX + RXlong + 1, VipWin[no-NumOfWin].y, NowX + RXlong + 1, VipWin[no-NumOfWin].y + CYlong);
+			line(NowX + RXlong + 1, VipWin[no - NumOfWin].y, NowX + RXlong + 1, VipWin[no - NumOfWin].y + CYlong);
 			NowX += 2;
 			setlinecolor(WHITE);
 			setlinestyle(PS_SOLID, 1);
 		}
+
 	}
 	last[no] = i - 1;
 }
@@ -346,6 +345,18 @@ int DeCheck(int no) {
 int BeginOK(int i) //到位后才设置时间
 {
 	if (CheckMap[i][1].Used == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int PreWinOK()
+{
+	if (LineMap[0].Used == 1)
 	{
 		return 1;
 	}

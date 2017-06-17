@@ -65,6 +65,8 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 /*进入缓冲区*/
 
 //缓冲区进安检口
+int PreWinOK();
+
 void PreWinRun(int IsVip) {
 	Queue* queue = IsVip ? VipQueue : OdinQueue;
 	int WinNum = IsVip ? NumOfVIPWin : NumOfWin;
@@ -72,7 +74,14 @@ void PreWinRun(int IsVip) {
 
 	int NowWinNo = 0;//窗口数组编号
 	int MinWaitNum = MaxCustCheck;//最少安检口排队乘客数量
-	int MinWaitWinNo = 0;//最少乘客排队的安检口数组编号						
+	int MinWaitWinNo = 0;//最少乘客排队的安检口数组编号		
+	if (queue == OdinQueue)
+	{
+		if (PreWinOK() == 0)
+		{
+			return;
+		}
+	}
 	while (queue->WaitNum != 0  )//有人在排队缓冲区排队
 	{
 		MinWaitWinNo = 0;
