@@ -7,8 +7,8 @@
 //two pi
 #define TWOPI 2*3.1415926
 
-#define OX 1390
-#define OY 110
+#define OX 1370
+#define OY 130
 
 #define asdf 4
 #define qwer 1									
@@ -70,6 +70,7 @@ void InitStar() {
 	for (int i = 0; i < MAXSTAR; i++)
 	{
 		ResetStar(i);
+		star[i].y += rand() % (StarRadius * 2);
 	}
 	setorigin(0, 0);
 }
