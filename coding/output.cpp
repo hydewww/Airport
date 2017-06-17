@@ -155,13 +155,14 @@ void FinalOutputGraph() {
 	lstrcat(tems, ctime(&TimeFinish));
 	outtextxy(40, 200, tems);
 	outtextxy(220, 350, ConnectStr(OdinQueue->SumNum + VipQueue->SumNum, OriginalStr[2]));
-	outtextxy(400, 350, ConnectStr((TimeFinish - TimeStart) % 60, OriginalStr[3]));
+
+	outtextxy(400, 350, ConnectStr(TimeFinish - TimeStart, OriginalStr[3]));
 
 	for (int i = 0; i < NumOfWin; i++) {
 		//´°¿Ún
 		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
 		lstrcat(tems, ConnectStr(Win[i].TotalSer, OriginalStr[4]));
-		lstrcat(tems, ConnectStr(Win[i].TotalTime % 60, OriginalStr[5]));
+		lstrcat(tems, ConnectStr(Win[i].TotalTime , OriginalStr[5]));
 
 		outtextxy(550, 200+35*i, tems);
 		//´°¿Ú×´Ì¬
@@ -172,7 +173,7 @@ void FinalOutputGraph() {
 		TCHAR tems[50];
 		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
 		lstrcat(tems, ConnectStr(VIPWin[i].TotalSer, OriginalStr[4]));
-		lstrcat(tems, ConnectStr(VIPWin[i].TotalTime % 60, OriginalStr[7]));
+		lstrcat(tems, ConnectStr(VIPWin[i].TotalTime, OriginalStr[7]));
 
 		outtextxy(550, 550, tems);
 		//´°¿Ú×´Ì¬
