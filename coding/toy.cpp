@@ -47,7 +47,9 @@ void CreateLineMap() {
 	//画边框
 	setlinestyle(PS_SOLID, Thickness, NULL, 0);
 	setcolor(BLACK);
-	line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
+	//line(NowX+ (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong), NowY);//最上
+	line(NowX + (Thickness + RXlong), NowY, NowX + MaxLines*(Thickness + RXlong + 2), NowY);//最上
+
 	line(NowX, NowY+MaxCustSingleLine*(Thickness+RYlong)+Thickness, NowX+MaxLines*(Thickness+RXlong+2), NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最下
 		
 
@@ -82,19 +84,19 @@ void CreateLineMap() {
 		case 1:NowY += (RYlong+Thickness); break;		//向下
 		}
 	}//end of for
-
+	//setlinecolor(RED);
 	//画缓冲区入口
-	if(!mode)
-		line(NowX - RXlong-Thickness, NowY-Thickness, NowX - Thickness, NowY-Thickness);
+	if ( MaxLines % 2 == 0 )
+		line(NowX - RXlong - 2*Thickness, NowY - Thickness , NowX - RXlong + RXlong, NowY -Thickness);
 	else
-		line(NowX-RXlong, NowY - RYlong, NowX - RXlong + RXlong, NowY - RYlong);
-	
+		line(NowX - RXlong - 2*Thickness, NowY +RYlong + Thickness, NowX - Thickness, NowY+RYlong + Thickness );
+
 	//画最左最右
 	setcolor(BLACK);
-	line(NowX, NowY-Thickness, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong));//最右
+	NowY = OdiWin[0].y + 0.1*CYlong;
+	line(NowX, NowY, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最右
 
 	NowX = OdiWin[0].x  + 9*RXlong + 0.2*CXlong;
-	NowY = OdiWin[0].y + 0.1*CYlong;
 	line(NowX-Thickness , NowY, NowX-Thickness , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
 }
 //排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +111,6 @@ extern int Xlong;
 extern int Ylong;
 
 #define MinStep MaxCustCheck+5//------------------需要修改
-
 Map* CheckMap;	//安检口map数组
 int* last;		//安检口最后一格数组 
 
