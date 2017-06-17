@@ -120,14 +120,16 @@ void BeginServe() {
 	SetAndBegin();
 	InitDraw();
 	HANDLE Mouse;
+	HANDLE KeyBoard;
 	Mouse = (HANDLE)_beginthreadex(NULL, 0, MouseEvent, NULL, 0, NULL);
+	KeyBoard= (HANDLE)_beginthreadex(NULL, 0, KeyEvent, NULL, 0, NULL);
 	while (AirportState != OffWork)
 	{
 		AirportOnServe();
 		StateTrans(&thisEvent);
 		StatusOutput();
-		lock = 0;
 		toy();
+		lock = 0;
 	}
 	toy();
 	time(&TimeFinish);
@@ -135,9 +137,9 @@ void BeginServe() {
 		closegraph();
 		FinalOutput();
 	}
-	/*
+	
 	WaitForSingleObject(KeyBoard, INFINITE);
-	CloseHandle(KeyBoard);*/
+	CloseHandle(KeyBoard);
 	WaitForSingleObject(Mouse, INFINITE);
 	CloseHandle(Mouse);
 	FreeMem();//ÊÍ·ÅmallocÄÚ´æ
