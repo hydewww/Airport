@@ -101,6 +101,9 @@ void SetWin() //----------------------------------------------------------------
 	int x0 = 0;  //蛮定义以下
 	y00 = 100; //上下留白80
 	Dy = (Ylong - 2 * y00) / (NumOfWin + NumOfVIPWin); //用来初始化画图的，可以不用管
+	
+	setlinestyle(PS_SOLID, 2, NULL, 0);
+	setcolor(BLACK);
 
 
 	if ((NumOfWin + NumOfVIPWin) <= 10)
@@ -116,6 +119,8 @@ void SetWin() //----------------------------------------------------------------
 		CXlong = CYlong / CProp;
 		DDy = (Dy-CYlong)/2;
 	}
+	RYlong = CYlong*0.8; //根据安检口大小设置乘客大小
+	RXlong = RYlong;
 
 	loadimage(&Cimg, _T("无人安检口.jpg"),CXlong ,CYlong);	// 读取图片到 img 对象中
 
@@ -128,6 +133,8 @@ void SetWin() //----------------------------------------------------------------
 		OdiWin[i].y = y;
 		OdiWin[i].x = x;
 		putimage(x, y,&Cimg);
+		line(OdiWin[i].x + CXlong + 1, OdiWin[i].y, OdiWin[i].x + CXlong + (MaxCustCheck + 1)*RXlong, OdiWin[i].y);
+		line(OdiWin[i].x + CXlong + 1, OdiWin[i].y + CYlong, OdiWin[i].x + CXlong + (MaxCustCheck + 1)*RXlong, OdiWin[i].y + CYlong);
 		y = y + 2 * DDy+CYlong;
 	}
 	for (i=0; i < NumOfVIPWin; i++)
@@ -135,10 +142,14 @@ void SetWin() //----------------------------------------------------------------
 		VipWin[i].y = y;
 		VipWin[i].x = x;
 		putimage(x, y, &Cimg);
+		line(VipWin[i].x + CXlong + 1, VipWin[i].y, VipWin[i].x + CXlong + (MaxCustCheck + 1)*RXlong, VipWin[i].y - 1);
+		line(VipWin[i].x + CXlong + 1, VipWin[i].y + CYlong, VipWin[i].x + CXlong + (MaxCustCheck + 1)*RXlong, VipWin[i].y + CYlong);
 		y = y + 2 * DDy+CYlong;
 	}
-	RYlong = CYlong*0.8; //根据安检口大小设置乘客大小
-	RXlong = RYlong;
+
+	setlinestyle(PS_SOLID, 0, NULL, 0);
+	setlinecolor(WHITE);
+	
 
 }//--------------------------------------------------------------------画安检口，算坐标，左上角坐标存在OdiWin[]和VipWin[]
 
@@ -218,6 +229,7 @@ unsigned _stdcall MouseEvent(void *p)
 						
 						thisEvent.type = 'Q';
 						thisEvent.ev_valid = 0;
+						thisEvent.sec = 100000;
 						_endthreadex(0);
 						return 0;
 					}
