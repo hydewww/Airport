@@ -50,7 +50,12 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 			}
 			OdinWatNum++;//---------------
 			EnQueue(OdinQueue);//-----------------入队
-			EnLineCache++;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进缓冲区Cahce
+			//EnLineCache++;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进缓冲区Cahce
+			if (event->check == 4)
+				EnCache(&EnLineCache, 1);
+			else if (event->check == 0)
+				EnCache(&EnLineCache, 0);
+				
 			EventOutputFile('G', OdinQueue->SumNum, 0);//事件输出
 		}
 	}
@@ -105,9 +110,9 @@ void PreWinRun(int IsVip) {
 			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
 			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
 			queue->WaitNum--;//排队缓冲区乘客-1
-
-			EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
-			ResetCheckCache();//^^^^^^^^^^^^^^^^
+			EnCache(&EnCheckCache, IsVip ? MinWaitWinNo + NumOfWin : MinWaitWinNo);
+			//EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
+			//ResetCheckCache();//^^^^^^^^^^^^^^^^
 			if(IsVip)
 				EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
 			else
@@ -191,8 +196,9 @@ void CheckOver(Window* win,int no) {
 	else
 		EventOutputFile('L', win->NowPas->id, 0);
 
-	DeCheckCache.no[(DeCheckCache.tail++)% CacheNum] = no;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^出安检口Cache
-	ResetCheckCache();
+	EnCache(&DeCheckCache,no);
+	//DeCheckCache.no[(DeCheckCache.tail++)% CacheNum] = no;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^出安检口Cache
+	//ResetCheckCache();
 	free(win->NowPas);//--------------------释放内存
 	win->NowPas = NULL;//设置被安检乘客指针为空
 }

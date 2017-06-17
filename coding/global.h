@@ -74,15 +74,15 @@ extern int CXlong;	//安检口
 extern int CYlong;
 extern int RXlong;	//乘客大小
 extern int RYlong;
-extern int EnLineCache;	//未进入动画的缓冲区乘客
 const int CacheNum = 50; //缓存数
 
-typedef struct Cache {
-	int no[CacheNum];
-	int head;
-	int tail;
-}Cache;
-extern Cache  EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
+//typedef struct Cache {
+//	int no[CacheNum];
+//	int head;
+//	int tail;
+//}Cache;
+extern struct Cache EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
+extern struct Cache EnLineCache;//未进入动画的缓冲区乘客
 extern int SingleLinePos;//每列的格子数
 typedef struct Pos //安检口坐标
 {
@@ -120,8 +120,9 @@ void FinalOutput();//下班输出（cmd、file）
 void InitInterface();
 //toy.cpp
 void InitDraw();
-void ResetCheckCache();
 void toy();
+void EnCache(Cache *cache, int no);
+void DeCache(Cache *cache);
 int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
 //Draw.cpp
 void SetWin();//初始化安检口图像

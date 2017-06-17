@@ -12,7 +12,7 @@
 IMAGE  Rimg;
 IMAGE VRimg;
 IMAGE BACKimg;
-
+IMAGE WRimg;
 int EventNum;
 
 //地图中的每一个小格
@@ -279,7 +279,7 @@ void SpecialMove() {
 //--------------------------------------------------------------------------------------------------------地图状态转化
 //到机场啦！
 extern void ShowID(int id, int x, int y);//新增显示ID函数
-int EnLine() {
+int EnLine(int IsWarning) {
 	int NumOfPos = MaxCustSingleLine*MaxLines;
 	int last = NumOfPos - 1 ;	//最后那个点
 	static int id = 0;
@@ -287,8 +287,7 @@ int EnLine() {
 	if (LineMap[last].Used)
 		return 0;
 	id++;
-
-	putimage(LineMap[last].x, LineMap[last].y, &Rimg);
+	putimage(LineMap[last].x, LineMap[last].y, IsWarning?&WRimg:&Rimg);
 	LineMap[last].Used = 1;
 	ShowID(id, LineMap[last].x, LineMap[last].y);
 	return 1;
@@ -368,36 +367,55 @@ int PreWinOK()
 //地图状态转化^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //------------------------------------------------------------------------------------------------------缓存
-Cache  EnCheckCache, DeCheckCache;
-int EnLineCache;//缓冲区cache
+typedef struct Cache {
+	int no[CacheNum];
+	int head;
+	int tail;
+}Cache;
 
-void ResetCheckCache() {
-	EnCheckCache.head %= CacheNum;
-	EnCheckCache.tail %= CacheNum;
-	DeCheckCache.head %= CacheNum;
-	DeCheckCache.tail %= CacheNum;
+Cache EnCheckCache, DeCheckCache;
+Cache EnLineCache;//缓冲区cache
+void InitCache() {
+	EnCheckCache.head = EnCheckCache.tail = 0;
+	DeCheckCache.head = DeCheckCache.tail = 0;
+	EnLineCache.head = EnLineCache.tail = 0;
 }
+void EnCache(Cache *cache, int no) {
+	cache->tail = ((cache->tail) + 1) % CacheNum;
+	cache->no[cache->tail] = no;
+}
+void DeCache(Cache *cache) {
+	cache->head = ((cache->head) + 1) % CacheNum;
+}
+//void ResetCheckCache() {
+//	EnCheckCache.head %= CacheNum;
+//	EnCheckCache.tail %= CacheNum;
+//	DeCheckCache.head %= CacheNum;
+//	DeCheckCache.tail %= CacheNum;
+//}
 
 void PreEnLine() {
-	if(EnLineCache)
-		if (EnLine())	//成功进入缓冲区
-			EnLineCache--;		
+	if (EnLineCache.head != EnLineCache.tail)
+		if (EnLine(EnLineCache.no[EnLineCache.head]))	//成功进入缓冲区
+			DeCache(&EnLineCache);		
 }
 
 void PreEnCheck() {
 	if (EnCheckCache.head != EnCheckCache.tail) {
 		if (EnCheck(EnCheckCache.no[EnCheckCache.head]))	//成功进入安检口
-			EnCheckCache.head++;		//缓存-1
+			DeCache(&EnCheckCache);		//缓存-1
+			//EnCheckCache.head++;
 	}
-	ResetCheckCache();
+	//ResetCheckCache();
 }
 
 void PreDeCheck() {
 	if (DeCheckCache.head != DeCheckCache.tail) {
 		if (DeCheck(DeCheckCache.no[DeCheckCache.head]))
-			DeCheckCache.head++;
+			//DeCheckCache.head++;
+			DeCache(&DeCheckCache);
 	}
-	ResetCheckCache();
+	//ResetCheckCache();
 }
 //缓存^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -417,14 +435,13 @@ void InitDraw() {
 	loadimage(&Rimg, _T("小人.jpg"), RXlong, RYlong);
 	loadimage(&VRimg, _T("vip小人.jpg"), RXlong, RYlong);
 	loadimage(&BACKimg, _T("背景.jpg"), RXlong, RYlong);
+	loadimage(&WRimg, _T("乘客new.jpg"), RXlong, RYlong);
 	//地图初始化
 	CreateLineMap();
 	CreateCheckMap();
 
 	//Cache初始化
-	EnLineCache = 0;
-	EnCheckCache.head = EnCheckCache.tail = 0;
-	DeCheckCache.head = DeCheckCache.tail = 0;
+	InitCache();
 
 	//Starclock初始化
 	InitStar();
