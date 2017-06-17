@@ -251,7 +251,7 @@ void SpecialMove() {
 		MoveRun(&(CheckMap[winid][posid - 1]), &(CheckMap[winid][posid]));
 
 		SpecialMap[i] = -1;
-		if (i > 0 && posid>6) {
+		if (i > 0 && posid>MaxCustCheck+1) {
 			SpecialMap[i - 1] = winid;
 		}
 	}
