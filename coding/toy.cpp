@@ -38,7 +38,7 @@ void CreateLineMap() {
 	//int NowX = RXlong * 8;	//--------------------左上角X
 	//int NowY = RYlong * 2;	//--------------------左上角Y
 
-	int NowX = OdiWin[0].x +  9* RXlong+0.2*CXlong; 
+	int NowX = OdiWin[0].x +  (MaxCustCheck+4)* RXlong+0.2*CXlong; 
 	int NowY = OdiWin[0].y + 0.1*CYlong;
 
 	int mode = 1;
@@ -96,7 +96,7 @@ void CreateLineMap() {
 	NowY = OdiWin[0].y + 0.1*CYlong;
 	line(NowX, NowY, NowX, NowY + MaxCustSingleLine*(Thickness + RYlong) + Thickness);//最右
 
-	NowX = OdiWin[0].x  + 9*RXlong + 0.2*CXlong;
+	NowX = OdiWin[0].x  + (MaxCustCheck+4)*RXlong + 0.2*CXlong;
 	line(NowX-Thickness , NowY, NowX-Thickness , NowY + MaxCustSingleLine*(Thickness + RYlong)+Thickness);//最左
 }
 //排队缓冲区map^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
