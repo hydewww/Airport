@@ -134,8 +134,16 @@ void CreateSingleCheckMap(int no) {
 		CheckMap[no][i].x = NowX;
 		CheckMap[no][i].y = NowY;
 		CheckMap[no][i].Used = 0;
+		if (j == 0) {
+			setlinestyle(PS_SOLID, 2, NULL, 0);
+			setcolor(RED);
+			line(NowX+RXlong+1 , OdiWin[no].y, NowX+RXlong+1 , OdiWin[no].y + CYlong);
+			NowX += 2;
+			setlinecolor(WHITE);
+		}
 	}
 	//putimage(NowX,NowY, &Rimg);
+	
 
 	//œÚ…œ
 	for (int j = 0; j < (1 + no); i++, j++) {
