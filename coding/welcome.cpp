@@ -33,8 +33,8 @@ void InitInter() {
 	loadimage(&airport,"机场.jpg",WINDOWS_X,WINDOWS_Y);
 	putimage(0,0,&airport);
 	
-	drawButton(1000, 300,BOX_WIDTH,BOX_HEGIHT, "开始安检 ");
-	drawButton(1000, 400, BOX_WIDTH,BOX_HEGIHT,"修改配置文件");
-	drawButton(1000, 500, BOX_WIDTH,BOX_HEGIHT," 退出安检 ");
+	drawButton(1100, 300,BOX_WIDTH,BOX_HEGIHT, "开始安检 ");
+	drawButton(1100, 400, BOX_WIDTH,BOX_HEGIHT,"修改配置文件");
+	drawButton(1100, 500, BOX_WIDTH,BOX_HEGIHT," 退出安检 ");
 }
 

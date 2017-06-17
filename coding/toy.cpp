@@ -383,8 +383,8 @@ void InitDraw() {
 	InitState();
 	//按键初始化
 	SetButton();
-	loadimage(&Rimg, _T("乘客.jpg"), RXlong, RYlong);
-	loadimage(&VRimg, _T("乘客new.jpg"), RXlong, RYlong);
+	loadimage(&Rimg, _T("小人.jpg"), RXlong, RYlong);
+	loadimage(&VRimg, _T("vip小人.jpg"), RXlong, RYlong);
 	loadimage(&BACKimg, _T("背景.jpg"), RXlong, RYlong);
 	//地图初始化
 	CreateLineMap();

@@ -194,7 +194,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 	int NowState;//安检口当前状态
 	
 	//排队缓冲人少，有关闭一个安检口的需求(当前安检口数大于最少安检口数,机场不处于ShutDown),且一次只能有一个安检口处于此状态
-	if (((OdinQueue->WaitNum / WinNum) <= EasySeqLen) && (WinNum>MinCheck) && (PreClose == 0) && (AirportState == OnWork))	{
+	if ((AirportState == OnWork) &&((OdinQueue->WaitNum / WinNum) <= EasySeqLen) && (WinNum>MinCheck) && (PreClose == 0) )	{
 		//for (i = NumOfWin-1; i >=0; i--)//从最后开始寻找一个合适关闭的安检口
 		for (i = 0; i < NumOfWin; i++)//从前开始寻找一个适合关闭的安检口
 		{

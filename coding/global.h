@@ -6,8 +6,6 @@
 #include"queue.h"
 #include"window.h"
 
-#define WINDOWS_X 1500 
-#define WINDOWS_Y 600
 
 //机场状态
 #define OffWork 0    //下班
@@ -20,6 +18,9 @@
 #define RestWin 3    //窗口正在休息
 #define ReadyRestWin 4  //窗口准备休息
 #define ReadyClosWin 5  //窗口准备关闭
+//动画窗口大小
+#define WINDOWS_X 1250	//窗口的长 
+#define WINDOWS_Y 800	//窗口的高
 
 //全局变量声明
 extern int AirportState;//机场状态
@@ -91,8 +92,12 @@ typedef struct Pos //安检口坐标
 extern Pos *OdiWin;
 extern Pos *VipWin;
 
-
+//
 //函数声明
+//main.cpp
+bool judgeButton(int x, int y, int bx, int by,int width,int height);	//判断鼠标事件是否再范围内发生
+int  InitInterCheck();	//初始化事件检测
+void BeginServe();		//开始执行安检操作
 //maintain.c
 //int MainPara();//维护配置文件
 //input.c
@@ -125,15 +130,11 @@ unsigned _stdcall MouseEvent(void* p); //鼠标事件
 void InitState();//安检口状态初始化
 void UpdateState(); //安检口状态变化
 //welcome.cpp
-void InitInter();
-bool judgeButton(int x, int y, int bx, int by,int width,int height);
-void drawButton(int x, int y, int width, int height, char *str);
+void InitInter(); //初始化界面
+void drawButton(int x, int y, int width, int height, char *str); //再指定方位画按钮
 //configure.cpp
-int ParaData();
-void MainPara();
-//main.cpp
-int InitInterCheck();
-void BeginServe();
+int ParaData();		//读取配置文件
+void MainPara();	//修改配置文件
 //StarClock.cpp
 void InitStar();
 void StarClock();

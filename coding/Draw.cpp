@@ -52,6 +52,7 @@ int BXlong; //按钮
 int BYlong;
 
 IMAGE Cimg; //安检口
+IMAGE COnimg; //正在安检的安检口
 //IMAGE Rimg; //乘客
 ButtonImg Bimg; //各种按钮
 IMAGE BBackimg; //按钮背景
@@ -116,7 +117,8 @@ void SetWin() //----------------------------------------------------------------
 		DDy = (Dy-CYlong)/2;
 	}
 
-	loadimage(&Cimg, _T("安检口.jpg"),CXlong ,CYlong);	// 读取图片到 img 对象中
+	loadimage(&Cimg, _T("无人安检口.jpg"),CXlong ,CYlong);	// 读取图片到 img 对象中
+
 	int i = 0; 
 	int x = CYlong/SProp;
 	int y = y00+DDy;
@@ -321,6 +323,7 @@ void InitState()
 	loadimage(&Simg.Sonserve, _T("服务中.jpg"), StateXlong, StateYlong);
 	loadimage(&Simg.Srest, _T("休息中.jpg"), StateXlong, StateYlong);
 	loadimage(&Simg.Sprerest, _T("准备休息.jpg"), StateXlong, StateYlong);
+	loadimage(&COnimg, _T("安检.jpg"), CXlong, CYlong);
 
 	for (int i = 0; i < NumOfWin; i++)
 	{
@@ -341,21 +344,27 @@ void UpdateState()
 		switch (Win[i].WinState)
 		{
 		case CloseWin:
+			putimage(OdiWin[i].x, OdiWin[i].y, &Cimg);
 			putimage(0, OdiWin[i].y, &Simg.Sclose);
 			break;
 		case ReadyClosWin:
+			putimage(OdiWin[i].x, OdiWin[i].y, &COnimg);
 			putimage(0, OdiWin[i].y, &Simg.Spreclose);
 			break;
 		case OpenWin:
+			putimage(OdiWin[i].x, OdiWin[i].y, &Cimg);
 			putimage(0, OdiWin[i].y, &Simg.Sopen);
 			break;
 		case OnSerWin:
+			putimage(OdiWin[i].x, OdiWin[i].y,&COnimg);
 			putimage(0, OdiWin[i].y, &Simg.Sonserve);
 			break;
 		case RestWin:
+			putimage(OdiWin[i].x, OdiWin[i].y, &Cimg);
 			putimage(0, OdiWin[i].y, &Simg.Srest);
 			break;
 		case ReadyRestWin:
+			putimage(OdiWin[i].x, OdiWin[i].y, &COnimg);
 			putimage(0, OdiWin[i].y, &Simg.Sprerest);
 			break;
 		}
@@ -365,15 +374,19 @@ void UpdateState()
 		switch (VIPWin[i].WinState)
 		{
 		case CloseWin:
+			putimage(VipWin[i].x, VipWin[i].y, &Cimg);
 			putimage(0, VipWin[i].y, &Simg.Sclose);
 			break;
 		case ReadyClosWin:
+			putimage(VipWin[i].x, VipWin[i].y, &COnimg);
 			putimage(0, VipWin[i].y, &Simg.Spreclose);
 			break;
 		case OpenWin:
+			putimage(VipWin[i].x, VipWin[i].y, &Cimg);
 			putimage(0, VipWin[i].y, &Simg.Sopen);
 			break;
 		case OnSerWin:
+			putimage(VipWin[i].x, VipWin[i].y, &COnimg);
 			putimage(0, VipWin[i].y, &Simg.Sonserve);
 			break;
 		}

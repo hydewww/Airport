@@ -68,7 +68,7 @@ void PrintPara(int *NumOfData,TCHAR StrNumOfData[],TCHAR *tems) {
 		"12.短期等待长度:",
 	};
 
-	loadimage(&airport, _T("机场.jpg"), WINDOWS_X, WINDOWS_Y);
+	loadimage(&airport, _T("配置文件.jpg"), WINDOWS_X, WINDOWS_Y);
 	putimage(0, 0, &airport);
 	for (int i = 0; i < 12; i++) {
 		if (i < 6) {
@@ -84,8 +84,8 @@ void PrintPara(int *NumOfData,TCHAR StrNumOfData[],TCHAR *tems) {
 			drawButton(740, 50 + 80 * (i - 6), BOX_WIDTH, BOX_HEGIHT, tems);
 		}
 	}
-	drawButton(1200,500 ,100 ,50 , "返回");
-	drawButton(1350, 500, 100, 50, "开始安检");
+	drawButton(250, 600 ,100 ,50 , "返回");
+	drawButton(790, 600, 100, 50, "开始安检");
 }
 
 void MainPara() {
@@ -224,12 +224,12 @@ void MainPara() {
 					fseek(fp, sizeof(int) * 11, SEEK_SET);
 					fwrite(&EasySeqLen, sizeof(int), 1, fp);
 				}
-				if (judgeButton(msg.x, msg.y, 1200, 500, 100, 50)) {
+				if (judgeButton(msg.x, msg.y, 250, 600, 100, 50)) {
 					closegraph();
 					InitInter();
 					InitInterCheck();
 				}
-				if (judgeButton(msg.x, msg.y, 1350, 500, 100, 50)) {
+				if (judgeButton(msg.x, msg.y, 790, 600, 100, 50)) {
 					TCHAR OriginalStr[10];
 					InputBox(OriginalStr, 10, _T("请输入事件个数"));
 					EventNum = _ttoi(OriginalStr);

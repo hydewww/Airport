@@ -130,6 +130,7 @@ void BeginServe() {
 		toy();
 	}
 	toy();
+	time(&TimeFinish);
 	{
 		closegraph();
 		FinalOutput();
@@ -151,17 +152,18 @@ int InitInterCheck() {
 		{
 			msg = GetMouseMsg();
 			if (msg.uMsg == WM_LBUTTONDOWN) {
-				if (judgeButton(msg.x, msg.y, 1000, 300, BOX_WIDTH, BOX_HEGIHT)) {		//开始进行安检
+				if (judgeButton(msg.x, msg.y, 1100, 300, BOX_WIDTH, BOX_HEGIHT)) {		//开始进行安检
 					TCHAR s[10];
 					InputBox(s, 10, _T("请输入事件个数"));
 					EventNum = _ttoi(s);
 					BeginServe();
 				}
-				if (judgeButton(msg.x, msg.y, 1000, 400, BOX_WIDTH, BOX_HEGIHT)) {		//修改配置文件
+				if (judgeButton(msg.x, msg.y, 1100, 400, BOX_WIDTH, BOX_HEGIHT)) {		//修改配置文件
 					MainPara();
 				}
-				if (judgeButton(msg.x, msg.y, 1000, 500, BOX_WIDTH, BOX_HEGIHT)) {		//退出程序
-					return 0;
+				if (judgeButton(msg.x, msg.y, 1100, 500, BOX_WIDTH, BOX_HEGIHT)) {		//退出程序
+					closegraph();
+					exit(0);
 				}
 			}
 		}

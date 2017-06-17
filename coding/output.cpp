@@ -123,7 +123,7 @@ TCHAR *ConnectStr(int NumOfData,TCHAR *OriginalStr) {
 
 void FinalOutputGraph() {
 	
-	initgraph(1200,600);
+	initgraph(WINDOWS_X,WINDOWS_Y);
 
 	LOGFONT f;
 	gettextstyle(&f);                     // 获取当前字体设置
@@ -143,18 +143,22 @@ void FinalOutputGraph() {
 		"VIP",
 	};
 
-	TCHAR temNum[5];
-	ctime(&TimeStart);
-	ctime(&TimeFinish);
-	outtextxy(120,200,"下班啦!!!!!!!!");/*
-	outtextxy(120, 250, ConnectStr(TimeStart, OriginalStr[0]));
-	outtextxy(120, 300, ConnectStr(TimeFinish, OriginalStr[1]));*/
+	TCHAR tems[50];
+
+	outtextxy(40,100,"下班啦!!!!!!!!");
+
+	lstrcpy(tems,OriginalStr[0]);
+	lstrcat(tems, ctime(&TimeStart));
+	outtextxy(40, 150, tems);
+
+	lstrcpy(tems, OriginalStr[1]);
+	lstrcat(tems, ctime(&TimeFinish));
+	outtextxy(40, 200, tems);
 	outtextxy(220, 350, ConnectStr(OdinQueue->SumNum + VipQueue->SumNum, OriginalStr[2]));
-	//outtextxy(400, 350, ConnectStr((TimeFinish - TimeStart) % 60, OriginalStr[3]));
+	outtextxy(400, 350, ConnectStr((TimeFinish - TimeStart) % 60, OriginalStr[3]));
 
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
-		TCHAR tems[50];
 		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
 		lstrcat(tems, ConnectStr(Win[i].TotalSer, OriginalStr[4]));
 		lstrcat(tems, ConnectStr(Win[i].TotalTime % 60, OriginalStr[5]));
