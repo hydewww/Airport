@@ -153,7 +153,7 @@ void SetWin() //----------------------------------------------------------------
 
 }//--------------------------------------------------------------------画安检口，算坐标，左上角坐标存在OdiWin[]和VipWin[]
 
-void SetButton()
+void SetButton() //设置鼠标按键，同时给出键盘说明
 {
 	BXlong = 120;
 	BYlong = BXlong*BProp;
@@ -188,6 +188,26 @@ void SetButton()
 	putimage(Bimg.Off.x, Bimg.Off.y, &Bimg.Offimg);
 	putimage(Bimg.VIPCome.x, Bimg.VIPCome.y, &Bimg.VIPComeimg);
 	putimage(Bimg.DanCome.x, Bimg.DanCome.y, &Bimg.DanComeimg);
+
+	setlinestyle(PS_SOLID,3, NULL, 0);
+	setcolor(BLUE);
+	//设置说明文字
+	line(Bimg.VIPCome.x - 150, Bimg.VIPCome.y, Bimg.VIPCome.x - 5, Bimg.VIPCome.y);
+	line(Bimg.Come.x - 150, Bimg.Come.y+BYlong, Bimg.Come.x - 5, Bimg.Come.y+BYlong);
+	line(Bimg.VIPCome.x - 150, Bimg.VIPCome.y, Bimg.Come.x - 150, Bimg.Come.y + BYlong);
+	line(Bimg.VIPCome.x - 5, Bimg.VIPCome.y, Bimg.Come.x - 5, Bimg.Come.y + BYlong);
+
+	settextcolor(BLACK);
+	setbkmode(TRANSPARENT);
+	outtextxy(Bimg.VIPCome.x - 120, Bimg.VIPCome.y+15,"G-乘客到来");
+	outtextxy(Bimg.VIPCome.x - 120, Bimg.VIPCome.y+42, "V-VIP到来");
+	outtextxy(Bimg.VIPCome.x - 120, Bimg.VIPCome.y +69, "W-危险乘客");
+	outtextxy(Bimg.VIPCome.x - 120, Bimg.VIPCome.y +96, "X-随机休息");
+	outtextxy(Bimg.VIPCome.x - 120, Bimg.VIPCome.y +123, "Q-机场下班");
+
+
+
+
 
 }
 
