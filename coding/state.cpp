@@ -64,6 +64,7 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 	else if (event->type == 'V') {
 		for (number = 0; number < event->mans; number++)
 		{
+			//printf("分配VIP到缓冲区！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！1\n");
 			EnQueue(VipQueue);//-------------
 			//----------不输出事件 装作没有缓冲区（手动滑稽
 		}
@@ -89,43 +90,63 @@ void PreWinRun(int IsVip) {
 	//		return;
 	//	}
 	//}
-	while (queue->WaitNum != 0  )//有人在排队缓冲区排队
+	if (queue == OdinQueue)
 	{
-		MinWaitWinNo = 0;
-		MinWaitNum = MaxCustCheck;
-
-		//记录目前排队最少且处于正常工作的安检口	
-		for (NowWinNo = 0; NowWinNo < WinNum; NowWinNo++) //数组编号小于安检口总数则执行循环
+		while (queue->WaitNum != 0)//有人在排队缓冲区排队
 		{
-			if ((MinWaitNum > win[NowWinNo].WaitNum) && (win[NowWinNo].WinState == OpenWin || win[NowWinNo].WinState == OnSerWin || (win[NowWinNo].WinState == ReadyClosWin&&AirportState == ShutDown))) 																																													
+			MinWaitWinNo = 0;
+			MinWaitNum = MaxCustCheck;
+			if (queue == VipQueue)
+				printf("VIP到安检口！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！\n");
+			//记录目前排队最少且处于正常工作的安检口	
+			for (NowWinNo = 0; NowWinNo < WinNum; NowWinNo++) //数组编号小于安检口总数则执行循环
 			{
-				MinWaitNum = Win[NowWinNo].WaitNum; //记录当前最少排队人数
-				MinWaitWinNo = NowWinNo; //改变当前最少安检口编号
+				if ((MinWaitNum > win[NowWinNo].WaitNum) && (win[NowWinNo].WinState == OpenWin || win[NowWinNo].WinState == OnSerWin || (win[NowWinNo].WinState == ReadyClosWin&&AirportState == ShutDown)))
+				{
+					MinWaitNum = Win[NowWinNo].WaitNum; //记录当前最少排队人数
+					MinWaitWinNo = NowWinNo; //改变当前最少安检口编号
+				}
 			}
-		}
-		//入安检口
-		if (MinWaitNum < MaxCustCheck) //存在排队未满的安检口
-		{
-			win[MinWaitWinNo].WinTail->next = queue->QueueHead->next;//将排队缓冲区队头插入该安检口的队尾
-			win[MinWaitWinNo].WinTail = queue->QueueHead->next;//将安检口队尾改为其下一个
-			queue->QueueHead->next = queue->QueueHead->next->next;//改变排队缓冲区的队头为其下一个
-			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
-			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
-			queue->WaitNum--;//排队缓冲区乘客-1
-			//EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
-			//ResetCheckCache();//^^^^^^^^^^^^^^^^
-			if (IsVip) {
-				EnCache(&VipEnCheckCache, MinWaitWinNo + NumOfWin);
-				EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+			//入安检口
+			if (MinWaitNum < MaxCustCheck) //存在排队未满的安检口
+			{
+				win[MinWaitWinNo].WinTail->next = queue->QueueHead->next;//将排队缓冲区队头插入该安检口的队尾
+				win[MinWaitWinNo].WinTail = queue->QueueHead->next;//将安检口队尾改为其下一个
+				queue->QueueHead->next = queue->QueueHead->next->next;//改变排队缓冲区的队头为其下一个
+				win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
+				win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
+				queue->WaitNum--;//排队缓冲区乘客-1
+				//EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
+				//ResetCheckCache();//^^^^^^^^^^^^^^^^
+				//if (queue == VipQueue) {
+				//	EnCache(&VipEnCheckCache, MinWaitWinNo + NumOfWin);
+				//	//printf("VIP到安检口！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！\n");
+				//	EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+				//}
+				//else {
+					EnCache(&EnCheckCache, MinWaitWinNo);
+					EventOutputFile('C', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+				//}
 			}
-			else {
-				EnCache(&EnCheckCache, MinWaitWinNo);
-				EventOutputFile('C', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+			else {//所有可用安检口队列已满
+				break;
 			}
-		}
-		else //所有可用安检口队列已满
-			break;
-	}//while
+		}//while
+	}
+	else
+	{
+		if (queue->WaitNum == 0)
+			return;
+		win[MinWaitWinNo].WinTail->next = queue->QueueHead->next;//将排队缓冲区队头插入该安检口的队尾
+		win[MinWaitWinNo].WinTail = queue->QueueHead->next;//将安检口队尾改为其下一个
+		queue->QueueHead->next = queue->QueueHead->next->next;//改变排队缓冲区的队头为其下一个
+		win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
+		win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
+		queue->WaitNum--;//排队缓冲区乘客-1
+		EnCache(&VipEnCheckCache, MinWaitWinNo + NumOfWin);
+		//printf("VIP到安检口！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！\n");
+		EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+	}
 	if (queue->WaitNum == 0)
 	{
 		queue->QueueTail = queue->QueueHead;
@@ -355,10 +376,10 @@ void VIPWinRun() //安检口处理乘客及计算安检口状态转换
 		case OpenWin: //安检口处于空闲状态
 			if (VIPWin[i].WinHead->next != NULL)//有人在此安检口排队
 			{
-				if (BeginOK(i+NumOfWin) == 0)
+				/*if (BeginOK(i+NumOfWin) == 0)
 				{
 					break;
-				}
+				}*/
 				
 				VIPWin[i].WinState = OnSerWin;//改变安检口状态为正在服务
 				CheckBegin(&VIPWin[i]);//--------------------------
@@ -441,6 +462,7 @@ void StateTrans(entry *event) // 总控制函数
 			if (AirportState != ShutDown) //机场不处于准备下班状态
 			{
 				DistriNum(event);//将VIP乘客直接分配到VIP窗口
+				//printf("VIP事件接收！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！\n");
 			}
 			break;
 		case 'X': //安检口事件
