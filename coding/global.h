@@ -130,6 +130,7 @@ void SetButton(); //初始化按键
 unsigned _stdcall MouseEvent(void* p); //鼠标事件
 void InitState();//安检口状态初始化
 void UpdateState(); //安检口状态变化
+void ShowID(int id, int x, int y);
 //welcome.cpp
 void InitInter(); //初始化界面
 void drawButton(int x, int y, int width, int height, char *str); //再指定方位画按钮

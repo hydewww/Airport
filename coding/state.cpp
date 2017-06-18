@@ -80,13 +80,13 @@ void PreWinRun(int IsVip) {
 	int NowWinNo = 0;//窗口数组编号
 	int MinWaitNum = MaxCustCheck;//最少安检口排队乘客数量
 	int MinWaitWinNo = 0;//最少乘客排队的安检口数组编号		
-	if (queue == OdinQueue)
-	{
-		if (PreWinOK() == 0)
-		{
-			return;
-		}
-	}
+	//if (queue == OdinQueue)
+	//{
+	//	if (PreWinOK() == 0)
+	//	{
+	//		return;
+	//	}
+	//}
 	while (queue->WaitNum != 0  )//有人在排队缓冲区排队
 	{
 		MinWaitWinNo = 0;

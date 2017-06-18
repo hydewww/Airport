@@ -5,8 +5,9 @@
 #include<stdlib.h>
 #include<time.h>
 #define FlashTime 100
-#define Odin 0
-#define Vip  1
+#define Odin 1
+#define Warn 2
+#define Vip  3
 //#define RXlong 30
 //#define RYlong 30
 IMAGE  Rimg;
@@ -19,10 +20,21 @@ int EventNum;
 typedef struct Position {
 	int x;
 	int y;
-	int Used;
+	int Used;	//id
+	int Type;	//1-Odin 2-Warn 3-Vip
 }Position;
 typedef Position* Map;
 
+void DrawPas(Position pos) {
+	IMAGE pas;
+	switch (pos.Type) {
+	case 1:pas = Rimg; break;
+	case 2:pas = WRimg; break;
+	case 3:pas = VRimg; break;
+	}
+	putimage(pos.x, pos.y, &pas);
+	ShowID(pos.Used, pos.x, pos.y);
+}
 
 //----------------------------------------------------------------------------------------------排队缓冲区map
 extern int MaxCustSingleLine;// 单队列最大等待乘客数
@@ -230,11 +242,13 @@ void MoveRun(Position* New, Position* Old) {
 	//getimage(&MoveImg, Old->x, Old->y, RXlong, RYlong);
 	//putimage(Old->x, Old->y, &BACKimg);
 	//putimage(New->x, New->y, &MoveImg);
-	putimage(New->x, New->y, &Rimg);
 
 	New->Used = Old->Used;
+	New->Type = Old->Type;
 	Old->Used = 0;
-	ShowID(New->Used, New->x, New->y);
+	//putimage(New->x, New->y, New->Used>0?&Rimg:&WRimg);
+	//ShowID(abs(New->Used), New->x, New->y);
+	DrawPas(*New);
 }
 
 //准备移动！
@@ -290,9 +304,12 @@ int EnLine(int IsWarning) {
 	if (LineMap[last].Used)
 		return 0;
 	id++;
-	putimage(LineMap[last].x, LineMap[last].y, IsWarning?&WRimg:&Rimg);
+	LineMap[last].Type = IsWarning ? Warn : Odin;
 	LineMap[last].Used = id;/**/
-	ShowID(id, LineMap[last].x, LineMap[last].y);
+	DrawPas(LineMap[last]);
+	//putimage(LineMap[last].x, LineMap[last].y, IsWarning?&WRimg:&Rimg);
+	//ShowID(abs(id), LineMap[last].x, LineMap[last].y);
+	//ShowID(id, LineMap[last].x, LineMap[last].y);
 	return 1;
 }
 
@@ -325,9 +342,11 @@ int EnVip(int no) {
 	if (CheckMap[no][last].Used)
 		return 0;
 	Vipid++;
-	putimage(CheckMap[no][last].x, CheckMap[no][last].y, &VRimg);
 	CheckMap[no][last].Used = Vipid;/**/
-	ShowID(Vipid, CheckMap[no][last].x, CheckMap[no][last].y);
+	CheckMap[no][last].Type = Vip;
+	DrawPas(CheckMap[no][last]);
+	//putimage(CheckMap[no][last].x, CheckMap[no][last].y, &VRimg);
+	//ShowID(Vipid, CheckMap[no][last].x, CheckMap[no][last].y);
 	return 1;
 }
 
@@ -346,7 +365,7 @@ int DeCheck(int no) {
 //安检时间延迟
 int BeginOK(int i) //到位后才设置时间
 {
-	if (CheckMap[i][1].Used == 1)
+	if (CheckMap[i][1].Used)
 	{
 		return 1;
 	}
@@ -358,7 +377,7 @@ int BeginOK(int i) //到位后才设置时间
 
 int PreWinOK()
 {
-	if (LineMap[0].Used == 1)
+	if (LineMap[0].Used)
 	{
 		return 1;
 	}
