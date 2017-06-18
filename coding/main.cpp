@@ -138,7 +138,7 @@ void BeginServe() {
 	InitFinalStar();
 	setcolor(WHITE);
 	while (true) {
-		cleardevice();
+		//cleardevice();
 		if (kbhit()) {
 			char c = getch();
 			if (c == '\r')
@@ -146,7 +146,7 @@ void BeginServe() {
 		}
 		MoveFinalStar();
 		FinalOutput();
-		Sleep(100);
+		Sleep(50);
 	}
 	FreeMem();//ÊÍ·ÅmallocÄÚ´æ
 	FreeToy();

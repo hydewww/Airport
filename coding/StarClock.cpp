@@ -161,11 +161,12 @@ void ResetFinalStar(int i)
 void MoveFinalStar()
 {
 	for (int i = 0; i < MAXStar; i++) {
+		putpixel((int)Star[i].x, Star[i].y, BLACK);
 		// 计算新位置
 		Star[i].y += Star[i].step;
 		if (Star[i].y > WINDOWS_Y)
 			ResetFinalStar(i);
-
+		
 		// 画新星星
 		putpixel((int)Star[i].x, Star[i].y, Star[i].color);
 	}
