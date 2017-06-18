@@ -82,6 +82,7 @@ const int CacheNum = 50; //缓存数
 //	int tail;
 //}Cache;
 extern struct Cache EnCheckCache, DeCheckCache;//进安检口缓存 出安检口缓存
+extern struct Cache VipEnCheckCache, VipDeCheckCache;
 extern struct Cache EnLineCache;//未进入动画的缓冲区乘客
 extern int SingleLinePos;//每列的格子数
 typedef struct Pos //安检口坐标

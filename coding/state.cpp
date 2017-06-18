@@ -80,9 +80,9 @@ void PreWinRun(int IsVip) {
 	int NowWinNo = 0;//窗口数组编号
 	int MinWaitNum = MaxCustCheck;//最少安检口排队乘客数量
 	int MinWaitWinNo = 0;//最少乘客排队的安检口数组编号		
-	//if (queue == OdinQueue)
+	//if (queue == odinqueue)
 	//{
-	//	if (PreWinOK() == 0)
+	//	if (prewinok() == 0)
 	//	{
 	//		return;
 	//	}
@@ -110,13 +110,16 @@ void PreWinRun(int IsVip) {
 			win[MinWaitWinNo].WinTail->next = NULL;//将安检口队尾的下一个置为空
 			win[MinWaitWinNo].WaitNum++;//此安检口排队乘客量加一
 			queue->WaitNum--;//排队缓冲区乘客-1
-			EnCache(&EnCheckCache, IsVip ? MinWaitWinNo + NumOfWin : MinWaitWinNo);
 			//EnCheckCache.no[(EnCheckCache.tail++) % CacheNum] = IsVip ? MinWaitWinNo + NumOfWin: MinWaitWinNo;//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^进安检口Cache
 			//ResetCheckCache();//^^^^^^^^^^^^^^^^
-			if(IsVip)
+			if (IsVip) {
+				EnCache(&VipEnCheckCache, MinWaitWinNo + NumOfWin);
 				EventOutputFile('c', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
-			else
+			}
+			else {
+				EnCache(&EnCheckCache, MinWaitWinNo);
 				EventOutputFile('C', win[MinWaitWinNo].WinTail->id, MinWaitWinNo + 1);//事件输出
+			}
 		}
 		else //所有可用安检口队列已满
 			break;

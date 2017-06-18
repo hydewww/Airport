@@ -139,3 +139,4 @@ void StarClock() {
 	DrawClock();
 	setorigin(0, 0);
 }
+

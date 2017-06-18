@@ -323,7 +323,7 @@ int EnCheck(int no) {
 			//CheckMap[no][last[no]].Used = LineMap[0].Used;
 			//LineMap[0].Used = 0;
 
-			SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+			//SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 			return 1;
 		}
 		return 0;
@@ -396,15 +396,18 @@ typedef struct Cache {
 }Cache;
 
 Cache EnCheckCache, DeCheckCache;
+Cache  VipEnCheckCache, VipDeCheckCache;
 Cache EnLineCache;//ª∫≥Â«¯cache
 void InitCache() {
 	EnCheckCache.head = EnCheckCache.tail = 0;
 	DeCheckCache.head = DeCheckCache.tail = 0;
 	EnLineCache.head = EnLineCache.tail = 0;
+	VipEnCheckCache.head = VipEnCheckCache.tail = 0;
+	VipDeCheckCache.head = VipDeCheckCache.tail = 0;
 }
 void EnCache(Cache *cache, int no) {
-	cache->tail = ((cache->tail) + 1) % CacheNum;
 	cache->no[cache->tail] = no;
+	cache->tail = ((cache->tail) + 1) % CacheNum;
 }
 void DeCache(Cache *cache) {
 	cache->head = ((cache->head) + 1) % CacheNum;
@@ -428,14 +431,22 @@ void PreEnCheck() {
 			DeCache(&EnCheckCache);		//ª∫¥Ê-1
 			//EnCheckCache.head++;
 	}
+	if (VipEnCheckCache.head != VipEnCheckCache.tail) {
+		if (EnCheck(VipEnCheckCache.no[VipEnCheckCache.head]))
+			DeCache(&VipEnCheckCache);
+	}
 	//ResetCheckCache();
 }
 
 void PreDeCheck() {
 	if (DeCheckCache.head != DeCheckCache.tail) {
 		if (DeCheck(DeCheckCache.no[DeCheckCache.head]))
-			//DeCheckCache.head++;
 			DeCache(&DeCheckCache);
+		//DeCheckCache.head++;
+	}
+	if (VipDeCheckCache.head != VipDeCheckCache.tail) {
+		if (DeCheck(VipDeCheckCache.no[VipDeCheckCache.head]))
+			DeCache(&VipDeCheckCache);
 	}
 	//ResetCheckCache();
 }
@@ -469,10 +480,10 @@ void InitDraw() {
 	InitStar();
 
 	//++++++++++++++++++++++++++++++++++++++++++++SpecialMap≥ı ºªØ
-	Splast = NumOfWin + 5;
-	for (int i = 0; i < Splast; i++) {
-		SpecialMap[i] = -1;
-	}
+	//Splast = NumOfWin + 5;
+	//for (int i = 0; i < Splast; i++) {
+	//	SpecialMap[i] = -1;
+	//}
 }
 
 clock_t PreMoveTime;
