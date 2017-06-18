@@ -109,18 +109,6 @@ void FinalOutputCmd() {
 	}
 }
 
-TCHAR *ConnectStr(int NumOfData,TCHAR *OriginalStr) {
-
-	TCHAR tems[20];
-	TCHAR StrNumOfData[20];
-
-	itoa(NumOfData, StrNumOfData, 10);
-	lstrcpy(tems, OriginalStr);
-	lstrcat(tems, StrNumOfData);
-
-	return tems;
-}
-
 void FinalOutputGraph() {
 	
 	initgraph(WINDOWS_X,WINDOWS_Y);
@@ -132,50 +120,62 @@ void FinalOutputGraph() {
 	f.lfQuality = ANTIALIASED_QUALITY;    // 设置输出效果为抗锯齿  
 	settextstyle(&f);                     // 设置字体样式
 
-	TCHAR OriginalStr[8][20] = {
-		"上班时间: ",
-		"下班时间: ",
-		"今日服务总人数: ",
-		"总共营业时间: ",
-		"总共服务人数: ",
-		"总共服务时间: ",
+
+	char tems[150];
+	char temNum[6];
+
+	outtextxy(WINDOWS_X/2-50,40,"下班啦!!!!!!!!");
+
+	char OriginalStr[][100] = { 
+		"Start Time : ",
+		"Finish Time : ",
+		"Number of Passengers Served today : ",
+		"Total Run Time : ",
 		"WIN",
 		"VIP",
+
 	};
 
-	TCHAR tems[50];
-
-	outtextxy(40,100,"下班啦!!!!!!!!");
-
-	lstrcpy(tems,OriginalStr[0]);
-	lstrcat(tems, ctime(&TimeStart));
+	strcpy(tems,OriginalStr[0]);
+	strcat(tems, ctime(&TimeStart));
 	outtextxy(40, 150, tems);
 
-	lstrcpy(tems, OriginalStr[1]);
-	lstrcat(tems, ctime(&TimeFinish));
+	strcpy(tems, OriginalStr[1]);
+	strcat(tems, ctime(&TimeFinish));
 	outtextxy(40, 200, tems);
-	outtextxy(220, 350, ConnectStr(OdinQueue->SumNum + VipQueue->SumNum, OriginalStr[2]));
 
-	outtextxy(400, 350, ConnectStr(TimeFinish - TimeStart, OriginalStr[3]));
+	strcpy(tems, OriginalStr[2]);
+	strcat(tems, itoa(OdinQueue->SumNum + VipQueue->SumNum,temNum,10));
+	outtextxy(40, 350, tems);
+
+	strcpy(tems, OriginalStr[3]);
+	strcat(tems, itoa(TimeFinish - TimeStart, temNum, 10));
+	outtextxy(40, 450, tems);
 
 	for (int i = 0; i < NumOfWin; i++) {
 		//窗口n
-		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
-		lstrcat(tems, ConnectStr(Win[i].TotalSer, OriginalStr[4]));
-		lstrcat(tems, ConnectStr(Win[i].TotalTime , OriginalStr[5]));
+		strcpy(tems,OriginalStr[4]);
+		strcat(tems, itoa(i,temNum,10));
+		strcat(tems, "Serve Number : ");
+		strcat(tems, itoa(Win[i].TotalSer, temNum, 10));
+		strcat(tems, "Serve Time : ");
+		sprintf(temNum, "%d", Win[i].TotalTime);
+		strcat(tems,temNum);
 
-		outtextxy(550, 200+35*i, tems);
+		outtextxy(650, 150+35*i, tems);
 		//窗口状态
 
 	}
 	for (int i = 0; i < NumOfVIPWin; i++) {
 		//窗口n
-		TCHAR tems[50];
-		lstrcpy(tems, ConnectStr(i, OriginalStr[6]));
-		lstrcat(tems, ConnectStr(VIPWin[i].TotalSer, OriginalStr[4]));
-		lstrcat(tems, ConnectStr(VIPWin[i].TotalTime, OriginalStr[7]));
+		strcpy(tems, OriginalStr[5]);
+		strcat(tems, itoa(i, temNum, 10));
+		strcat(tems, "Serve Number : ");
+		strcat(tems, itoa(VIPWin[i].TotalSer, temNum, 10));
+		strcat(tems, "Serve Time : ");
+		strcat(tems, itoa(VIPWin[i].TotalTime, temNum, 10));
 
-		outtextxy(550, 550, tems);
+		outtextxy(650, 550, tems);
 		//窗口状态
 	}
 }
