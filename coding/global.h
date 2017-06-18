@@ -125,6 +125,7 @@ void toy();
 void EnCache(Cache *cache, int no);
 void DeCache(Cache *cache);
 int BeginOK(int);//判断乘客是否到位，到位开始设置安检时间
+void FreeToy();
 //Draw.cpp
 void SetWin();//初始化安检口图像
 void SetButton(); //初始化按键
@@ -141,4 +142,6 @@ void MainPara();	//修改配置文件
 //StarClock.cpp
 void InitStar();
 void StarClock();
+void MoveFinalStar();
+void InitFinalStar();
 #endif

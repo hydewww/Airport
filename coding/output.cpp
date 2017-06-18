@@ -111,7 +111,6 @@ void FinalOutputCmd() {
 
 void FinalOutputGraph() {
 	
-	initgraph(WINDOWS_X,WINDOWS_Y);
 
 	LOGFONT f;
 	gettextstyle(&f);                     // 获取当前字体设置

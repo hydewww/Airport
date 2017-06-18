@@ -3,7 +3,7 @@
 #include<graphics.h>
 #include<math.h>
 #include<conio.h>
-
+#include"global.h"
 //two pi
 #define TWOPI 2*3.1415926
 
@@ -140,3 +140,43 @@ void StarClock() {
 	setorigin(0, 0);
 }
 
+
+
+
+/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>final*/
+//重置WINDOWS_X,WINDOWS_Y
+#define MAXStar 500
+STAR Star[MAXStar];
+void ResetFinalStar(int i)
+{
+	Star[i].x = rand() % WINDOWS_X;
+	Star[i].y = 0;
+	Star[i].step = (rand() % 5000) / 1000.0 + 1;
+	Star[i].color = (int)(Star[i].step * 255 / 6.0 + 0.5);	// 速度越快，颜色越亮
+	Star[i].color = RGB(Star[i].color, Star[i].color, Star[i].color);
+
+}
+
+//移动
+void MoveFinalStar()
+{
+	for (int i = 0; i < MAXStar; i++) {
+		// 计算新位置
+		Star[i].y += Star[i].step;
+		if (Star[i].y > WINDOWS_Y)
+			ResetFinalStar(i);
+
+		// 画新星星
+		putpixel((int)Star[i].x, Star[i].y, Star[i].color);
+	}
+}
+
+//初始化
+void InitFinalStar() {
+	srand((unsigned)time(NULL));	// 随机种子
+	for (int i = 0; i < MAXStar; i++)
+	{
+		ResetFinalStar(i);
+		Star[i].y += rand() % WINDOWS_Y;
+	}
+}

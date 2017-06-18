@@ -131,19 +131,37 @@ void BeginServe() {
 		toy();
 		lock = 0;
 	}
-	toy();
 	time(&TimeFinish);
-	{
-		closegraph();
+	closegraph();
+	fflush(stdin);
+	initgraph(WINDOWS_X, WINDOWS_Y);
+	InitFinalStar();
+	setcolor(WHITE);
+	while (true) {
+		cleardevice();
+		if (kbhit()) {
+			char c = getch();
+			if (c == '\r')
+				break;
+		}
+		MoveFinalStar();
 		FinalOutput();
+		Sleep(100);
 	}
-	
+	FreeMem();//释放malloc内存
+	FreeToy();
+	closegraph();
+
+
+
 	WaitForSingleObject(KeyBoard, INFINITE);
 	CloseHandle(KeyBoard);
 	WaitForSingleObject(Mouse, INFINITE);
 	CloseHandle(Mouse);
-	FreeMem();//释放malloc内存
-	system("pause");
+
+	exit(0);
+
+	//system("pause");
 }
 
 int InitInterCheck() {

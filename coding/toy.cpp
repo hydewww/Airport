@@ -517,3 +517,11 @@ void toy() {
 		PreEnLine();	//½ø»º³åÇø
 	}
 }
+
+void FreeToy() {
+	free(LineMap);
+	for (int i = 0; i < NumOfWin + NumOfVIPWin; i++) {
+		free(CheckMap[i]);
+	}
+	free(CheckMap);
+}
