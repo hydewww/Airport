@@ -224,14 +224,17 @@ void CreateCheckMap() {
 //------------------------------------------------------------------------------------------------------GoGOGO
 //移动！
 void MoveRun(Position* New, Position* Old) {
-	//setcolor(WHITE);
-	//fillrectangle(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
+	setcolor(WHITE);
+	fillrectangle(Old->x, Old->y, Old->x + RXlong, Old->y + RYlong);	//用背景色填充
 	IMAGE MoveImg;
-	getimage(&MoveImg, Old->x, Old->y, RXlong, RYlong);
-	putimage(Old->x, Old->y, &BACKimg);
-	putimage(New->x, New->y, &MoveImg);
+	//getimage(&MoveImg, Old->x, Old->y, RXlong, RYlong);
+	//putimage(Old->x, Old->y, &BACKimg);
+	//putimage(New->x, New->y, &MoveImg);
+	putimage(New->x, New->y, &Rimg);
+
+	New->Used = Old->Used;
 	Old->Used = 0;
-	New->Used = 1;
+	ShowID(New->Used, New->x, New->y);
 }
 
 //准备移动！
@@ -288,7 +291,7 @@ int EnLine(int IsWarning) {
 		return 0;
 	id++;
 	putimage(LineMap[last].x, LineMap[last].y, IsWarning?&WRimg:&Rimg);
-	LineMap[last].Used = 1;
+	LineMap[last].Used = id;/**/
 	ShowID(id, LineMap[last].x, LineMap[last].y);
 	return 1;
 }
@@ -300,8 +303,8 @@ int EnCheck(int no) {
 	if (no < NumOfWin) {
 		if (LineMap[0].Used) {			//队头有人
 			MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
-			LineMap[0].Used = 0;
-			CheckMap[no][last[no]].Used = 1;
+			//CheckMap[no][last[no]].Used = LineMap[0].Used;
+			//LineMap[0].Used = 0;
 
 			SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 			return 1;
@@ -323,7 +326,7 @@ int EnVip(int no) {
 		return 0;
 	Vipid++;
 	putimage(CheckMap[no][last].x, CheckMap[no][last].y, &VRimg);
-	CheckMap[no][last].Used = 1;
+	CheckMap[no][last].Used = Vipid;/**/
 	ShowID(Vipid, CheckMap[no][last].x, CheckMap[no][last].y);
 	return 1;
 }
@@ -464,10 +467,13 @@ void toy() {
 		PreDeCheck();	//出安检口
 		UpdateState();//安检状态更新
 		/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+		//for (int i = 0; i < NumOfWin; i++) {
+		//	Move(CheckMap[i], MaxCustCheck+1);//普通安检口动 前6格
+		//}
+		//SpecialMove();
 		for (int i = 0; i < NumOfWin; i++) {
-			Move(CheckMap[i], MaxCustCheck+1);//普通安检口动 前6格
+			Move(CheckMap[i], MinStep + i);
 		}
-		SpecialMove();
 		/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 		for (int i = 0; i < NumOfVIPWin; i++) {
 			Move(CheckMap[i+NumOfWin], (MaxCustCheck + 1));//vip安检口动
