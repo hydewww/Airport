@@ -225,13 +225,11 @@ void MainPara() {
 					fwrite(&EasySeqLen, sizeof(int), 1, fp);
 				}
 				if (judgeButton(msg.x, msg.y, 250, 600, 100, 50)) {
-					fclose(fp);
 					closegraph();
 					InitInter();
 					InitInterCheck();
 				}
 				if (judgeButton(msg.x, msg.y, 790, 600, 100, 50)) {
-					fclose(fp);
 					TCHAR OriginalStr[10];
 					InputBox(OriginalStr, 10, _T("请输入事件个数"));
 					EventNum = _ttoi(OriginalStr);
@@ -241,4 +239,5 @@ void MainPara() {
 			}
 		}
 	}
+	fclose(fp);
 }
