@@ -151,7 +151,7 @@ void SetWin() //------------------------------------------------------//画公告栏
 
 	setlinestyle(PS_SOLID, 0, NULL, 0);
 	setlinecolor(WHITE);
-	putimage(600, Ylong - 230, &Gimg); //放公告栏
+	putimage(700, Ylong - 230, &Gimg); //放公告栏
 
 }//--------------------------------------------------------------------画安检口，算坐标，左上角坐标存在OdiWin[]和VipWin[]
 
@@ -456,7 +456,7 @@ void ShowID(int id,int x,int y)
 clock_t  BoardNow;
 clock_t BoardPre;
 static int by = Ylong - 150;
-static int bx = 700;
+static int bx = 800;
 void BoardShow()
 {
 	settextcolor(BLACK);
@@ -464,10 +464,9 @@ void BoardShow()
 	if (BoardNow - BoardPre >= 5000)
 	{
 		by = Ylong - 150;
-		bx = 700;
+		bx = 800;
 		BoardPre = BoardNow;
-		putimage(600, Ylong - 230, &Gimg);
-		by = Ylong - 150;
+		putimage(700, Ylong - 230, &Gimg);
 		if(AirportState==OnWork)
 		{
 			outtextxy(bx, by, "机场状态：上班");
@@ -476,18 +475,24 @@ void BoardShow()
 		{
 			outtextxy(bx , by, "机场状态：准备关闭");
 		}
-		else if (AirportState == OffWork)
+		/*else if (AirportState == OffWork)
 		{
 			outtextxy(bx, by, "机场状态：下班");
-		}	
+		}	*/
 	}	
 }
 void BoardEvent(char c,int i)
 {
 	TCHAR no[2];
 	if (by >= (Ylong - 70))
+	{
 		by = Ylong - 150;
+		bx += 100;
+		if (bx >= 1100)
+			bx = 800;
+	}
 	by += 20;
+
 	settextcolor(BLACK);
 	switch (c)
 	{
@@ -504,6 +509,11 @@ void BoardEvent(char c,int i)
 	case 'M':
 		outtextxy(bx, by, "缓冲区已满");
 		break;
+	case 'X':
+		putimage(700, Ylong - 230, &Gimg);
+		outtextxy(800, Ylong - 150, "机场状态：准备关闭");
+		break;
+
 	}
 }
 
