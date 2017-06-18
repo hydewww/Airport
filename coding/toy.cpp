@@ -492,6 +492,7 @@ void InitDraw() {
 
 clock_t PreMoveTime;
 clock_t NowMoveTime;
+void BoardShow();
 void toy() {
 	NowMoveTime = clock();
 	//这里顺序不能变！！！ 有玄学的奥秘！！！
@@ -516,6 +517,7 @@ void toy() {
 		Move(LineMap, MaxCustSingleLine*MaxLines);//缓冲区动
 		PreEnLine();	//进缓冲区
 	}
+	BoardShow();
 }
 
 void FreeToy() {

@@ -14,6 +14,7 @@
 #define ODIN 0
 int PreClose = 0;//记录准备关闭安检口的数目
 int OdinWatNum;
+void BoardEvent(char, int);
 
 //进入缓冲区
 void EnQueue(Queue* queue) {
@@ -46,6 +47,7 @@ void DistriNum(entry *event)//为乘客分配号码并插入排队缓冲区
 			if (OdinQueue->WaitNum >= MaxCustSingleLine*MaxLines) //排队缓冲区已满
 			{
 				EventOutputFile('F', 0, 0);//事件输出
+				BoardEvent('M', 0); //公告栏状态
 				break;
 			}
 			OdinWatNum++;//---------------
@@ -155,6 +157,7 @@ void RestOrClosWin(entry *event)//接收事件完成安检口下班及休息功能
 					WinNum++;
 				}
 				Win[i].WinState = ReadyClosWin;//改变安检口状态为准备关闭(正在休息或准备休息的安检口强制准备下班）
+				BoardEvent('G', i + 1);
 			}
 		}
 		for (i = 0; i < NumOfVIPWin; i++)
@@ -162,6 +165,7 @@ void RestOrClosWin(entry *event)//接收事件完成安检口下班及休息功能
 			if (VIPWin[i].WinState != CloseWin)//安检口不在关闭状态
 			{
 				VIPWin[i].WinState = ReadyClosWin;//改变安检口状态为准备关闭(正在休息或准备休息的安检口强制准备下班）
+				BoardEvent('V', i + 1);
 			}
 		}
 		EventOutputFile('Q', 0, 0);//事件输出
@@ -220,6 +224,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 			{
 				Win[i].WinState = ReadyClosWin;//设置安检口状态为准备关闭
 				PreClose++;//准备关闭安检口数目加一
+				BoardEvent('G', i+1);
 				break;//一次最多关闭一个
 			}
 		}
@@ -237,6 +242,7 @@ void WinRun() //安检口处理乘客及计算安检口状态转换
 				WinNum++;//当前安检口数量增加
 				n++;//已增设安检口加一
 				EventOutputFile('O', 0, i + 1);//事件输出
+				BoardEvent('K', i + 1);
 			}
 			break;
 		case OpenWin: //安检口处于空闲状态

@@ -57,6 +57,7 @@ IMAGE COnimg; //ÕýÔÚ°²¼ìµÄ°²¼ì¿Ú
 ButtonImg Bimg; //¸÷ÖÖ°´Å¥
 IMAGE BBackimg; //°´Å¥±³¾°
 IMAGE RBackimg; //³Ë¿Í±³¾°
+IMAGE Gimg;//¹«¸æÀ¸±³¾°
 
 typedef struct Stateimg
 {
@@ -94,10 +95,11 @@ void Draw() //ÒÔÏÂÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Ê
 }
 //ÒÔÉÏÎª---------------------------------------------Ã»Ê²Ã´ÓÃµÄÖ÷º¯Êý£¬µ¥´¿ÓÃÀ´²âÊÔ³õÊ¼»¯°²¼ì¿Ú¹¦ÄÜ
 */
-void SetWin() //--------------------------------------------------------------------»­°²¼ì¿Ú£¬Ëã×ø±ê£¬×óÉÏ½Ç×ø±ê´æÔÚOdiWin[]ºÍVipWin[]
+void SetWin() //------------------------------------------------------//»­¹«¸æÀ¸---------»­°²¼ì¿Ú£¬Ëã×ø±ê£¬×óÉÏ½Ç×ø±ê´æÔÚOdiWin[]ºÍVipWin[]
 {
 	OdiWin = (Pos*)malloc(sizeof(Pos)*NumOfWin);
 	VipWin = (Pos*)malloc(sizeof(Pos)*NumOfVIPWin);
+	loadimage(&Gimg, _T("¹«¸æÀ¸.jpg"), 500, 200);
 	int x0 = 0;  //Âù¶¨ÒåÒÔÏÂ
 	y00 = 100; //ÉÏÏÂÁô°×80
 	Dy = (Ylong - 2 * y00) / (NumOfWin + NumOfVIPWin); //ÓÃÀ´³õÊ¼»¯»­Í¼µÄ£¬¿ÉÒÔ²»ÓÃ¹Ü
@@ -149,7 +151,7 @@ void SetWin() //----------------------------------------------------------------
 
 	setlinestyle(PS_SOLID, 0, NULL, 0);
 	setlinecolor(WHITE);
-	
+	putimage(600, Ylong - 230, &Gimg); //·Å¹«¸æÀ¸
 
 }//--------------------------------------------------------------------»­°²¼ì¿Ú£¬Ëã×ø±ê£¬×óÉÏ½Ç×ø±ê´æÔÚOdiWin[]ºÍVipWin[]
 
@@ -451,7 +453,59 @@ void ShowID(int id,int x,int y)
 
 }
 
-
+clock_t  BoardNow;
+clock_t BoardPre;
+static int by = Ylong - 150;
+static int bx = 700;
+void BoardShow()
+{
+	settextcolor(BLACK);
+	BoardNow = clock();
+	if (BoardNow - BoardPre >= 5000)
+	{
+		by = Ylong - 150;
+		bx = 700;
+		BoardPre = BoardNow;
+		putimage(600, Ylong - 230, &Gimg);
+		by = Ylong - 150;
+		if(AirportState==OnWork)
+		{
+			outtextxy(bx, by, "»ú³¡×´Ì¬£ºÉÏ°à");
+		}
+		else if (AirportState == ShutDown)
+		{
+			outtextxy(bx , by, "»ú³¡×´Ì¬£º×¼±¸¹Ø±Õ");
+		}
+		else if (AirportState == OffWork)
+		{
+			outtextxy(bx, by, "»ú³¡×´Ì¬£ºÏÂ°à");
+		}	
+	}	
+}
+void BoardEvent(char c,int i)
+{
+	TCHAR no[2];
+	if (by >= (Ylong - 70))
+		by = Ylong - 150;
+	by += 20;
+	settextcolor(BLACK);
+	switch (c)
+	{
+	case 'G':
+		_itoa(i, no,10);
+		outtextxy(bx, by,no);
+		outtextxy(bx + 5, by, "ºÅ°²¼ì¿Ú×¼±¸¹Ø±Õ");
+		break;
+	case 'K':
+		_itoa(i, no, 10);
+		outtextxy(bx, by, no);
+		outtextxy(bx + 5, by, "ºÅ°²¼ì¿Ú¿ªÆô");
+		break;
+	case 'M':
+		outtextxy(bx, by, "»º³åÇøÒÑÂú");
+		break;
+	}
+}
 
 void MouseOK()
 {
