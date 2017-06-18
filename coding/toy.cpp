@@ -317,21 +317,23 @@ int EnVip(int no);
 //去安检口啦！
 int EnCheck(int no) {
 	//普通乘客
-	if (no < NumOfWin) {
-		if (LineMap[0].Used) {			//队头有人
-			MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
-			//CheckMap[no][last[no]].Used = LineMap[0].Used;
-			//LineMap[0].Used = 0;
-
-			//SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-			return 1;
+	
+	if (LineMap[0].Used) {			//队头有人
+		MoveRun(&CheckMap[no][last[no]], &LineMap[0]);	//走你
+		//CheckMap[no][last[no]].Used = LineMap[0].Used;
+		//LineMap[0].Used = 0;
+		//SpecialMap[Splast-1] = no;/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+		return 1;
 		}
+	return 0;
+}
+
+int VipEnCheck(int no)
+{
+	if(EnVip(no) == 1)
+		return 1;
+	else
 		return 0;
-	}
-	//Vip乘客 没有缓冲区 直接进安检口 操作不太一样
-	else {
-		EnVip(no);
-	}
 }
 
 //Vip乘客 没有缓冲区 直接进安检口 操作不太一样
@@ -426,19 +428,21 @@ void PreEnLine() {
 }
 
 void PreEnCheck() {
+	if (VipEnCheckCache.head != VipEnCheckCache.tail) {
+		if (VipEnCheck(VipEnCheckCache.no[VipEnCheckCache.head]))
+			DeCache(&VipEnCheckCache);
+	}
+	//ResetCheckCache();
 	if (EnCheckCache.head != EnCheckCache.tail) {
 		if (EnCheck(EnCheckCache.no[EnCheckCache.head]))	//成功进入安检口
 			DeCache(&EnCheckCache);		//缓存-1
 			//EnCheckCache.head++;
 	}
-	if (VipEnCheckCache.head != VipEnCheckCache.tail) {
-		if (EnCheck(VipEnCheckCache.no[VipEnCheckCache.head]))
-			DeCache(&VipEnCheckCache);
-	}
-	//ResetCheckCache();
+	
 }
 
 void PreDeCheck() {
+
 	if (DeCheckCache.head != DeCheckCache.tail) {
 		if (DeCheck(DeCheckCache.no[DeCheckCache.head]))
 			DeCache(&DeCheckCache);
